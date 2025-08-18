@@ -16,19 +16,19 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv("GENIUS_TOKEN")
 
-# Настройка логирования
+# Настройка логирования с правильной кодировкой
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('scraping.log'),
+        logging.FileHandler('scraping.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
 
 if not TOKEN:
-    logger.error("Токен Genius API не найден в .env!")
+    logger.error("Genius API token not found in .env!")
     exit(1)
 
 class LyricsDatabase:
@@ -71,8 +71,24 @@ class LyricsDatabase:
                 self.conn.commit()
                 self.batch_count = 0
             return True
+        except sqlite3.OperationalError as e:
+            if "database is locked" in str(e):
+                logger.warning(f"База заблокирована, повторная попытка через 2 сек: {artist} - {title}")
+                time.sleep(2)
+                try:
+                    self.conn.execute(
+                        """INSERT INTO songs (artist, title, lyrics, url, genius_id, word_count) 
+                           VALUES (?, ?, ?, ?, ?, ?)""",
+                        (artist, title, lyrics, url, genius_id, word_count)
+                    )
+                    return True
+                except Exception:
+                    logger.error(f"Повторная попытка не удалась: {artist} - {title}")
+                    return False
+            else:
+                raise e
         except sqlite3.IntegrityError as e:
-            logger.debug(f"Дубликат: {artist} - {title}")
+            logger.debug(f"Duplicate: {artist} - {title}")
             return False
 
     def song_exists(self, url: str = None, genius_id: int = None) -> bool:
@@ -116,13 +132,27 @@ class SafeGeniusScraper:
         )
         self.db = LyricsDatabase(db_name)
         self.session_stats = {"processed": 0, "added": 0, "skipped": 0, "errors": 0}
-        self.min_delay = 2.0
-        self.max_delay = 5.0
-        self.error_delay = 10.0
+        self.min_delay = 3.0  # Увеличил с 2.0
+        self.max_delay = 7.0  # Увеличил с 5.0
+        self.error_delay = 15.0  # Увеличил с 10.0
         self.max_retries = 3
         self.shutdown_requested = False
+        
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
+        # Дополнительная обработка для Windows
+        if sys.platform == "win32":
+            try:
+                signal.signal(signal.SIGBREAK, self._signal_handler)
+            except AttributeError:
+                pass  # SIGBREAK может отсутствовать
+        signal.signal(signal.SIGTERM, self._signal_handler)
+        # Дополнительная обработка для Windows
+        if sys.platform == "win32":
+            try:
+                signal.signal(signal.SIGBREAK, self._signal_handler)
+            except AttributeError:
+                pass  # SIGBREAK может отсутствовать
 
     def _signal_handler(self, signum, frame):
         logger.info(f"\nПолучен сигнал {signum}. Завершение работы...")
@@ -135,17 +165,48 @@ class SafeGeniusScraper:
         for _ in range(intervals):
             if self.shutdown_requested:
                 return
-            time.sleep(1)
+            try:
+                time.sleep(1)
+            except KeyboardInterrupt:
+                self.shutdown_requested = True
+                return
         if remainder > 0 and not self.shutdown_requested:
-            time.sleep(remainder)
+            try:
+                time.sleep(remainder)
+            except KeyboardInterrupt:
+                self.shutdown_requested = True
+                return
         logger.debug(f"Пауза: {delay:.1f}с")
 
     def clean_lyrics(self, lyrics: str) -> str:
         if not lyrics:
             return ""
+        
+        # Удаляем информацию о контрибьюторах (например, "81 Contributors")
+        lyrics = re.sub(r"^\d+\s+Contributors.*?Lyrics", "", lyrics, flags=re.MULTILINE | re.DOTALL)
+        
+        # Удаляем блок с переводами (например, "TranslationsEnglishEspañol") 
+        lyrics = re.sub(r"Translations[A-Za-z]+", "", lyrics, flags=re.MULTILINE)
+        
+        # Удаляем информацию о исполнителе и описание песни в начале
+        # (обычно идет после "Lyrics" и до первой строки песни)
+        lyrics = re.sub(r"Lyrics[A-Z].*?Read More\s*", "", lyrics, flags=re.DOTALL)
+        
+        # Удаляем стандартные блоки от Genius
         lyrics = re.sub(r"(?i)(Embed|Submitted by [^\n]*|Written by [^\n]*|You might also like).*$", "", lyrics, flags=re.DOTALL)
+        
+        # Удаляем ссылки и URL
+        lyrics = re.sub(r"https?://[^\s]+", "", lyrics)
+        
+        # Удаляем блоки в квадратных скобках (обычно это описания или переходы)
+        lyrics = re.sub(r"\[.*?\]", "", lyrics)
+        
+        # Удаляем множественные переносы строк
+        lyrics = re.sub(r"\n{3,}", "\n\n", lyrics)
         lyrics = re.sub(r"\n{2,}", "\n", lyrics.strip())
-        return lyrics
+        
+        # Удаляем пустые строки в начале и конце
+        return lyrics.strip()
 
     def _is_valid_lyrics(self, lyrics: str) -> bool:
         if not lyrics:
@@ -156,83 +217,100 @@ class SafeGeniusScraper:
         instrumental_markers = ["instrumental", "no lyrics", "без слов", "music only", "beat only"]
         return not any(marker in lyrics.lower() for marker in instrumental_markers)
 
-    def scrape_artist_songs(self, artist_name: str, max_songs: int = 100) -> int:
+    def scrape_artist_songs(self, artist_name: str, max_songs: int = 500) -> int:
         added_count = 0
         retry_count = 0
         
+        logger.info(f"Starting processing artist: {artist_name}")
+        
         while retry_count < self.max_retries and not self.shutdown_requested:
             try:
-                logger.info(f"Поиск артиста: {artist_name} (попытка {retry_count + 1})")
+                logger.info(f"Searching artist: {artist_name} (attempt {retry_count + 1})")
+                # Убираем лимит или ставим очень большой
                 artist = self.genius.search_artist(artist_name, max_songs=max_songs, sort="popularity", get_full_info=False)
                 
                 if not artist or not artist.songs:
-                    logger.warning(f"Артист {artist_name} не найден")
+                    logger.warning(f"Artist {artist_name} not found")
                     return 0
 
-                logger.info(f"Найдено {len(artist.songs)} песен для {artist_name}")
+                logger.info(f"Found {len(artist.songs)} songs for {artist_name}")
 
                 for i, song in enumerate(artist.songs):
                     if self.shutdown_requested:
-                        logger.info(f"Останавливаем на песне {i+1}/{len(artist.songs)} для {artist_name}")
+                        logger.info(f"Stopping at song {i+1}/{len(artist.songs)} for {artist_name}")
                         break
                         
                     try:
                         if self.db.song_exists(url=song.url):
-                            logger.debug(f"Пропуск (дубликат): {song.title}")
+                            logger.debug(f"Skip (duplicate): {song.title}")
                             self.session_stats["skipped"] += 1
                             continue
 
                         lyrics = self.clean_lyrics(song.lyrics)
                         if not self._is_valid_lyrics(lyrics):
-                            logger.debug(f"Пропуск (невалидный текст): {song.title}")
+                            logger.debug(f"Skip (invalid lyrics): {song.title}")
                             self.session_stats["skipped"] += 1
                             continue
 
                         if self.db.add_song(artist_name, song.title, lyrics, song.url, song.id if hasattr(song, 'id') else None):
                             added_count += 1
                             self.session_stats["added"] += 1
-                            logger.info(f"✅ Добавлено: {artist_name} - {song.title} ({len(lyrics.split())} слов)")
+                            word_count = len(lyrics.split())
+                            logger.info(f"Added: {artist_name} - {song.title} ({word_count} words)")
                             if self.session_stats["added"] % 5 == 0:
                                 current_stats = self.db.get_stats()
-                                logger.info(f"📊 Промежуточная статистика: {current_stats['total_songs']} песен в базе")
+                                logger.info(f"Stats: {current_stats['total_songs']} songs in database")
                         else:
                             self.session_stats["skipped"] += 1
 
                         self.session_stats["processed"] += 1
                         if (i + 1) % 10 == 0:
-                            logger.info(f"Обработано {i + 1}/{len(artist.songs)} песен для {artist_name}")
+                            logger.info(f"Processed {i + 1}/{len(artist.songs)} songs for {artist_name}")
+                        
+                        # Check for shutdown before pause
+                        if self.shutdown_requested:
+                            break
+                            
                         self.safe_delay()
 
-                    except lyricsgenius.exceptions.Timeout as e:
-                        logger.error(f"Таймаут для {song.title}: {e}")
-                        self.session_stats["errors"] += 1
-                        self.safe_delay(is_error=True)
+                    except Exception as timeout_e:
+                        if "timeout" in str(timeout_e).lower():
+                            logger.error(f"Timeout for {song.title}: {timeout_e}")
+                            self.session_stats["errors"] += 1
+                            self.safe_delay(is_error=True)
+                        else:
+                            raise timeout_e
                     except Exception as e:
-                        logger.error(f"Ошибка с песней {song.title}: {e}")
+                        logger.error(f"Error with song {song.title}: {e}")
                         self.session_stats["errors"] += 1
                         self.safe_delay(is_error=True)
 
                 break
 
-            except lyricsgenius.exceptions.RateLimitExceeded as e:
-                logger.error(f"429 Too Many Requests для {artist_name}: {e}")
-                self.safe_delay(is_error=True)
-                if not self.shutdown_requested:
-                    time.sleep(60)
-                retry_count += 1
-                if retry_count >= self.max_retries:
-                    logger.error(f"Максимум попыток достигнут для {artist_name}")
-                    self.session_stats["errors"] += 1
-                    break
             except Exception as e:
-                retry_count += 1
-                logger.error(f"Ошибка с артистом {artist_name} (попытка {retry_count}): {e}")
-                if retry_count >= self.max_retries:
-                    logger.error(f"Максимум попыток достигнут для {artist_name}")
-                    self.session_stats["errors"] += 1
-                    break
-                self.safe_delay(is_error=True)
+                if "rate limit" in str(e).lower() or "429" in str(e):
+                    logger.error(f"Rate Limit for {artist_name}: {e}")
+                    logger.info(f"Waiting 60 seconds before retry...")
+                    self.safe_delay(is_error=True)
+                    if not self.shutdown_requested:
+                        time.sleep(60)
+                    retry_count += 1
+                    if retry_count >= self.max_retries:
+                        logger.error(f"Max retries reached for {artist_name}")
+                        self.session_stats["errors"] += 1
+                        break
+                else:
+                    retry_count += 1
+                    logger.error(f"Error with artist {artist_name} (attempt {retry_count}): {e}")
+                    logger.error(f"Error type: {type(e).__name__}")
+                    if retry_count >= self.max_retries:
+                        logger.error(f"Max retries reached for {artist_name}")
+                        self.session_stats["errors"] += 1
+                        break
+                    logger.info(f"Pause before retry...")
+                    self.safe_delay(is_error=True)
 
+        logger.info(f"Completed processing {artist_name}: added {added_count} songs")
         return added_count
 
     def show_current_results(self):
@@ -240,53 +318,58 @@ class SafeGeniusScraper:
         recent_songs = self.db.get_recent_songs(5)
         
         logger.info(f"\n{'='*60}")
-        logger.info(f"📊 ТЕКУЩИЕ РЕЗУЛЬТАТЫ:")
-        logger.info(f"Всего песен в базе: {stats['total_songs']}")
-        logger.info(f"Уникальных артистов: {stats['unique_artists']}")
-        logger.info(f"За эту сессию добавлено: {self.session_stats['added']}")
+        logger.info(f"CURRENT RESULTS:")
+        logger.info(f"Total songs in database: {stats['total_songs']}")
+        logger.info(f"Unique artists: {stats['unique_artists']}")
+        logger.info(f"Added this session: {self.session_stats['added']}")
         
         if recent_songs:
-            logger.info(f"\n🎵 Последние добавленные песни:")
+            logger.info(f"\nRecent added songs:")
             for song in recent_songs:
-                logger.info(f"  • {song['artist']} - {song['title']} ({song['word_count']} слов)")
+                logger.info(f"  - {song['artist']} - {song['title']} ({song['word_count']} words)")
         
         logger.info(f"{'='*60}\n")
 
-    def run_scraping_session(self, artists: List[str], songs_per_artist: int = 100):
-        logger.info(f"Начало сессии скрапинга: {len(artists)} артистов, {songs_per_artist} песен каждого")
+    def run_scraping_session(self, artists: List[str], songs_per_artist: int = 500):
+        logger.info(f"Starting scraping session: {len(artists)} artists, {songs_per_artist} songs each")
         start_time = datetime.now()
         
         initial_stats = self.db.get_stats()
-        logger.info(f"В базе уже есть: {initial_stats['total_songs']} песен")
+        logger.info(f"Already in database: {initial_stats['total_songs']} songs")
         
         try:
             for i, artist_name in enumerate(artists, 1):
                 if self.shutdown_requested:
-                    logger.info("Получен запрос на остановку")
+                    logger.info("Shutdown requested")
                     break
                     
                 logger.info(f"\n{'='*50}")
-                logger.info(f"Артист {i}/{len(artists)}: {artist_name}")
+                logger.info(f"Artist {i}/{len(artists)}: {artist_name}")
                 
                 added = self.scrape_artist_songs(artist_name, songs_per_artist)
-                logger.info(f"Добавлено песен для {artist_name}: {added}")
+                logger.info(f"Added songs for {artist_name}: {added}")
                 
                 stats = self.db.get_stats()
-                logger.info(f"Всего в базе: {stats['total_songs']} песен от {stats['unique_artists']} артистов")
+                logger.info(f"Total in database: {stats['total_songs']} songs from {stats['unique_artists']} artists")
                 
                 if i < len(artists) and not self.shutdown_requested:
                     artist_delay = random.uniform(5, 10)
-                    logger.info(f"Пауза между артистами: {artist_delay:.1f}с")
-                    for _ in range(int(artist_delay)):
+                    logger.info(f"Pause between artists: {artist_delay:.1f}s")
+                    intervals = int(artist_delay)
+                    for _ in range(intervals):
                         if self.shutdown_requested:
                             break
-                        time.sleep(1)
+                        try:
+                            time.sleep(1)
+                        except KeyboardInterrupt:
+                            self.shutdown_requested = True
+                            break
 
         except KeyboardInterrupt:
-            logger.info("Получено прерывание от пользователя (Ctrl+C)")
+            logger.info("User interruption received (Ctrl+C)")
             self.shutdown_requested = True
         except Exception as e:
-            logger.error(f"Критическая ошибка: {e}")
+            logger.error(f"Critical error: {e}")
         finally:
             self.db.conn.commit()  # Принудительный коммит перед финальной статистикой
             self.show_current_results()
@@ -296,27 +379,37 @@ class SafeGeniusScraper:
             final_stats = self.db.get_stats()
             
             logger.info(f"\n{'='*50}")
-            logger.info(f"🏁 СЕССИЯ ЗАВЕРШЕНА")
-            logger.info(f"Время выполнения: {duration}")
-            logger.info(f"Обработано: {self.session_stats['processed']}")
-            logger.info(f"Добавлено: {self.session_stats['added']}")
-            logger.info(f"Пропущено: {self.session_stats['skipped']}")
-            logger.info(f"Ошибок: {self.session_stats['errors']}")
-            logger.info(f"Всего в базе: {final_stats['total_songs']} песен")
+            logger.info(f"SESSION COMPLETED")
+            logger.info(f"Execution time: {duration}")
+            logger.info(f"Processed: {self.session_stats['processed']}")
+            logger.info(f"Added: {self.session_stats['added']}")
+            logger.info(f"Skipped: {self.session_stats['skipped']}")
+            logger.info(f"Errors: {self.session_stats['errors']}")
+            logger.info(f"Total in database: {final_stats['total_songs']} songs")
             
             self.close()
 
     def close(self):
-        logger.info("Закрытие соединения с базой данных...")
+        logger.info("Closing database connection...")
         self.db.close()
 
 def load_artist_list(filename: str = "rap_artists.json") -> List[str]:
+    # Приоритет: сначала проверяем файл с оставшимися артистами
+    remaining_file = "remaining_artists.json"
+    if os.path.exists(remaining_file):
+        logger.info(f"Loading remaining artists from {remaining_file}")
+        with open(remaining_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    
+    # Если файла с оставшимися нет, загружаем основной список
     if os.path.exists(filename):
+        logger.info(f"Loading full artist list from {filename}")
         with open(filename, 'r', encoding='utf-8') as f:
             return json.load(f)
     else:
+        logger.info("Using built-in artist list")
         artists = [
-            "Kendrick Lamar", "J. Cole", "Drake", "Eminem", "Kanye West",
+            "J. Cole", "Drake", "Eminem", "Kanye West",
             "Travis Scott", "Lil Wayne", "Jay-Z", "Nas", "Tupac",
             "The Notorious B.I.G.", "Lil Baby", "Future", "21 Savage", "Post Malone",
             "Tyler, The Creator", "A$AP Rocky", "Mac Miller", "Childish Gambino", "Logic",
@@ -333,25 +426,25 @@ def load_artist_list(filename: str = "rap_artists.json") -> List[str]:
 
 def main():
     if not TOKEN:
-        logger.error("Токен Genius API не найден в .env!")
+        logger.error("Genius API token not found in .env!")
         exit(1)
         
     scraper = SafeGeniusScraper(TOKEN, "rap_lyrics.db")
     
     try:
         artists = load_artist_list()
-        SONGS_PER_ARTIST = 100  # Увеличено для цели 10,000 треков
+        SONGS_PER_ARTIST = 500  # Увеличено до 500 песен на артиста
         
-        logger.info(f"Загружено {len(artists)} артистов")
-        logger.info(f"Цель: ~{len(artists) * SONGS_PER_ARTIST} песен")
-        logger.info("Используйте Ctrl+C для безопасной остановки")
+        logger.info(f"Loaded {len(artists)} artists")
+        logger.info(f"Target: ~{len(artists) * SONGS_PER_ARTIST} songs")
+        logger.info("To stop use: Get-Process python | Stop-Process -Force")
         
         scraper.run_scraping_session(artists, SONGS_PER_ARTIST)
         
     except Exception as e:
-        logger.error(f"Ошибка в main: {e}")
+        logger.error(f"Error in main: {e}")
     finally:
-        logger.info("Программа завершена")
+        logger.info("Program completed")
 
 if __name__ == "__main__":
     main()
