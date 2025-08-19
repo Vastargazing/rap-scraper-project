@@ -1,0 +1,9 @@
+{
+  "total_processed": 3,
+  "successful": 3,
+  "failed": 0,
+  "average_processing_time": 9.059436559677124,
+  "start_time": "2025-08-19T08:28:45.638166",
+  "end_time": "2025-08-19T08:29:22.823828",
+  "errors": []
+}
