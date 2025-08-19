@@ -1,9 +1,10 @@
 # Environment variables
 .env
 
-# Database files
-*.db
+# Database files (except main database)
 *.db-journal
+*_backup.db
+temp_*.db
 
 # Log files
 *.log

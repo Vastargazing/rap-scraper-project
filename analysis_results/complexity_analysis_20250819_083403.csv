@@ -1,0 +1,10 @@
+complexity_level,count,avg_authenticity,avg_creativity,avg_word_count
+"Средний.  Язык достаточно простой, но обсуждаются сложные эмоциональные состояния и творческие процессы.",1,0.8,0.6,4086.0
+"Высокая. Текст насыщен сложными рифмами, метафорами, аллюзиями на поп-культуру и специфической лексикой гангста-рэпа.",1,0.7,0.6,3838.0
+"Medium. The language is straightforward, using common slang and imagery associated with trap music. While the vocabulary isn't overly complex, the rapid-fire delivery and dense use of slang requires some familiarity with the genre to fully grasp.",1,0.7,0.4,6048.0
+"Medium. The language is straightforward, but the themes of wealth, isolation, and emotional distance add a layer of complexity.",1,0.7,0.6,3506.0
+"Medium. The language is relatively straightforward, using common slang and imagery. However, the rapid-fire delivery and dense concentration of boasts and threats add a layer of complexity.",1,0.6,0.4,10079.0
+"Medium. The language is relatively straightforward, using common slang and boasts of wealth and success. However, the rapid-fire delivery, frequent shifts in topic, and use of internal rhymes add a layer of complexity.",1,0.7,0.6,5872.0
+"Medium to Complex. While the core message is relatively straightforward, the language uses a mix of complex vocabulary (e.g., 'comatose', 'celestials'), internal rhymes, and multi-layered metaphors, elevating it beyond simple.",1,0.8,0.7,3137.0
+Medium to Complex,1,0.7,0.6,3162.0
+Complex,2,0.825,0.725,3969.0
