@@ -58,6 +58,28 @@ def check_database():
             for artist, title, date in recent:
                 print(f"  • {artist} - {title} ({date})")
         
+        # Проверяем AI анализ если таблица существует
+        if 'ai_analysis' in tables:
+            cursor.execute("SELECT COUNT(*) FROM ai_analysis")
+            analyzed_count = cursor.fetchone()[0]
+            print(f"\n🤖 AI анализов: {analyzed_count}")
+            
+            if analyzed_count > 0:
+                # Последние анализы
+                cursor.execute("""
+                    SELECT s.artist, s.title, a.genre, a.overall_quality, a.analysis_date
+                    FROM ai_analysis a
+                    JOIN songs s ON a.song_id = s.id
+                    ORDER BY a.id DESC
+                    LIMIT 3
+                """)
+                analyses = cursor.fetchall()
+                print(f"🔍 Последние анализы:")
+                for artist, title, genre, quality, date in analyses:
+                    print(f"  • {artist} - {title} | {genre} | {quality} ({date[:10]})")
+        else:
+            print(f"\n⚠️ Таблица ai_analysis не найдена")
+        
         conn.close()
         print(f"\n✅ База данных проверена успешно!")
         

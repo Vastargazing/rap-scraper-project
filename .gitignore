@@ -1,10 +1,11 @@
 # Environment variables
 .env
 
-# Database files (except main database)
-*.db-journal
-*_backup.db
-temp_*.db
+# Database files - ALL database files excluded
+*.db
+rap_lyrics*.db
+backup_*.db
+*backup*.db
 
 # Log files
 *.log
@@ -35,3 +36,9 @@ ExplainMEPython.ini
 # Temporary files
 *.tmp
 *.temp
+
+# Large data files
+*.jsonl
+enhanced_data/
+langchain_results/
+analysis_results/

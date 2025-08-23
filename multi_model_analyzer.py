@@ -32,7 +32,18 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Импорт моделей данных
-from models import SongMetadata, LyricsAnalysis, QualityMetrics, EnhancedSongAnalysis
+from models import SongMetadata, LyricsAnalysis, QualityMetrics
+
+# Создаем модель для анализа (исправленная версия)
+class EnhancedSongData(BaseModel):
+    """Результат AI анализа песни"""
+    artist: str
+    title: str
+    metadata: SongMetadata
+    lyrics_analysis: LyricsAnalysis
+    quality_metrics: QualityMetrics
+    model_used: str
+    analysis_date: str
 
 class ModelProvider:
     """Базовый класс для AI провайдеров"""
@@ -46,14 +57,14 @@ class ModelProvider:
         """Проверка доступности модели"""
         raise NotImplementedError
         
-    def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongAnalysis]:
+    def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:
         """Анализ песни"""
         raise NotImplementedError
 
 class OllamaProvider(ModelProvider):
     """Провайдер для локальных моделей Ollama"""
     
-    def __init__(self, model_name: str = "llama3.1:8b", base_url: str = "http://localhost:11434"):
+    def __init__(self, model_name: str = "llama3.2:3b", base_url: str = "http://localhost:11434"):
         super().__init__("Ollama")
         self.model_name = model_name
         self.base_url = base_url
@@ -63,7 +74,7 @@ class OllamaProvider(ModelProvider):
     def check_availability(self) -> bool:
         """Проверка запущен ли Ollama"""
         try:
-            response = requests.get(f"{self.base_url}/api/tags", timeout=5)
+            response = requests.get(f"{self.base_url}/api/tags", timeout=5, proxies={"http": "", "https": ""})
             if response.status_code == 200:
                 models = response.json().get('models', [])
                 available_models = [model['name'] for model in models]
@@ -88,7 +99,8 @@ class OllamaProvider(ModelProvider):
             response = requests.post(
                 f"{self.base_url}/api/pull",
                 json={"name": self.model_name},
-                timeout=300  # 5 минут на загрузку
+                timeout=300,  # 5 минут на загрузку
+                proxies={"http": "", "https": ""}
             )
             if response.status_code == 200:
                 logger.info(f"✅ Модель {self.model_name} загружена")
@@ -100,7 +112,7 @@ class OllamaProvider(ModelProvider):
             logger.error(f"❌ Ошибка загрузки модели: {e}")
             return False
     
-    def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongAnalysis]:
+    def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:
         """Анализ песни через Ollama"""
         if not self.available:
             return None
@@ -120,7 +132,8 @@ class OllamaProvider(ModelProvider):
                         "max_tokens": 1500
                     }
                 },
-                timeout=60
+                timeout=60,
+                proxies={"http": "", "https": ""}
             )
             
             if response.status_code == 200:
@@ -138,40 +151,49 @@ class OllamaProvider(ModelProvider):
     def _create_analysis_prompt(self, artist: str, title: str, lyrics: str) -> str:
         """Создание промпта для анализа"""
         return f"""
-Проанализируй рэп-песню и верни результат СТРОГО в JSON формате:
+Проанализируй рэп-песню и верни результат СТРОГО в JSON формате.
 
 Исполнитель: {artist}
 Название: {title}
 Текст: {lyrics[:2000]}...
 
-Верни JSON с полями:
+Верни ТОЛЬКО валидный JSON без дополнительного текста:
+
 {{
     "metadata": {{
-        "genre": "hip-hop/rap/trap/drill/old-school/...",
-        "mood": "aggressive/melancholic/energetic/chill/...",
-        "energy_level": "low/medium/high",
-        "explicit_content": true/false
+        "genre": "rap",
+        "mood": "aggressive",
+        "energy_level": "high",
+        "explicit_content": true
     }},
     "lyrics_analysis": {{
-        "structure": "verse-chorus-verse/freestyle/storytelling/...",
-        "rhyme_scheme": "AABA/ABAB/complex/simple/...",
-        "complexity_level": "beginner/intermediate/advanced",
-        "main_themes": ["money", "relationships", "street_life", "success", "..."]
+        "structure": "verse-chorus-verse",
+        "rhyme_scheme": "ABAB",
+        "complexity_level": "advanced",
+        "main_themes": ["street_life", "success", "relationships"],
+        "emotional_tone": "mixed",
+        "storytelling_type": "narrative",
+        "wordplay_quality": "excellent"
     }},
     "quality_metrics": {{
-        "authenticity_score": 0.0-1.0,
-        "lyrical_creativity": 0.0-1.0,
-        "commercial_appeal": 0.0-1.0,
-        "uniqueness": 0.0-1.0,
-        "overall_quality": "poor/fair/good/excellent",
-        "ai_likelihood": 0.0-1.0
+        "authenticity_score": 0.8,
+        "lyrical_creativity": 0.9,
+        "commercial_appeal": 0.7,
+        "uniqueness": 0.6,
+        "overall_quality": "excellent",
+        "ai_likelihood": 0.1
     }}
 }}
 
-ВАЖНО: Отвечай ТОЛЬКО JSON, без дополнительного текста!
+ОБЯЗАТЕЛЬНЫЕ ПОЛЯ:
+- emotional_tone: positive/negative/neutral/mixed
+- storytelling_type: narrative/abstract/conversational
+- wordplay_quality: basic/good/excellent
+
+Верни ТОЛЬКО JSON без комментариев!
 """
     
-    def _parse_analysis(self, analysis_text: str, artist: str, title: str) -> Optional[EnhancedSongAnalysis]:
+    def _parse_analysis(self, analysis_text: str, artist: str, title: str) -> Optional[EnhancedSongData]:
         """Парсинг результата анализа"""
         try:
             # Извлекаем JSON из ответа
@@ -185,12 +207,30 @@ class OllamaProvider(ModelProvider):
             json_str = analysis_text[json_start:json_end]
             data = json.loads(json_str)
             
-            # Создаем структурированный анализ
-            metadata = SongMetadata(**data['metadata'])
-            lyrics_analysis = LyricsAnalysis(**data['lyrics_analysis'])
-            quality_metrics = QualityMetrics(**data['quality_metrics'])
+            # Проверяем и дополняем отсутствующие поля
+            metadata_data = data.get('metadata', {})
+            lyrics_data = data.get('lyrics_analysis', {})
+            quality_data = data.get('quality_metrics', {})
             
-            return EnhancedSongAnalysis(
+            # Дополняем отсутствующие поля в lyrics_analysis
+            if 'emotional_tone' not in lyrics_data:
+                lyrics_data['emotional_tone'] = 'neutral'
+                logger.warning("⚠️ Добавлено значение по умолчанию для emotional_tone")
+            
+            if 'storytelling_type' not in lyrics_data:
+                lyrics_data['storytelling_type'] = 'conversational'
+                logger.warning("⚠️ Добавлено значение по умолчанию для storytelling_type")
+            
+            if 'wordplay_quality' not in lyrics_data:
+                lyrics_data['wordplay_quality'] = 'basic'
+                logger.warning("⚠️ Добавлено значение по умолчанию для wordplay_quality")
+            
+            # Создаем структурированный анализ
+            metadata = SongMetadata(**metadata_data)
+            lyrics_analysis = LyricsAnalysis(**lyrics_data)
+            quality_metrics = QualityMetrics(**quality_data)
+            
+            return EnhancedSongData(
                 artist=artist,
                 title=title,
                 metadata=metadata,
@@ -240,7 +280,7 @@ class DeepSeekProvider(ModelProvider):
                     "messages": [{"role": "user", "content": "test"}],
                     "max_tokens": 10
                 },
-                timeout=10
+                timeout=3
             )
             
             if response.status_code == 200:
@@ -254,7 +294,7 @@ class DeepSeekProvider(ModelProvider):
             logger.error(f"❌ Ошибка проверки DeepSeek: {e}")
             return False
     
-    def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongAnalysis]:
+    def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:
         """Анализ песни через DeepSeek"""
         if not self.available:
             return None
@@ -318,7 +358,7 @@ Artist: {artist}
 Title: {title}
 Lyrics: {lyrics[:2000]}...
 
-Return JSON with these exact fields:
+Return JSON with ALL these exact fields:
 {{
     "metadata": {{
         "genre": "hip-hop/rap/trap/drill/old-school/...",
@@ -330,7 +370,10 @@ Return JSON with these exact fields:
         "structure": "verse-chorus-verse/freestyle/storytelling/...",
         "rhyme_scheme": "AABA/ABAB/complex/simple/...",
         "complexity_level": "beginner/intermediate/advanced",
-        "main_themes": ["money", "relationships", "street_life", "success", "..."]
+        "main_themes": ["money", "relationships", "street_life", "success", "..."],
+        "emotional_tone": "positive/negative/neutral/mixed",
+        "storytelling_type": "narrative/abstract/conversational/...",
+        "wordplay_quality": "basic/good/excellent"
     }},
     "quality_metrics": {{
         "authenticity_score": 0.0-1.0,
@@ -342,10 +385,11 @@ Return JSON with these exact fields:
     }}
 }}
 
-IMPORTANT: Return ONLY JSON, no additional text!
+IMPORTANT: Include ALL fields including emotional_tone, storytelling_type, wordplay_quality!
+Return ONLY JSON, no additional text!
 """
     
-    def _parse_analysis(self, analysis_text: str, artist: str, title: str) -> Optional[EnhancedSongAnalysis]:
+    def _parse_analysis(self, analysis_text: str, artist: str, title: str) -> Optional[EnhancedSongData]:
         """Парсинг результата анализа"""
         try:
             # Извлекаем JSON из ответа
@@ -359,12 +403,30 @@ IMPORTANT: Return ONLY JSON, no additional text!
             json_str = analysis_text[json_start:json_end]
             data = json.loads(json_str)
             
-            # Создаем структурированный анализ
-            metadata = SongMetadata(**data['metadata'])
-            lyrics_analysis = LyricsAnalysis(**data['lyrics_analysis'])
-            quality_metrics = QualityMetrics(**data['quality_metrics'])
+            # Проверяем и дополняем отсутствующие поля
+            metadata_data = data.get('metadata', {})
+            lyrics_data = data.get('lyrics_analysis', {})
+            quality_data = data.get('quality_metrics', {})
             
-            return EnhancedSongAnalysis(
+            # Дополняем отсутствующие поля в lyrics_analysis
+            if 'emotional_tone' not in lyrics_data:
+                lyrics_data['emotional_tone'] = 'neutral'
+                logger.warning("⚠️ Добавлено значение по умолчанию для emotional_tone")
+            
+            if 'storytelling_type' not in lyrics_data:
+                lyrics_data['storytelling_type'] = 'conversational'
+                logger.warning("⚠️ Добавлено значение по умолчанию для storytelling_type")
+            
+            if 'wordplay_quality' not in lyrics_data:
+                lyrics_data['wordplay_quality'] = 'basic'
+                logger.warning("⚠️ Добавлено значение по умолчанию для wordplay_quality")
+            
+            # Создаем структурированный анализ
+            metadata = SongMetadata(**metadata_data)
+            lyrics_analysis = LyricsAnalysis(**lyrics_data)
+            quality_metrics = QualityMetrics(**quality_data)
+            
+            return EnhancedSongData(
                 artist=artist,
                 title=title,
                 metadata=metadata,
@@ -421,7 +483,7 @@ class MultiModelAnalyzer:
         self.current_provider = self.providers[0]
         logger.info(f"🎯 Активный провайдер: {self.current_provider.name}")
     
-    def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongAnalysis]:
+    def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:
         """Анализ песни с fallback между провайдерами"""
         
         for provider in self.providers:
@@ -521,7 +583,7 @@ class MultiModelAnalyzer:
         except Exception as e:
             logger.error(f"❌ Ошибка batch анализа: {e}")
     
-    def _save_analysis_to_db(self, conn: sqlite3.Connection, song_id: int, analysis: EnhancedSongAnalysis):
+    def _save_analysis_to_db(self, conn: sqlite3.Connection, song_id: int, analysis: EnhancedSongData):
         """Сохранение анализа в базу данных"""
         try:
             conn.execute("""
