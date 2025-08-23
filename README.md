@@ -5,7 +5,14 @@
 [![Gemini API](https://img.shields.io/badge/Gemini-API-orange.svg)](https://ai.google.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> 🎯 **ML Pipeline для создания высококачественного датасета рэп-музыки с AI-анализом аутентичности**
+> 🎯 **Production-ready система для сбора и анализа текстов рэп-песен с ML-возможностями**
+
+## 📚 Документация проекта
+
+- 📖 **[PROJECT_EVOLUTION.md](PROJECT_EVOLUTION.md)** - Подробная история развития проекта и технические решения
+- 🛠️ **[TECH_SUMMARY.md](TECH_SUMMARY.md)** - Краткий технический обзор для резюме
+- 🔄 **[MERGE_PLAN.md](MERGE_PLAN.md)** - Инструкции по объединению баз данных
+- 📱 **[LAPTOP_INSTRUCTIONS.md](LAPTOP_INSTRUCTIONS.md)** - Инструкции для работы с ноутбука
 
 ## 🚀 Quick Start
 
@@ -21,16 +28,27 @@ pip install -r requirements.txt
 GENIUS_TOKEN=your_genius_token
 GOOGLE_API_KEY=your_gemini_key
 
+# Использование оптимизированного скрапера
+python rap_scraper_optimized.py
+
 # Тестирование AI анализа
 python test_langchain.py
 ```
 
+## �️ Основные компоненты
+
+- **`rap_scraper_optimized.py`** - Production-ready скрапер с мониторингом ресурсов
+- **`merge_databases.py`** - Инструмент для объединения баз данных
+- **`migrate_database.py`** - Миграция схемы БД с метаданными
+- **`langchain_analyzer.py`** - AI-анализ с LangChain и Gemini
+- **`check_db.py`** - Утилита для проверки статистики БД
+
 ## 📊 Результаты
 
-- **16,254** собранных песен с Genius.com
-- **10** песен с полным AI-анализом (MVP)
-- **0.735/1.0** средняя аутентичность ("живые" треки)
-- **0.17/1.0** AI-likelihood (очень низкая вероятность ИИ-генерации)
+- **44,115+** собранных песен с Genius.com
+- **237+** уникальных артистов
+- **160+ МБ** структурированных данных
+- **Production-ready** архитектура с оптимизацией памяти
 - **20+** структурированных признаков для ML
 
 ## 🏗️ Архитектура
