@@ -9,8 +9,10 @@ import sys
 from datetime import datetime
 import json
 import os
-from typing import List, Optional
+from typing import List, Optional, Dict, Any, Generator
 from dotenv import load_dotenv
+import psutil
+import gc
 
 # Загрузка переменных окружения из .env
 load_dotenv()
@@ -31,14 +33,72 @@ if not TOKEN:
     logger.error("Genius API token not found in .env!")
     exit(1)
 
+class MemoryMonitor:
+    """Класс для мониторинга использования памяти и автоматической очистки"""
+    
+    def __init__(self, memory_limit_mb: float = 1000.0, warning_threshold: float = 0.8):
+        self.process = psutil.Process()
+        self.memory_limit_bytes = memory_limit_mb * 1024 * 1024
+        self.warning_threshold = warning_threshold
+        self.last_check = time.time()
+        self.check_interval = 30  # Проверка каждые 30 секунд
+        
+    def get_memory_usage(self) -> Dict[str, float]:
+        """Получить текущее использование памяти"""
+        memory_info = self.process.memory_info()
+        return {
+            'rss_mb': memory_info.rss / 1024 / 1024,
+            'vms_mb': memory_info.vms / 1024 / 1024,
+            'percent': self.process.memory_percent()
+        }
+    
+    def check_memory(self, force_check: bool = False) -> bool:
+        """Проверить память и вернуть True если нужна очистка"""
+        current_time = time.time()
+        if not force_check and current_time - self.last_check < self.check_interval:
+            return False
+            
+        self.last_check = current_time
+        usage = self.get_memory_usage()
+        
+        # Логируем каждые 5 минут
+        if int(current_time) % 300 < self.check_interval:
+            logger.info(f"Memory usage: {usage['rss_mb']:.1f}MB ({usage['percent']:.1f}%)")
+        
+        # Проверяем лимиты
+        if usage['rss_mb'] > self.memory_limit_bytes / 1024 / 1024:
+            logger.warning(f"Memory limit exceeded: {usage['rss_mb']:.1f}MB > {self.memory_limit_bytes/1024/1024:.1f}MB")
+            return True
+            
+        if usage['percent'] > self.warning_threshold * 100:
+            logger.warning(f"Memory warning: {usage['percent']:.1f}% > {self.warning_threshold*100:.1f}%")
+            return True
+            
+        return False
+    
+    def force_cleanup(self):
+        """Принудительная очистка памяти"""
+        logger.info("Forcing garbage collection...")
+        before = self.get_memory_usage()
+        gc.collect()
+        after = self.get_memory_usage()
+        freed = before['rss_mb'] - after['rss_mb']
+        logger.info(f"Freed {freed:.1f}MB memory ({before['rss_mb']:.1f} -> {after['rss_mb']:.1f}MB)")
+
 class LyricsDatabase:
     def __init__(self, db_name="lyrics.db"):
         self.conn = sqlite3.connect(db_name, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
+        
+        # Включаем WAL mode для лучшей производительности
+        self.conn.execute("PRAGMA journal_mode=WAL")
+        self.conn.execute("PRAGMA synchronous=NORMAL")
+        self.conn.execute("PRAGMA cache_size=10000")
+        
         self.create_table()
-        logger.info(f"База данных {db_name} инициализирована")
+        logger.info(f"База данных {db_name} инициализирована (WAL mode)")
         self.batch_count = 0
-        self.batch_size = 20  # Коммит каждые 20 записей
+        self.batch_size = 100  # Увеличил batch size
 
     def create_table(self):
         self.conn.execute("""
@@ -51,20 +111,48 @@ class LyricsDatabase:
                 genius_id INTEGER UNIQUE,
                 scraped_date TEXT DEFAULT CURRENT_TIMESTAMP,
                 word_count INTEGER,
+                -- Новые поля для метаданных
+                release_date TEXT,
+                genre TEXT,
+                album TEXT,
+                primary_artist_id INTEGER,
+                featured_artists TEXT, -- JSON array
+                producer_artists TEXT, -- JSON array
+                language TEXT,
                 UNIQUE(artist, title)
             )
         """)
         self.conn.execute("CREATE INDEX IF NOT EXISTS idx_artist ON songs(artist)")
         self.conn.execute("CREATE INDEX IF NOT EXISTS idx_url ON songs(url)")
+        self.conn.execute("CREATE INDEX IF NOT EXISTS idx_genre ON songs(genre)")
+        self.conn.execute("CREATE INDEX IF NOT EXISTS idx_release_date ON songs(release_date)")
         self.conn.commit()
 
-    def add_song(self, artist: str, title: str, lyrics: str, url: str, genius_id: int = None) -> bool:
+    def add_song(self, artist: str, title: str, lyrics: str, url: str, 
+                 genius_id: int = None, metadata: Dict[str, Any] = None) -> bool:
         try:
             word_count = len(lyrics.split()) if lyrics else 0
+            
+            # Извлекаем метаданные
+            if metadata is None:
+                metadata = {}
+                
+            release_date = metadata.get('release_date')
+            genre = metadata.get('genre')
+            album = metadata.get('album')
+            primary_artist_id = metadata.get('primary_artist_id')
+            featured_artists = json.dumps(metadata.get('featured_artists', [])) if metadata.get('featured_artists') else None
+            producer_artists = json.dumps(metadata.get('producer_artists', [])) if metadata.get('producer_artists') else None
+            language = metadata.get('language', 'en')
+            
             self.conn.execute(
-                """INSERT INTO songs (artist, title, lyrics, url, genius_id, word_count) 
-                   VALUES (?, ?, ?, ?, ?, ?)""",
-                (artist, title, lyrics, url, genius_id, word_count)
+                """INSERT INTO songs (artist, title, lyrics, url, genius_id, word_count,
+                   release_date, genre, album, primary_artist_id, featured_artists, 
+                   producer_artists, language) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (artist, title, lyrics, url, genius_id, word_count,
+                 release_date, genre, album, primary_artist_id, 
+                 featured_artists, producer_artists, language)
             )
             self.batch_count += 1
             if self.batch_count >= self.batch_size:
@@ -77,9 +165,13 @@ class LyricsDatabase:
                 time.sleep(2)
                 try:
                     self.conn.execute(
-                        """INSERT INTO songs (artist, title, lyrics, url, genius_id, word_count) 
-                           VALUES (?, ?, ?, ?, ?, ?)""",
-                        (artist, title, lyrics, url, genius_id, word_count)
+                        """INSERT INTO songs (artist, title, lyrics, url, genius_id, word_count,
+                           release_date, genre, album, primary_artist_id, featured_artists, 
+                           producer_artists, language) 
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (artist, title, lyrics, url, genius_id, word_count,
+                         release_date, genre, album, primary_artist_id, 
+                         featured_artists, producer_artists, language)
                     )
                     return True
                 except Exception:
@@ -88,7 +180,10 @@ class LyricsDatabase:
             else:
                 raise e
         except sqlite3.IntegrityError as e:
-            logger.debug(f"Duplicate: {artist} - {title}")
+            if "UNIQUE constraint failed" in str(e):
+                logger.debug(f"Duplicate: {artist} - {title}")
+            else:
+                logger.warning(f"Integrity error for {artist} - {title}: {e}")
             return False
 
     def song_exists(self, url: str = None, genius_id: int = None) -> bool:
@@ -131,7 +226,12 @@ class SafeGeniusScraper:
             excluded_terms=["(Remix)", "(Live)", "(Instrumental)"]
         )
         self.db = LyricsDatabase(db_name)
-        self.session_stats = {"processed": 0, "added": 0, "skipped": 0, "errors": 0}
+        self.memory_monitor = MemoryMonitor(memory_limit_mb=1500.0)  # 1.5GB лимит
+        self.session_stats = {
+            "processed": 0, "added": 0, "skipped": 0, "errors": 0,
+            "memory_cleanups": 0, "songs_per_minute": 0.0
+        }
+        self.session_start_time = time.time()
         self.min_delay = 3.0  # Увеличил с 2.0
         self.max_delay = 7.0  # Увеличил с 5.0
         self.error_delay = 15.0  # Увеличил с 10.0
@@ -139,13 +239,6 @@ class SafeGeniusScraper:
         self.shutdown_requested = False
         
         signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
-        # Дополнительная обработка для Windows
-        if sys.platform == "win32":
-            try:
-                signal.signal(signal.SIGBREAK, self._signal_handler)
-            except AttributeError:
-                pass  # SIGBREAK может отсутствовать
         signal.signal(signal.SIGTERM, self._signal_handler)
         # Дополнительная обработка для Windows
         if sys.platform == "win32":
@@ -216,6 +309,140 @@ class SafeGeniusScraper:
             return False
         instrumental_markers = ["instrumental", "no lyrics", "без слов", "music only", "beat only"]
         return not any(marker in lyrics.lower() for marker in instrumental_markers)
+    
+    def _extract_metadata(self, song) -> Dict[str, Any]:
+        """Извлечь метаданные из объекта песни"""
+        metadata = {}
+        
+        try:
+            # Дата релиза
+            if hasattr(song, 'release_date_for_display'):
+                metadata['release_date'] = song.release_date_for_display
+            elif hasattr(song, 'release_date_components'):
+                if song.release_date_components:
+                    year = song.release_date_components.get('year')
+                    month = song.release_date_components.get('month')
+                    day = song.release_date_components.get('day')
+                    if year:
+                        date_str = str(year)
+                        if month:
+                            date_str += f"-{month:02d}"
+                            if day:
+                                date_str += f"-{day:02d}"
+                        metadata['release_date'] = date_str
+            
+            # Альбом
+            if hasattr(song, 'album') and song.album:
+                if hasattr(song.album, 'name'):
+                    metadata['album'] = song.album.name
+                elif hasattr(song.album, 'full_title'):
+                    metadata['album'] = song.album.full_title
+            
+            # ID основного артиста
+            if hasattr(song, 'primary_artist') and song.primary_artist:
+                if hasattr(song.primary_artist, 'id'):
+                    metadata['primary_artist_id'] = song.primary_artist.id
+            
+            # Featured артисты
+            if hasattr(song, 'featured_artists') and song.featured_artists:
+                featured = []
+                for artist in song.featured_artists:
+                    if hasattr(artist, 'name'):
+                        featured.append(artist.name)
+                if featured:
+                    metadata['featured_artists'] = featured
+            
+            # Продюсеры
+            if hasattr(song, 'producer_artists') and song.producer_artists:
+                producers = []
+                for artist in song.producer_artists:
+                    if hasattr(artist, 'name'):
+                        producers.append(artist.name)
+                if producers:
+                    metadata['producer_artists'] = producers
+            
+            # Попытка определить жанр (примерный)
+            if hasattr(song, 'primary_artist') and song.primary_artist:
+                artist_name = getattr(song.primary_artist, 'name', '').lower()
+                # Простая эвристика для жанров
+                if any(term in artist_name for term in ['lil', 'young', 'future', 'travis']):
+                    metadata['genre'] = 'trap'
+                elif any(term in artist_name for term in ['eminem', 'nas', 'jay-z', 'biggie']):
+                    metadata['genre'] = 'hip-hop'
+                else:
+                    metadata['genre'] = 'rap'
+            
+        except Exception as e:
+            logger.debug(f"Error extracting metadata: {e}")
+        
+        return metadata
+
+    def _get_songs_generator(self, artist_name: str, max_songs: int = 500) -> Generator:
+        """Генератор для получения песен по одной, экономя память"""
+        try:
+            # Сначала получаем базовую информацию об артисте
+            search_results = self.genius.search_artist(artist_name, max_songs=1, get_full_info=False)
+            if not search_results:
+                logger.warning(f"Artist {artist_name} not found")
+                return
+            
+            artist_id = search_results.id
+            logger.info(f"Found artist {artist_name} (ID: {artist_id})")
+            
+            # Получаем список песен через API по частям
+            per_page = 50  # Загружаем по 50 песен за раз
+            page = 1
+            total_fetched = 0
+            
+            while total_fetched < max_songs:
+                try:
+                    songs_response = self.genius.artist_songs(
+                        artist_id, 
+                        sort='popularity', 
+                        per_page=min(per_page, max_songs - total_fetched),
+                        page=page
+                    )
+                    
+                    if not songs_response or 'songs' not in songs_response:
+                        break
+                    
+                    songs = songs_response['songs']
+                    if not songs:
+                        break
+                    
+                    for song_data in songs:
+                        if self.shutdown_requested:
+                            return
+                        
+                        try:
+                            # Получаем полную информацию о песне
+                            song = self.genius.song(song_data['id'])
+                            if song:
+                                yield song
+                                total_fetched += 1
+                                
+                                # Принудительно удаляем объект для экономии памяти
+                                del song
+                                
+                                if total_fetched >= max_songs:
+                                    break
+                        except Exception as e:
+                            logger.debug(f"Error fetching song {song_data.get('title', 'unknown')}: {e}")
+                            continue
+                    
+                    page += 1
+                    
+                    # Проверяем память после каждой страницы
+                    if self.memory_monitor.check_memory():
+                        self.memory_monitor.force_cleanup()
+                        self.session_stats["memory_cleanups"] += 1
+                    
+                except Exception as e:
+                    logger.error(f"Error fetching page {page} for {artist_name}: {e}")
+                    break
+                    
+        except Exception as e:
+            logger.error(f"Error in songs generator for {artist_name}: {e}")
 
     def scrape_artist_songs(self, artist_name: str, max_songs: int = 500) -> int:
         added_count = 0
@@ -225,22 +452,16 @@ class SafeGeniusScraper:
         
         while retry_count < self.max_retries and not self.shutdown_requested:
             try:
-                logger.info(f"Searching artist: {artist_name} (attempt {retry_count + 1})")
-                # Убираем лимит или ставим очень большой
-                artist = self.genius.search_artist(artist_name, max_songs=max_songs, sort="popularity", get_full_info=False)
-                
-                if not artist or not artist.songs:
-                    logger.warning(f"Artist {artist_name} not found")
-                    return 0
-
-                logger.info(f"Found {len(artist.songs)} songs for {artist_name}")
-
-                for i, song in enumerate(artist.songs):
+                # Используем генератор для экономии памяти
+                song_count = 0
+                for song in self._get_songs_generator(artist_name, max_songs):
                     if self.shutdown_requested:
-                        logger.info(f"Stopping at song {i+1}/{len(artist.songs)} for {artist_name}")
+                        logger.info(f"Stopping at song {song_count+1} for {artist_name}")
                         break
                         
                     try:
+                        song_count += 1
+                        
                         if self.db.song_exists(url=song.url):
                             logger.debug(f"Skip (duplicate): {song.title}")
                             self.session_stats["skipped"] += 1
@@ -252,20 +473,48 @@ class SafeGeniusScraper:
                             self.session_stats["skipped"] += 1
                             continue
 
-                        if self.db.add_song(artist_name, song.title, lyrics, song.url, song.id if hasattr(song, 'id') else None):
+                        # Извлекаем метаданные
+                        metadata = self._extract_metadata(song)
+                        
+                        if self.db.add_song(
+                            artist_name, 
+                            song.title, 
+                            lyrics, 
+                            song.url, 
+                            song.id if hasattr(song, 'id') else None,
+                            metadata
+                        ):
                             added_count += 1
                             self.session_stats["added"] += 1
                             word_count = len(lyrics.split())
-                            logger.info(f"Added: {artist_name} - {song.title} ({word_count} words)")
-                            if self.session_stats["added"] % 5 == 0:
+                            
+                            # Добавляем информацию о жанре в лог
+                            genre_info = f" [{metadata.get('genre', 'unknown')}]" if metadata.get('genre') else ""
+                            logger.info(f"Added: {artist_name} - {song.title}{genre_info} ({word_count} words)")
+                            
+                            if self.session_stats["added"] % 10 == 0:
                                 current_stats = self.db.get_stats()
-                                logger.info(f"Stats: {current_stats['total_songs']} songs in database")
+                                # Вычисляем скорость
+                                elapsed = time.time() - self.session_start_time
+                                songs_per_minute = (self.session_stats["added"] / elapsed) * 60 if elapsed > 0 else 0
+                                self.session_stats["songs_per_minute"] = songs_per_minute
+                                
+                                logger.info(f"Stats: {current_stats['total_songs']} songs in database "
+                                          f"({songs_per_minute:.1f} songs/min)")
                         else:
                             self.session_stats["skipped"] += 1
 
                         self.session_stats["processed"] += 1
-                        if (i + 1) % 10 == 0:
-                            logger.info(f"Processed {i + 1}/{len(artist.songs)} songs for {artist_name}")
+                        
+                        if song_count % 10 == 0:
+                            logger.info(f"Processed {song_count} songs for {artist_name}")
+                        
+                        # Проверка памяти каждые 5 песен
+                        if song_count % 5 == 0:
+                            if self.memory_monitor.check_memory():
+                                logger.info("Memory cleanup triggered during scraping")
+                                self.memory_monitor.force_cleanup()
+                                self.session_stats["memory_cleanups"] += 1
                         
                         # Check for shutdown before pause
                         if self.shutdown_requested:
@@ -273,18 +522,21 @@ class SafeGeniusScraper:
                             
                         self.safe_delay()
 
-                    except Exception as timeout_e:
-                        if "timeout" in str(timeout_e).lower():
-                            logger.error(f"Timeout for {song.title}: {timeout_e}")
+                    except Exception as song_e:
+                        if "timeout" in str(song_e).lower():
+                            logger.error(f"Timeout for {song.title}: {song_e}")
                             self.session_stats["errors"] += 1
                             self.safe_delay(is_error=True)
                         else:
-                            raise timeout_e
-                    except Exception as e:
-                        logger.error(f"Error with song {song.title}: {e}")
-                        self.session_stats["errors"] += 1
-                        self.safe_delay(is_error=True)
+                            logger.error(f"Error with song {song.title}: {song_e}")
+                            self.session_stats["errors"] += 1
+                            self.safe_delay(is_error=True)
+                    finally:
+                        # Принудительно удаляем объект песни
+                        if 'song' in locals():
+                            del song
 
+                logger.info(f"Processed {song_count} total songs for {artist_name}")
                 break
 
             except Exception as e:
@@ -316,12 +568,16 @@ class SafeGeniusScraper:
     def show_current_results(self):
         stats = self.db.get_stats()
         recent_songs = self.db.get_recent_songs(5)
+        memory_usage = self.memory_monitor.get_memory_usage()
         
         logger.info(f"\n{'='*60}")
         logger.info(f"CURRENT RESULTS:")
         logger.info(f"Total songs in database: {stats['total_songs']}")
         logger.info(f"Unique artists: {stats['unique_artists']}")
         logger.info(f"Added this session: {self.session_stats['added']}")
+        logger.info(f"Processing speed: {self.session_stats['songs_per_minute']:.1f} songs/min")
+        logger.info(f"Memory usage: {memory_usage['rss_mb']:.1f}MB ({memory_usage['percent']:.1f}%)")
+        logger.info(f"Memory cleanups: {self.session_stats['memory_cleanups']}")
         
         if recent_songs:
             logger.info(f"\nRecent added songs:")
@@ -385,7 +641,10 @@ class SafeGeniusScraper:
             logger.info(f"Added: {self.session_stats['added']}")
             logger.info(f"Skipped: {self.session_stats['skipped']}")
             logger.info(f"Errors: {self.session_stats['errors']}")
+            logger.info(f"Memory cleanups: {self.session_stats['memory_cleanups']}")
+            logger.info(f"Average speed: {self.session_stats['songs_per_minute']:.1f} songs/min")
             logger.info(f"Total in database: {final_stats['total_songs']} songs")
+            logger.info(f"Final memory usage: {self.memory_monitor.get_memory_usage()['rss_mb']:.1f}MB")
             
             self.close()
 
