@@ -1,11 +1,10 @@
 # Environment variables
 .env
 
-# Database files - ALL database files excluded
-*.db
-rap_lyrics*.db
-backup_*.db
+# Database files - backup files excluded, main DB will use LFS
 *backup*.db
+backup_*.db
+temp_*.db
 
 # Log files
 *.log
