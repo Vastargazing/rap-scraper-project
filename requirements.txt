@@ -13,10 +13,16 @@ numpy>=1.24.0
 # Configuration
 python-dotenv>=1.0.0
 
+# System monitoring
+psutil>=5.9.0
+
 # Optional: Analysis and visualization
 matplotlib>=3.7.0
 seaborn>=0.12.0
 plotly>=5.15.0
+
+# System monitoring
+psutil>=5.9.0
 
 # Development
 pytest>=7.4.0
