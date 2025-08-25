@@ -1,9 +1,12 @@
 # Environment variables
 .env
 
-# Database files - backup files excluded, main DB will use LFS
+# Database files - ALL db files excluded
+*.db
+*.db-shm
+*.db-wal
 *backup*.db
-backup_*.db
+backup_*.db*
 temp_*.db
 
 # Log files
