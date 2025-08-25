@@ -1,8 +1,8 @@
 """
-Pydantic модели для структурированного анализа песен через LangChain + Gemini
+Pydantic модели для структурированного анализа песен через LangChain + Gemini + Spotify API
 """
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 class SongMetadata(BaseModel):
@@ -69,3 +69,50 @@ class BatchAnalysisStats(BaseModel):
     start_time: str
     end_time: str
     errors: List[str] = Field(default_factory=list)
+
+# ===== SPOTIFY API MODELS =====
+
+class SpotifyAudioFeatures(BaseModel):
+    """Аудио-характеристики трека из Spotify"""
+    danceability: float = Field(ge=0.0, le=1.0, description="Танцевальность (0.0-1.0)")
+    energy: float = Field(ge=0.0, le=1.0, description="Энергичность (0.0-1.0)")
+    valence: float = Field(ge=0.0, le=1.0, description="Позитивность (0.0-1.0)")
+    tempo: float = Field(ge=0.0, description="Темп в BPM")
+    acousticness: float = Field(ge=0.0, le=1.0, description="Акустичность (0.0-1.0)")
+    instrumentalness: float = Field(ge=0.0, le=1.0, description="Инструментальность (0.0-1.0)")
+    speechiness: float = Field(ge=0.0, le=1.0, description="Речевость (0.0-1.0)")
+    liveness: float = Field(ge=0.0, le=1.0, description="Живое исполнение (0.0-1.0)")
+    loudness: float = Field(description="Громкость в dB")
+
+class SpotifyArtist(BaseModel):
+    """Информация об артисте из Spotify"""
+    spotify_id: str = Field(description="Уникальный ID артиста в Spotify")
+    name: str = Field(description="Имя артиста")
+    genres: List[str] = Field(default_factory=list, description="Жанры артиста")
+    popularity: int = Field(ge=0, le=100, description="Популярность артиста (0-100)")
+    followers: int = Field(ge=0, description="Количество подписчиков")
+    image_url: Optional[str] = Field(default=None, description="URL изображения артиста")
+    spotify_url: str = Field(description="Ссылка на профиль в Spotify")
+    
+class SpotifyTrack(BaseModel):
+    """Информация о треке из Spotify"""
+    spotify_id: str = Field(description="Уникальный ID трека в Spotify")
+    name: str = Field(description="Название трека")
+    artist_id: str = Field(description="ID артиста в Spotify")
+    album_name: Optional[str] = Field(default=None, description="Название альбома")
+    release_date: Optional[str] = Field(default=None, description="Дата релиза")
+    duration_ms: Optional[int] = Field(default=None, description="Длительность в миллисекундах")
+    popularity: int = Field(ge=0, le=100, description="Популярность трека (0-100)")
+    explicit: bool = Field(default=False, description="Содержит ли трек явный контент")
+    spotify_url: str = Field(description="Ссылка на трек в Spotify")
+    preview_url: Optional[str] = Field(default=None, description="URL превью трека")
+    audio_features: Optional[SpotifyAudioFeatures] = Field(default=None, description="Аудио-характеристики")
+
+class SpotifyEnrichmentResult(BaseModel):
+    """Результат обогащения данных из Spotify"""
+    success: bool
+    artist_data: Optional[SpotifyArtist] = None
+    track_data: Optional[SpotifyTrack] = None
+    error_message: Optional[str] = None
+    processing_time: float
+    api_calls_used: int = Field(default=0, description="Количество использованных API вызовов")

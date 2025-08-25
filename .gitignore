@@ -29,8 +29,8 @@ ENV/
 # OS files
 .DS_Store
 Thumbs.db
-to_do.md
-ExplainMEPython.ini
+
+
 
 # Temporary files
 *.tmp
