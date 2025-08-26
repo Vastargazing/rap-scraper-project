@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Drake", 
+    "expected_tracks": 15,
+    "genres": ["hip hop", "canadian hip hop", "pop rap"],
+    "test_priority": "high"
+  },
+  {
+    "name": "Kendrick Lamar",
+    "expected_tracks": 12, 
+    "genres": ["hip hop", "west coast hip hop", "conscious hip hop"],
+    "test_priority": "high"
+  },
+  {
+    "name": "J. Cole",
+    "expected_tracks": 8,
+    "genres": ["hip hop", "conscious hip hop", "north carolina hip hop"],
+    "test_priority": "medium"
+  },
+  {
+    "name": "Travis Scott",
+    "expected_tracks": 10,
+    "genres": ["hip hop", "trap", "pop rap"],
+    "test_priority": "medium"
+  },
+  {
+    "name": "Future",
+    "expected_tracks": 7,
+    "genres": ["hip hop", "trap", "atlanta hip hop"],
+    "test_priority": "medium"
+  },
+  {
+    "name": "Lil Wayne",
+    "expected_tracks": 20,
+    "genres": ["hip hop", "southern hip hop", "bounce"],
+    "test_priority": "high"
+  },
+  {
+    "name": "Eminem",
+    "expected_tracks": 18,
+    "genres": ["hip hop", "detroit hip hop", "hardcore hip hop"],
+    "test_priority": "high"
+  },
+  {
+    "name": "21 Savage",
+    "expected_tracks": 6,
+    "genres": ["hip hop", "trap", "atlanta hip hop"],
+    "test_priority": "low"
+  },
+  {
+    "name": "Post Malone",
+    "expected_tracks": 8,
+    "genres": ["hip hop", "pop rap", "trap"],
+    "test_priority": "medium"
+  },
+  {
+    "name": "A$AP Rocky",
+    "expected_tracks": 5,
+    "genres": ["hip hop", "east coast hip hop", "cloud rap"],
+    "test_priority": "low"
+  }
+]
