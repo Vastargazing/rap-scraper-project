@@ -26,285 +26,313 @@ GOOGLE_API_KEY=your_google_api_key_here  # Опционально
 python scripts/rap_scraper_cli.py status
 
 # Скрапинг новых данных
+````markdown
+# 🎵 Rap Lyrics Scraper & Analyzer
+
+**Production-ready ML pipeline for collecting and analyzing rap lyrics using AI**
+
+📊 **48K+ tracks | 263 artists | Spotify enriched | AI analyzed**
+
+## 🚀 Quick start
+
+### 1. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Configure API keys
+Create a `.env` file:
+```bash
+GENIUS_TOKEN=your_genius_token_here
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+GOOGLE_API_KEY=your_google_api_key_here  # Optional
+```
+
+### 3. Main CLI interface
+```bash
+# Check project status
+python scripts/rap_scraper_cli.py status
+
+# Scrape new data
 python scripts/rap_scraper_cli.py scraping
 
-# Обогащение Spotify метаданными
+# Continue Spotify metadata enrichment
 python scripts/rap_scraper_cli.py spotify --continue
 
-# ML анализ
+# Run ML analysis
 python scripts/rap_scraper_cli.py analysis --analyzer gemma
 
-# Полная справка
+# Full help
 python scripts/rap_scraper_cli.py --help
 ```
 
-## 🏗️ Архитектура проекта
+## 🏗️ Project architecture
 
-### Новая структурированная архитектура:
+### Structured layout:
 ```
 src/
-├── scrapers/     # 🕷️ Сбор данных (Genius API)
-├── enhancers/    # 🎵 Обогащение (Spotify API)  
-├── analyzers/    # 🤖 ML анализ (LLM models)
-├── models/       # 📊 Pydantic модели
-└── utils/        # 🛠️ Утилиты и конфигурация
+├── scrapers/     # 🕷️ Data collection (Genius API)
+├── enhancers/    # 🎵 Enrichment (Spotify API)
+├── analyzers/    # 🤖 ML analysis (LLM models)
+├── models/       # 📊 Pydantic models
+└── utils/        # 🛠️ Utilities and config
 
-scripts/         # 🚀 Entry points и CLI
-monitoring/      # 📊 Мониторинг и статистика
-data/           # 📄 База данных и файлы
-results/        # 📈 Результаты анализа
-docs/           # 📚 Документация
+scripts/         # 🚀 Entry points and CLI
+monitoring/      # 📊 Monitoring and stats
+data/             # 📄 Database and files
+results/         # 📈 Analysis outputs
+docs/            # 📚 Documentation
 ```
 
-## � Основные команды
+## 🔧 Core commands
 
-### 🕷️ Скрапинг данных
+### 🕷️ Scraping
 ```bash
-# Новая архитектура (рекомендуется)
+# Recommended (new architecture)
 python scripts/rap_scraper_cli.py scraping
 
-# Прямой вызов
+# Direct invocation
 python scripts/run_scraping.py
 
-# Legacy совместимость
+# Legacy compatibility
 python scripts/legacy/rap_scraper_optimized.py
 ```
 
-### 🎵 Spotify Enhancement
+### 🎵 Spotify enrichment
 ```bash
-# Через CLI
+# Via CLI
 python scripts/rap_scraper_cli.py spotify --continue
 
-# Прямой вызов
+# Direct invocation
 python scripts/continue_spotify_enhancement.py
 ```
 
-### 🤖 ML Анализ
+### 🤖 ML analysis
 ```bash
-# Gemma 27B (рекомендуется)
+# Gemma 27B (recommended)
 python scripts/rap_scraper_cli.py analysis --analyzer gemma
 
-# Сравнение моделей
+# Model comparison
 python scripts/rap_scraper_cli.py analysis --analyzer multi
 
 # LangChain + OpenAI
 python scripts/rap_scraper_cli.py analysis --analyzer langchain
 ```
 
-### 📊 Мониторинг
+### 📊 Monitoring
 ```bash
-# Статус базы данных
+# Database status
 python scripts/rap_scraper_cli.py monitoring --component database
 
-# Прогресс AI анализа
+# AI analysis progress
 python scripts/rap_scraper_cli.py monitoring --component analysis
 
-# Мониторинг Gemma
+# Gemma monitoring
 python scripts/rap_scraper_cli.py monitoring --component gemma
 ```
 
-### 🛠️ Утилиты
+### 🛠️ Utilities
 ```bash
-# Очистка проекта (dry run)
+# Project cleanup (dry run)
 python scripts/rap_scraper_cli.py utils --utility cleanup
 
-# Реальная очистка
+# Perform cleanup
 python scripts/rap_scraper_cli.py utils --utility cleanup --execute
 
-# Миграция БД
+# Migrate the database
 python scripts/rap_scraper_cli.py utils --utility migrate
 
-# Настройка Spotify
+# Spotify setup helper
 python scripts/rap_scraper_cli.py utils --utility spotify-setup
 ```
 
-## 🗄️ База данных
+## 🗄️ Database
 
-### Структура данных
-- **Основная БД**: `data/rap_lyrics.db`
-- **Таблица песен**: `songs` (48,370+ записей)
-- **Таблица анализов**: `ai_analysis` (~1,500+ анализов)
-- **Spotify данные**: `spotify_artists` (262/263 обогащенных артистов)
-- **Конфиг артистов**: `data/rap_artists.json`
+### Data layout
+- **Primary DB**: `data/rap_lyrics.db`
+- **Songs table**: `songs` (48,370+ records)
+- **Analyses table**: `ai_analysis` (~1,500+ analyses)
+- **Spotify data**: `spotify_artists` (262/263 artists enriched)
+- **Artists config**: `data/rap_artists.json`
 
-### Схема таблиц
+### Table schemas
 ```sql
--- Основная таблица песен
+-- Main songs table
 songs: artist, song, lyrics, url, scraped_at, album, year
 
--- AI анализы
+-- AI analyses
 ai_analysis: song_id, complexity, mood, genre, quality_score, analysis_text
 
--- Spotify метаданные
+-- Spotify metadata
 spotify_artists: genius_name, spotify_id, name, followers, genres, popularity
 ```
 
-## 🤖 AI Модели и анализаторы
+## 🤖 AI models & analyzers
 
-| Модель | Скорость | Качество | Использование | Файл |
-|--------|----------|----------|---------------|------|
-| **Gemma 3 27B** | ⚡⚡ | ⭐⭐⭐⭐⭐ | Production анализ | `src/analyzers/gemma_27b_fixed.py` |
-| **LangChain GPT** | ⚡⚡⚡ | ⭐⭐⭐⭐ | Быстрый анализ | `src/analyzers/langchain_analyzer.py` |
-| **Multi-model** | ⚡ | ⭐⭐⭐⭐⭐ | Сравнение моделей | `src/analyzers/multi_model_analyzer.py` |
+| Model | Speed | Quality | Usage | File |
+|-------|-------|---------|-------|------|
+| **Gemma 3 27B** | ⚡⚡ | ⭐⭐⭐⭐⭐ | Production analysis | `src/analyzers/gemma_27b_fixed.py` |
+| **LangChain GPT** | ⚡⚡⚡ | ⭐⭐⭐⭐ | Fast analysis | `src/analyzers/langchain_analyzer.py` |
+| **Multi-model** | ⚡ | ⭐⭐⭐⭐⭐ | Model comparison | `src/analyzers/multi_model_analyzer.py` |
 
-### Анализируемые метрики
-- **Complexity**: Лингвистическая сложность (1-10)
-- **Mood**: Эмоциональная окраска (positive/negative/neutral)
-- **Genre**: Поджанр рэпа (trap, conscious, etc.)
-- **Quality**: Оценка качества текста (1-10)
-- **Themes**: Ключевые темы и мотивы
+### Metrics analyzed
+- **Complexity**: Linguistic complexity (1-10)
+- **Mood**: Sentiment / tonal classification (positive/negative/neutral)
+- **Genre**: Rap subgenre (trap, conscious, etc.)
+- **Quality**: Text quality score (1-10)
+- **Themes**: Key themes and motifs
 
-## 📈 Текущая статистика
+## 📈 Current stats
 
-### 📊 Данные проекта
-- **48,370+** песен в базе данных
-- **263** артиста (262 обогащены Spotify)
-- **1,500+** AI анализов высокого качества
-- **15GB+** общий размер данных
+### Project data
+- **48,370+** songs in the database
+- **263** artists (262 enriched with Spotify)
+- **1,500+** high-quality AI analyses
+- **15GB+** total data size
 
-### 🎯 Покрытие анализа
-- **Genius API**: 100% работоспособность
-- **Spotify API**: 99.6% успешного обогащения (262/263)
-- **AI анализ**: ~3% от общей базы (фокус на качество)
-- **Error handling**: 100% покрытие критических ошибок
+### Coverage
+- **Genius API**: 100% availability
+- **Spotify API**: 99.6% enrichment success (262/263)
+- **AI analysis**: ~3% of the full dataset (quality-focused)
+- **Error handling**: critical errors covered
 
-## 🔧 Системные требования
+## 🔧 System requirements
 
-### Базовые требования
-- **Python 3.8+** (рекомендуется 3.11+)
-- **SQLite** (встроено в Python)
-- **16GB+ RAM** (для Gemma 27B анализа)
-- **50GB+ диск** (для полной базы данных)
+### Minimum
+- **Python 3.8+** (3.11+ recommended)
+- **SQLite** (bundled with Python)
+- **16GB+ RAM** (for Gemma 27B analysis)
+- **50GB+ disk** (for the full dataset)
 
-### API ключи
-- **Genius API** токен (обязательно)
-- **Spotify API** credentials (client_id + client_secret)  
-- **Google AI Studio** API ключ (для Gemma анализа)
-- **Ollama** (опционально, для локального анализа)
+### API keys
+- **Genius API** token (required)
+- **Spotify API** credentials (client_id + client_secret)
+- **Google AI Studio** API key (for Gemma analysis)
+- **Ollama** (optional, for local experimentation)
 
-## 📁 Новая архитектура проекта
+## 📁 Project layout (summary)
 
 ```
 rap-scraper-project/
-├── � src/                    # Основной код
-│   ├── scrapers/             # 🕷️ Сбор данных (Genius API)
-│   ├── enhancers/            # 🎵 Spotify обогащение  
-│   ├── analyzers/            # 🤖 ML анализ
-│   ├── models/               # 📊 Pydantic модели
-│   └── utils/                # 🛠️ Утилиты и конфиг
-├── 🚀 scripts/               # Entry points и CLI
-│   ├── rap_scraper_cli.py    # 🎯 Главный CLI интерфейс
-│   ├── run_*.py              # 🏃 Прямые entry points
-│   └── legacy/               # 🗂️ Совместимость
-├── 📊 monitoring/            # Мониторинг и логи
-├── 📄 data/                  # База данных и файлы
-├── 📈 results/              # Результаты анализа
-├── 🧪 tests/                # Unit тесты
-└── 📚 docs/                 # Документация
+├── src/                    # Core code
+│   ├── scrapers/           # 🕷️ Data collection (Genius API)
+│   ├── enhancers/          # 🎵 Spotify enrichment
+│   ├── analyzers/          # 🤖 ML analysis
+│   ├── models/             # 📊 Pydantic models
+│   └── utils/              # 🛠️ Utilities & config
+├── scripts/                # 🚀 Entry points and CLI
+│   ├── rap_scraper_cli.py  # 🎯 Main CLI
+│   ├── run_*.py            # 🏃 Direct entry points
+│   └── legacy/             # 🗂️ Backwards compatibility
+├── monitoring/             # Monitoring & logs
+├── data/                   # Database & files
+├── results/                # Analysis outputs
+├── tests/                  # Unit tests
+└── docs/                   # Documentation
 
-# Legacy файлы (архивированы)
-scripts/archive/             # Старые скрипты
+# Legacy files (archived)
+scripts/archive/           # Old scripts
 ```
 
-## 💡 Примеры использования
+## 💡 Examples
 
-### 🚀 Быстрый старт с CLI
+### 🚀 Quick CLI workflow
 ```bash
-# 1. Проверяем состояние проекта
+# 1. Check project status
 python scripts/rap_scraper_cli.py status
 
-# 2. Запускаем полный пайплайн
-python scripts/rap_scraper_cli.py scraping          # Сбор данных
-python scripts/rap_scraper_cli.py spotify --continue # Spotify обогащение  
-python scripts/rap_scraper_cli.py analysis --analyzer gemma # AI анализ
+# 2. Run the full pipeline
+python scripts/rap_scraper_cli.py scraping          # Scrape data
+python scripts/rap_scraper_cli.py spotify --continue # Spotify enrichment
+python scripts/rap_scraper_cli.py analysis --analyzer gemma # AI analysis
 
-# 3. Мониторим прогресс
+# 3. Monitor progress
 python scripts/rap_scraper_cli.py monitoring --component all
 ```
 
-### � Детальные команды
+### Detailed commands
 ```bash
-# Статистика базы данных
+# Database stats
 python scripts/rap_scraper_cli.py monitoring --component database
 
-# Анализ конкретным алгоритмом
+# Run analysis with a specific algorithm
 python scripts/rap_scraper_cli.py analysis --analyzer multi --limit 100
 
-# Очистка проекта (dry run)
+# Project cleanup (dry run)
 python scripts/rap_scraper_cli.py utils --utility cleanup
 
-# Миграция БД с бекапом
+# Migrate DB with backup
 python scripts/rap_scraper_cli.py utils --utility migrate
 ```
 
-### 🛠️ Прямые вызовы (advanced)
+### 🛠️ Direct invocations (advanced)
 ```bash
-# Прямой запуск компонентов
-python scripts/run_scraping.py              # Скрапинг
-python scripts/continue_spotify_enhancement.py # Spotify
-python scripts/run_gemma_analysis.py        # AI анализ
+# Direct component runs
+python scripts/run_scraping.py                # Scraping
+python scripts/continue_spotify_enhancement.py # Spotify enrichment
+python scripts/run_gemma_analysis.py          # AI analysis
 
-# Legacy совместимость
+# Legacy compatibility
 python scripts/legacy/rap_scraper_optimized.py
 python scripts/legacy/multi_model_analyzer.py
 ```
 
-## � Результаты и выводы
+## ✅ Results & takeaways
 
-### 🏆 Достижения проекта
-- ✅ **48,370+** собранных треков с полными текстами
-- ✅ **99.6%** успешного Spotify обогащения (262/263 артистов)
-- ✅ **1,500+** high-quality AI анализов
-- ✅ **Production-ready** архитектура с CLI интерфейсом
-- ✅ **Полная автоматизация** пайплайна сбора и анализа
+### Achievements
+- ✅ **48,370+** collected tracks with full lyrics
+- ✅ **99.6%** Spotify enrichment success (262/263 artists)
+- ✅ **1,500+** high-quality AI analyses
+- ✅ **Production-ready** architecture with a CLI
+- ✅ **Fully automated** collection & analysis pipeline
 
-### 🎯 Качество данных
-- **Lyrics coverage**: 100% для всех собранных треков
-- **Metadata accuracy**: 99%+ благодаря Spotify API
-- **AI analysis quality**: Экспертная оценка 9/10
-- **Data consistency**: Полная валидация Pydantic моделями
+### Data quality
+- **Lyrics coverage**: 100% for collected tracks
+- **Metadata accuracy**: 99%+ (Spotify)
+- **AI analysis quality**: expert-rated 9/10
+- **Data consistency**: fully validated with Pydantic models
 
 ## 🚨 Troubleshooting
 
-### Частые проблемы
+### Common issues
 ```bash
-# Проблемы с путями после реструктуризации
+# Path problems after restructuring
 python scripts/rap_scraper_cli.py utils --utility cleanup
 
-# Ошибки импортов в старых скриптах  
-# Используйте новый CLI или scripts/run_*.py entry points
+# Import errors from legacy scripts
+# Use the new CLI or the scripts/run_*.py entry points
 
-# Проблемы с базой данных
+# Database issues
 python scripts/run_database_check.py
 
-# Spotify API 403 ошибки - это нормально
-# Система автоматически обрабатывает такие случаи
+# Spotify API 403 responses may occur; they are handled automatically
 ```
 
-### 🆘 Поддержка
-- 📖 Детальная документация в `docs/`
-- 🐛 Issue tracking через Git
-- 📊 Мониторинг через `monitoring/` скрипты
-- 🧪 Unit тесты в `tests/`
+### Support
+- 📖 Detailed docs in `docs/`
+- 🐛 Report issues via Git
+- 📊 Monitoring via `monitoring/` scripts
+- 🧪 Unit tests in `tests/`
 
 ---
 
 **Created with ❤️ by AI Engineer | Production ML Pipeline | 2025**
-python cleanup_project.py
-```
 
-## 📚 Документация
+````
 
-Детальная документация находится в `AI_Engineer_Journal/Projects/Rap_Scraper_Project/`:
-- `README.md` - Презентационная версия
-- `PROJECT_EVOLUTION.md` - История развития
-- `TECH_SUMMARY.md` - Технический обзор
-- `INTERVIEW_PREPARATION.md` - Подготовка к интервью
+## 📚 Documentation
 
-## 🎯 Статус проекта
+Detailed project documentation is stored in `AI_Engineer_Journal/Projects/Rap_Scraper_Project/`:
+- `README.md` - Presentation version
+- `PROJECT_EVOLUTION.md` - Development history
+- `TECH_SUMMARY.md` - Technical overview
+- `INTERVIEW_PREPARATION.md` - Interview prep
 
-- ✅ Скрапинг: Стабильно работает
-- ✅ AI Анализ: Множественные модели
-- ✅ Мониторинг: Реальное время
-- ✅ База данных: 47K+ записей
-- 🔄 В процессе: Полный анализ через Gemma 27B
+## 🎯 Project status
+
+- ✅ Scraping: stable
+- ✅ AI analysis: multiple models available
+- ✅ Monitoring: real-time
+- ✅ Database: 47K+ records
+- 🔄 In progress: full Gemma 27B analysis
