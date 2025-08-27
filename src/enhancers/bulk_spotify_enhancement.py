@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 """
 Массовое обогащение базы данных метаданными из Spotify API
+полноценный интерактивный инструмент:
+имеет режимы: тест (первые 10 артистов), обогащение всех артистов, 
+обогащение образца треков, массовое обогащение всех треков.
+в режиме «обогащение всех артистов» он пройдёт по списку 
+всех артистов из songs и вызовет enhance_artist() -> save_artist_to_db().
+в режиме «обогащение всех треков» он проходит по всем 
+трекам без записи в spotify_tracks и пытается заполнить 
+spotify_tracks. Паузы и защита от лимитов там уже есть 
+(пауза 0.1s, проверка rate-limit).
+python src\enhancers\bulk_spotify_enhancement.py
 """
 import os
 import sys
@@ -8,7 +18,12 @@ import time
 import json
 from datetime import datetime
 from dotenv import load_dotenv
-from spotify_enhancer import SpotifyEnhancer
+try:
+    # preferred package import when running from project root
+    from src.enhancers.spotify_enhancer import SpotifyEnhancer
+except Exception:
+    # fallback for legacy direct execution inside enhancers/ directory
+    from spotify_enhancer import SpotifyEnhancer
 
 # Загружаем переменные окружения
 load_dotenv()

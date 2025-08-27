@@ -52,18 +52,23 @@ python scripts/rap_scraper_cli.py monitoring --component database
 ## 📊 Project Status (Live Dashboard)
 
 ### Current metrics
-- 📁 **Dataset**: ~48K tracks, ~263 artists (full dataset)
-- 🎯 **Spotify Coverage**: ~99.6% artists enriched
-- 🔄 **Pipeline Status**: ongoing track enrichment
-- 🎵 **Audio Features**: graceful degradation (403/permission issues handled)
-- 🚀 **ML Readiness**: feature engineering in progress
+- 📁 **Dataset**: 53,300 tracks, 328 artists (full dataset)
+- 🎯 **Spotify Coverage**: ~99.6% artists enriched, 38K+ tracks pending AI analysis
+- 🔄 **Pipeline Status**: Cleaned and optimized - removed 5+ redundant scripts
+- 🤖 **AI Analysis**: Multi-model pipeline ready (Ollama, Gemma 27B, fallback modes)
+- 🚀 **CLI-First**: Unified interface via `rap_scraper_cli.py` - single entry point
 
 ### Active components (quick checks)
 ```bash
-# Check status via CLI
+# Unified CLI - single entry point for all operations
 python scripts/rap_scraper_cli.py status
+python scripts/rap_scraper_cli.py monitoring --component database
 
-# Key state files & directories
+# Production tools (moved from clutter)
+python scripts/tools/batch_ai_analysis.py --dry-run
+python scripts/tools/check_spotify_coverage.py
+
+# Key data locations
 - data/rap_lyrics.db (main SQLite DB)
 - analysis_results/ (ML outputs)
 - enhanced_data/ (enriched JSONL)
@@ -90,26 +95,23 @@ graph TD
 ### Core components
 
 #### Data collection layer
-- `src/scrapers/rap_scraper_optimized.py` — optimized Genius scraper with batching (legacy wrappers available under `scripts/legacy/`)
+- `src/scrapers/rap_scraper_optimized.py` — optimized Genius scraper with proxy handling
 - `src/enhancers/spotify_enhancer.py` — Spotify metadata enrichment
 - `src/enhancers/bulk_spotify_enhancement.py` — bulk enhancement utilities
 
 #### Data models & storage
 - `src/models/models.py` — Pydantic models (SpotifyArtist, SpotifyTrack, etc.)
-- `data/rap_lyrics.db` — SQLite DB with primary tables
-
-Example schema (informational):
-```sql
-songs: id, title, artist, lyrics, url, genre, year
-spotify_artists: name, spotify_id, genres, popularity, followers
-spotify_audio_features: track_id, danceability, energy, valence, tempo
-```
+- `data/rap_lyrics.db` — SQLite DB with enhanced schema
 
 #### ML analysis layer
-- `src/analyzers/langchain_analyzer.py` — analysis via LangChain + OpenAI
-- `src/analyzers/ollama_analyzer.py` — local analysis via Ollama
-- `src/analyzers/multi_model_analyzer.py` — model comparison
-- `src/analyzers/optimized_analyzer.py` — production-ready analysis pipeline
+- `src/analyzers/multi_model_analyzer.py` — multi-provider AI analysis (Ollama → Gemma → Mock)
+- `src/analyzers/gemma_27b_fixed.py` — Gemma 27B integration
+- `src/analyzers/create_visual_analysis.py` — portfolio-ready dashboard generation
+
+#### Tools & utilities
+- `scripts/tools/batch_ai_analysis.py` — production batch processor (rehabilitated)
+- `scripts/tools/check_spotify_coverage.py` — coverage diagnostics
+- `monitoring/` — real-time progress tracking
 
 ---
 
@@ -200,48 +202,51 @@ get_changed_files()
 
 ## 🔧 Commands reference
 
-### Canonical pipeline (use the CLI)
+### Canonical pipeline (CLI-first architecture)
 ```bash
-# Scraping (collect lyrics and metadata)
-python scripts/rap_scraper_cli.py scraping
+# Core scraping workflow
+python scripts/rap_scraper_cli.py scraping                    # Production mode
+python scripts/rap_scraper_cli.py scraping --test            # Test mode (3 artists)
+python scripts/rap_scraper_cli.py scraping --artist "Drake"  # Single artist
 
-# Spotify enrichment (start/continue)
-python scripts/rap_scraper_cli.py spotify --continue
+# Spotify enrichment workflow  
+python scripts/rap_scraper_cli.py spotify                     # New enhancement
+python scripts/rap_scraper_cli.py spotify --continue         # Resume existing
 
-# Run ML analysis
-python scripts/rap_scraper_cli.py analysis --analyzer langchain
-python scripts/rap_scraper_cli.py analysis --analyzer ollama
-python scripts/rap_scraper_cli.py analysis --analyzer multi
+# AI analysis workflow
+python scripts/rap_scraper_cli.py analysis --analyzer gemma  # Gemma 27B
+python scripts/rap_scraper_cli.py analysis --analyzer multi  # Multi-model comparison
 
-# Monitoring & status
-python scripts/rap_scraper_cli.py monitoring --component all
+# Monitoring & utilities
 python scripts/rap_scraper_cli.py monitoring --component database
+python scripts/rap_scraper_cli.py monitoring --component analysis
+python scripts/rap_scraper_cli.py monitoring --component gemma
+python scripts/rap_scraper_cli.py utilities --utility spotify-setup
 python scripts/rap_scraper_cli.py status
 ```
 
-### Direct / advanced invocations (legacy and debugging)
+### Production tools (new organized structure)
 ```bash
-# Direct module runs (advanced users)
-python src/scrapers/rap_scraper_optimized.py --limit 10
-python src/enhancers/bulk_spotify_enhancement.py
-python src/enhancers/spotify_enhancer.py --artist "Drake"
+# Batch processing (rehabilitated from archive)
+python scripts/tools/batch_ai_analysis.py --batch-size 25 --dry-run
+python scripts/tools/batch_ai_analysis.py --batch-size 50 --max-batches 100
 
-# Utilities (preferred via src/utils)
-python src/utils/check_db.py --stats
-python src/utils/setup_spotify.py --refresh
-python src/utils/migrate_database.py --repair
+# Diagnostics & coverage analysis
+python scripts/tools/check_spotify_coverage.py
+
+# Portfolio & visualization
+python src/analyzers/create_visual_analysis.py
 ```
 
-### Run modes
+### Development & testing
 ```bash
-# Development (safe)
-python scripts/rap_scraper_cli.py scraping --limit 10 --dry-run
+# Development scripts (organized)
+python scripts/development/test_fixed_scraper.py          # Test scraper fixes
+python scripts/development/scrape_artist_one.py "Artist" # Single artist testing
+python scripts/development/run_scraping_debug.py         # Debug mode
 
-# Production
-python scripts/rap_scraper_cli.py scraping --batch-size 100
-
-# Debug (verbose logs)
-python scripts/rap_scraper_cli.py spotify --verbose --log-level DEBUG
+# Legacy compatibility (maintained)
+python scripts/legacy/run_analysis.py                     # Legacy analysis wrapper
 ```
 
 ---
@@ -333,14 +338,54 @@ pytest tests/ --tb=short
 
 ## 🎯 ML pipeline goals
 
+### Project structure (post-cleanup)
+```
+scripts/
+├── rap_scraper_cli.py          # 🎯 UNIFIED CLI - single entry point
+├── continue_spotify_enhancement.py  # Resume Spotify enhancement
+├── run_spotify_enhancement.py      # New Spotify enhancement  
+├── check_db.py                     # Database diagnostics
+├── development/                    # 🧪 Development & testing
+│   ├── test_fixed_scraper.py      # Test scraper fixes
+│   ├── scrape_artist_one.py       # Single artist testing
+│   └── run_scraping_debug.py      # Debug mode
+├── legacy/                         # 🗂️ Legacy compatibility
+│   └── run_analysis.py            # Legacy analysis wrapper
+├── tools/                          # 🛠️ Production utilities
+│   ├── batch_ai_analysis.py       # Batch processor (rehabilitated)
+│   └── check_spotify_coverage.py  # Coverage diagnostics
+└── utils/                          # 🔧 Project utilities
+    └── cleanup_project.py          # Project organization tool
+
+src/
+├── scrapers/
+│   └── rap_scraper_optimized.py   # Core scraper with proxy handling
+├── enhancers/
+│   ├── spotify_enhancer.py        # Spotify API integration
+│   └── bulk_spotify_enhancement.py # Bulk processing
+├── analyzers/
+│   ├── multi_model_analyzer.py    # Multi-provider AI analysis
+│   ├── gemma_27b_fixed.py         # Gemma 27B integration
+│   └── create_visual_analysis.py  # Portfolio dashboard
+└── models/
+    └── models.py                   # Pydantic schemas
+
+monitoring/
+├── monitor_gemma_progress.py      # Real-time Gemma monitoring
+└── check_analysis_status.py       # Analysis status overview
+```
+
+## 🎯 ML pipeline goals
+
 ### Project goal
 **Conditional Rap Lyrics Generation** — artist style + genre + mood → authentic generated lyrics
 
 ### Training pipeline
-1. Data collection: 48K+ tracks with rich metadata
-2. Feature engineering: sentiment, complexity, audio features
-3. Model training: fine-tuning on structured dataset
-4. Generation: controlled sampling for style/mood
+1. Data collection: 53K+ tracks with rich metadata ✅
+2. Feature engineering: sentiment, complexity, audio features 🔄
+3. AI analysis: Multi-model pipeline (Ollama, Gemma 27B) 🔄  
+4. Model training: fine-tuning on structured dataset 📋
+5. Generation: controlled sampling for style/mood 📋
 
 ### Available features for training
 - Lyrics text (full corpus)
@@ -370,25 +415,25 @@ pytest tests/ --tb=short
 
 ---
 
-## 📈 Project evolution (case status)
+## 📈 Project evolution (post-cleanup status)
 
-### Completed
-- 48K+ tracks collected from Genius API
-- ~99.6% Spotify enrichment coverage
-- Full type safety via Pydantic models
-- Production-ready features: retries, backoff, graceful degradation
-- Comprehensive documentation in `docs/`
+### Recently completed ✅
+- **Project organization**: Removed 5+ redundant scripts, organized into logical folders
+- **CLI consolidation**: Single entry point via `rap_scraper_cli.py` 
+- **Tool rehabilitation**: Moved `batch_ai_analysis.py` from archive to tools/
+- **Code quality**: Enhanced error handling, documentation, and user experience
+- **53,300 tracks** collected with ~99.6% Spotify enrichment coverage
 
-### In progress
-- Track enrichment via Spotify (bulk processing)
-- Audio features recovery for blocked endpoints
-- Feature engineering for ML training
+### In progress 🔄
+- **AI Analysis pipeline**: 38K+ tracks pending analysis via multi-model system
+- **Batch processing**: Production-ready batch analyzer for large-scale analysis
+- **Feature engineering**: Audio features + sentiment analysis for ML training
 
-### Next milestones
-- Complete Spotify audio features coverage
-- Automated sentiment/mood pipeline
-- Prepare final ML training dataset and splits
-- Architect model for conditional generation
+### Next milestones 📋
+- Complete AI analysis coverage using batch tools
+- Prepare final ML training dataset with rich features
+- Architect conditional generation model
+- Production deployment pipeline
 
 ---
 
@@ -402,11 +447,12 @@ pytest tests/ --tb=short
 5. Production readiness and observability
 
 ### Working principles for agents
-- Agentic exploration (inspect code & run checks) over blind RAG
-- Plan first, validate, execute in small steps
-- Document changes in `docs/PROJECT_DIARY.md`
-- Test-driven approach for changes
-- Keep ML goals in focus for all changes
+- **CLI-first approach**: Use unified `rap_scraper_cli.py` as primary interface
+- **Organized exploration**: Check `scripts/tools/`, `scripts/development/` for utilities
+- **Systematic investigation**: Use semantic_search → grep_search → read_file workflow
+- **Clean architecture**: Respect separation between development/, legacy/, tools/
+- **Production readiness**: Test changes thoroughly, document in PROJECT_DIARY
+- **Batch-friendly**: Use `scripts/tools/batch_ai_analysis.py` for large operations
 
 ### Success metrics
 - Code quality: types, tests, documentation

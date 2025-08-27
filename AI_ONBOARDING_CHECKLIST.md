@@ -7,45 +7,43 @@
 ### ⚡ Express Mode (30 секунд)
 ```bash
 # Только базовый контекст
-read_file("docs/claude.md")
+read_file("docs/claude.md")  # Обновлен после cleanup!
 ```
-**Когда использовать**: Простые вопросы, quick fixes, понимание общей архитектуры
+**Когда использовать**: Простые вопросы, quick fixes, понимание новой организованной архитектуры
 
 ### 🚀 Standard Mode (2 минуты)  
 ```bash
-# Полный контекст для работы
-read_file("docs/claude.md")
-read_file("src/models/models.py") 
-run_terminal("python src/utils/check_db.py")
-# ИЛИ используй новый CLI
-run_terminal("python scripts/rap_scraper_cli.py status")
+# Полный контекст для работы с обновленной структурой
+read_file("docs/claude.md")                                 # Обновленная архитектура
+read_file("src/models/models.py")                           # Data schemas
+run_terminal("python scripts/rap_scraper_cli.py status")    # Unified CLI interface
+list_dir("scripts/")                                        # Новая организация
 ```
-**Когда использовать**: Разработка новых фич, debugging, analysis tasks
+**Когда использовать**: Разработка, debugging, работа с новой структурой проекта
 
 ### 🔬 Deep Dive Mode (5 минут)
 ```bash
-# Comprehensive understanding
-read_file("docs/claude.md")
-read_file("docs/PROJECT_DIARY.md")
-read_file("src/models/models.py")
-read_file("README.md")  # Новая архитектура и CLI
-semantic_search("main processing pipeline")
-file_search("src/**/*spotify*.py")
-get_changed_files()
-run_terminal("python scripts/rap_scraper_cli.py status")
+# Comprehensive understanding после cleanup
+read_file("docs/claude.md")                                 # Обновленный контекст
+read_file("docs/PROJECT_DIARY.md")                          # История включая cleanup
+read_file("src/models/models.py")                           # Data models
+list_dir("scripts/tools/")                                  # Production utilities
+list_dir("scripts/development/")                            # Development tools  
+semantic_search("batch processing OR multi-model analysis") # Core functionality
+run_terminal("python scripts/rap_scraper_cli.py status")    # Current state
 ```
-**Когда использовать**: Архитектурные изменения, complex debugging, ML pipeline work
+**Когда использовать**: Архитектурные изменения, complex debugging, работа с новыми инструментами
 
 ---
 
 ## 📖 Context Layers (читать по потребности)
 
-### Layer 1: Project Foundation (MANDATORY)
+### Layer 1: Project Foundation (MANDATORY - UPDATED!)
 ```yaml
 File: docs/claude.md
-Purpose: Central project context, architecture, AI workflow
-Read When: Always (first thing to read)
-Key Info: ML goals, 48K+ tracks, Spotify+Genius APIs, restructured architecture
+Purpose: Central project context, architecture, post-cleanup workflow
+Read When: Always (first thing to read - recently updated!)
+Key Info: 53K+ tracks, organized structure, CLI-first approach, tools reorganization
 ```
 
 ### Layer 2: Data Models (HIGH PRIORITY)
@@ -56,20 +54,20 @@ Read When: Working with data structures, API integration
 Key Info: SpotifyTrack, SpotifyArtist, AudioFeatures models
 ```
 
-### Layer 3: Project Architecture (NEW - HIGH PRIORITY)
+### Layer 3: New Project Organization (NEW - HIGH PRIORITY)
 ```yaml
-File: README.md
-Purpose: New CLI interface, structured architecture, production setup
-Read When: Using project tools, understanding new organization
-Key Info: scripts/rap_scraper_cli.py, src/ structure, entry points
+Structure: scripts/{tools,development,legacy}/, src/{scrapers,enhancers,analyzers}/
+Purpose: Clean organized architecture, production tools, development workflow
+Read When: Using any project tools, understanding new organization
+Key Info: Unified CLI, batch processing tools, development utilities
 ```
 
 ### Layer 4: Project History (CONTEXT DEPENDENT)
 ```yaml
 File: docs/PROJECT_DIARY.md  
-Purpose: Complete evolution history, 13+ documented cases
-Read When: Understanding decisions, avoiding past mistakes
-Key Info: STAR methodology, technical debt, lessons learned
+Purpose: Complete evolution history, includes recent cleanup case
+Read When: Understanding decisions, avoiding past mistakes, learning from cleanup
+Key Info: STAR methodology, cleanup decisions, why scripts were moved/removed
 ```
 
 ### Layer 5: Implementation Details (AS NEEDED)
@@ -88,47 +86,53 @@ Key Info: Rate limiting patterns, error handling, batch processing
 ```python
 # Primary tasks: Code changes, new features, refactoring
 def developer_onboarding():
-    read_file("docs/claude.md")                    # Architecture understanding
-    read_file("src/models/models.py")              # Data contracts
-    read_file("README.md")                         # CLI and new structure
-    semantic_search("error handling patterns")     # Code quality standards
-    grep_search("TODO|FIXME", isRegexp=True)      # Known issues
-    run_terminal("python -m pytest tests/")       # Test status
+    read_file("docs/claude.md")                         # Updated architecture
+    read_file("src/models/models.py")                   # Data contracts
+    list_dir("scripts/tools/")                          # Production utilities
+    list_dir("scripts/development/")                    # Development tools
+    semantic_search("error handling patterns")         # Code quality standards
+    grep_search("TODO|FIXME", isRegexp=True)          # Known issues
+    run_terminal("python -m pytest tests/")           # Test status
+    run_terminal("python scripts/rap_scraper_cli.py status")  # System health
 ```
 
 ### 🔍 Debugging Agent  
 ```python
 # Primary tasks: Issue investigation, error resolution
 def debugging_onboarding():
-    read_file("docs/claude.md")                              # Context
-    read_file("README.md")                                   # Current tools
-    grep_search("error|exception|failed", isRegexp=True)    # Error patterns
-    get_terminal_output("last_run")                         # Recent failures
-    run_terminal("python scripts/rap_scraper_cli.py status") # System health
-    list_code_usages("problematic_function")               # Usage analysis
+    read_file("docs/claude.md")                                    # Updated context
+    list_dir("scripts/tools/")                                     # Available tools
+    grep_search("error|exception|failed", isRegexp=True)          # Error patterns
+    get_terminal_output("last_run")                               # Recent failures
+    run_terminal("python scripts/rap_scraper_cli.py status")      # System health
+    run_terminal("python scripts/tools/check_spotify_coverage.py") # Diagnostics
+    list_code_usages("problematic_function")                     # Usage analysis
 ```
 
 ### 📊 ML/Analysis Agent
 ```python  
 # Primary tasks: Data analysis, feature engineering, ML pipeline
 def ml_onboarding():
-    read_file("docs/claude.md")                         # ML objectives
-    read_file("src/models/models.py")                   # Feature schemas
-    file_search("src/analyzers/**/*.py")               # Existing ML code
-    run_terminal("python scripts/rap_scraper_cli.py status") # Dataset overview
-    semantic_search("conditional generation")          # ML architecture
+    read_file("docs/claude.md")                                    # Updated ML objectives
+    read_file("src/models/models.py")                              # Feature schemas
+    file_search("src/analyzers/**/*.py")                          # Existing ML code
+    run_terminal("python scripts/rap_scraper_cli.py status")      # Dataset overview
+    run_terminal("python scripts/tools/batch_ai_analysis.py --dry-run")  # Batch tools
+    semantic_search("multi-model analysis OR gemma")              # Current ML stack
 ```
 
 ### 📝 Documentation Agent
 ```python
 # Primary tasks: Documentation updates, technical writing  
 def docs_onboarding():
-    read_file("docs/claude.md")           # Current docs state
-    read_file("docs/PROJECT_DIARY.md")    # History to document
-    read_file("README.md")                # Current documentation
-    get_changed_files()                   # Recent changes
-    grep_search("TODO.*doc", isRegexp=True) # Doc gaps
-    file_search("docs/**/*.md")           # All documentation
+    read_file("docs/claude.md")                        # Updated docs state
+    read_file("docs/PROJECT_DIARY.md")                 # History including cleanup
+    list_dir("scripts/tools/")                         # New tools to document
+    list_dir("scripts/development/")                   # Development workflow
+    get_changed_files()                                # Recent changes
+    grep_search("TODO.*doc", isRegexp=True)           # Doc gaps
+    file_search("docs/**/*.md")                       # All documentation
+    read_file("scripts/tools/README.md")              # New tools documentation
 ```
 
 ---
@@ -137,48 +141,54 @@ def docs_onboarding():
 
 ### New Feature Development
 ```bash
-# 1. Understand existing patterns
+# 1. Understand organized structure
+list_dir("scripts/tools/")                              # Production utilities
+list_dir("scripts/development/")                        # Development tools
+read_file("docs/claude.md")                            # Updated architecture
 semantic_search("similar feature functionality")
-list_code_usages("BaseClass")
-read_file("README.md")  # Check CLI structure
 
-# 2. Check dependencies  
+# 2. Check dependencies and patterns
 grep_search("import.*spotify", isRegexp=True)
-read_file("requirements.txt")
+list_code_usages("BaseClass") 
+file_search("src/**/*.py")                             # Browse organized structure
 
-# 3. Plan implementation
-grep_search("def.*process", isRegexp=True)  # Find processing patterns
-file_search("src/**/*.py")  # Browse new structure
+# 3. Plan implementation using existing tools
+run_terminal("python scripts/rap_scraper_cli.py --help")  # Available commands
+grep_search("def.*process", isRegexp=True)              # Find processing patterns
 ```
 
 ### Bug Investigation
 ```bash
-# 1. Reproduce issue using CLI
+# 1. Use unified CLI for diagnosis
 run_terminal("python scripts/rap_scraper_cli.py status")
-run_terminal("python scripts/legacy/problematic_script.py --debug")
+run_terminal("python scripts/tools/check_spotify_coverage.py")  # Coverage diagnostics
+run_terminal("python scripts/rap_scraper_cli.py monitoring --component analysis")
 
-# 2. Find error patterns
+# 2. Find error patterns in organized code
 grep_search("Exception|Error", isRegexp=True)
 get_terminal_output("error_session")
-
-# 3. Locate relevant code in new structure
 semantic_search("error_symptom description")
+
+# 3. Locate relevant code using new structure
 list_code_usages("failing_function")
-file_search("src/**/*relevant*.py")
+file_search("src/**/*relevant*.py")                     # Organized src structure
 ```
 
 ### Data Analysis  
 ```bash
-# 1. Current dataset state using new CLI
+# 1. Current dataset state using unified CLI
 run_terminal("python scripts/rap_scraper_cli.py status")
 run_terminal("python scripts/rap_scraper_cli.py monitoring --component database")
+run_terminal("python scripts/tools/batch_ai_analysis.py --dry-run")  # Batch processing
 
-# 2. Analysis tools available
+# 2. Analysis tools in organized structure
 file_search("src/analyzers/**/*.py")
-semantic_search("sentiment analysis OR complexity metrics")
+run_terminal("python src/analyzers/create_visual_analysis.py")  # Portfolio dashboard
+semantic_search("multi-model analysis OR gemma")
 
-# 3. ML pipeline status
+# 3. ML pipeline status  
 grep_search("training.*ready", isRegexp=True)
+run_terminal("python scripts/rap_scraper_cli.py analysis --analyzer multi")
 ```
 
 ### API Integration Work
@@ -205,58 +215,68 @@ file_search("src/utils/**/*.py")
 
 #### Project Summary (elevator pitch):
 ```
-"Production-ready ML pipeline для conditional rap lyrics generation. 48K+ треков из Genius+Spotify APIs, 
-новая структурированная архитектура src/, единый CLI интерфейс, Python+Pydantic+SQLite stack. 
-Цель: artist_style + genre + mood → authentic generated lyrics."
+"Production-ready ML pipeline для conditional rap lyrics generation. 53K+ треков из Genius+Spotify APIs, 
+новая организованная архитектура scripts/{tools,development,legacy}/ + src/, единый CLI интерфейс, 
+Python+Pydantic+SQLite stack. Цель: artist_style + genre + mood → authentic generated lyrics.
+Недавно: проект полностью реорганизован, удалены избыточные скрипты, добавлены production инструменты."
 ```
 
 #### Current Status (что сейчас происходит):
 ```
-"Проект полностью реструктурирован: новая архитектура src/, CLI интерфейс, обновленная документация.
-Active: Gemma 27B анализ (11,860+ треков проанализировано), Spotify обогащение завершено (262/263).
-База: 48,508 песен, 265 артистов. Next: Завершение AI анализа + ML feature engineering."
+"Проект полностью реорганизован (авг 2025): новая структура scripts/{tools,development,legacy}/, 
+унифицированный CLI интерфейс, удалено 5+ избыточных скриптов, реабилитированы batch processing инструменты.
+Active: 38K+ треков ожидают AI анализа, Spotify обогащение завершено (~99.6%).
+База: 53,300+ песен, 328 артистов. Next: Завершение AI анализа через batch_ai_analysis.py"
 ```
 
 #### Technical Stack (для понимания технологий):
 ```
-"Python 3.13, новая структура src/{scrapers,enhancers,analyzers,models,utils}/, 
-Pydantic validation, SQLite persistence, CLI интерфейс scripts/rap_scraper_cli.py,
-async/await patterns, comprehensive rate limiting, production-ready architecture."
+"Python 3.13, организованная структура: scripts/{tools,development,legacy}/ + src/{scrapers,enhancers,analyzers,models,utils}/, 
+Pydantic validation, SQLite persistence, единый CLI scripts/rap_scraper_cli.py,
+async/await patterns, comprehensive rate limiting, production batch processing tools,
+rehabilitated batch_ai_analysis.py for large-scale operations."
 ```
 
 ### Common Pitfalls (чего избегать)
 
 #### ❌ Don't Do This:
 ```python
-# Использовать старые пути
-from models import SpotifyTrack  # Устарело!
-python check_db.py              # Используй CLI!
+# Использовать старые/удаленные пути
+from models import SpotifyTrack              # Устарело!
+python project_status.py                    # Удален! Используй CLI!
+python enhanced_scraper.py                  # Удален как избыточный!
 
-# Игнорировать rate limits
-requests.get(url)  # Без delays
+# Игнорировать новую организацию
+python scripts/some_random_script.py        # Проверь scripts/{tools,development,legacy}/
 
-# Не валидировать данные  
-data = {"field": raw_api_response}  # Без Pydantic
+# Забывать про batch processing
+# Для большой обработки используй scripts/tools/batch_ai_analysis.py
 
-# Забывать новую архитектуру
-# Прямые вызовы вместо CLI интерфейса
+# Пропускать unified CLI
+python src/scrapers/rap_scraper_optimized.py  # Используй CLI интерфейс!
 ```
 
 #### ✅ Do This Instead:
 ```python  
-# Новая структурированная архитектура
+# Новая организованная архитектура
 from src.models.models import SpotifyTrack
-python scripts/rap_scraper_cli.py status  # Используй CLI
+python scripts/rap_scraper_cli.py status                    # Unified CLI
 
-# Respectful API usage
+# Используй правильные инструменты из организованной структуры
+python scripts/tools/batch_ai_analysis.py --batch-size 25   # Production batching
+python scripts/tools/check_spotify_coverage.py             # Diagnostics
+python scripts/development/test_fixed_scraper.py           # Development testing
+
+# Respectful API usage (unchanged)
 await self.rate_limiter.wait()
 response = await session.get(url, timeout=30)
 
-# Type-safe data handling
+# Type-safe data handling (unchanged)
 track_data = SpotifyTrack(**api_response)
 
-# Используй новые entry points
+# Используй organized entry points
 python scripts/rap_scraper_cli.py analysis --analyzer gemma
+python scripts/rap_scraper_cli.py monitoring --component analysis
 ```
 
 ---
@@ -269,7 +289,19 @@ python scripts/rap_scraper_cli.py analysis --analyzer gemma
 python --version  # Should be 3.13+
 pip list | grep pydantic  # Core dependencies
 
-# Project setup (новые пути!)
+### Project setup (обновленная структура!)
+```bash
+# System requirements
+python --version  # Should be 3.13+
+pip list | grep pydantic  # Core dependencies
+
+# Organized project structure validation
+ls docs/claude.md docs/PROJECT_DIARY.md src/models/models.py     # Key files present
+ls scripts/rap_scraper_cli.py                                   # Unified CLI
+ls scripts/tools/batch_ai_analysis.py scripts/tools/check_spotify_coverage.py  # Production tools
+ls scripts/development/test_fixed_scraper.py                    # Development tools
+sqlite3 data/rap_lyrics.db ".tables"                           # Database accessible
+```
 ls docs/claude.md docs/PROJECT_DIARY.md src/models/models.py  # Key files present
 sqlite3 data/rap_lyrics.db ".tables"  # Database accessible
 ls scripts/rap_scraper_cli.py  # CLI interface present
@@ -288,12 +320,13 @@ python -c "import os; print('✅ Genius key:', 'GENIUS_ACCESS_TOKEN' in os.envir
 
 ### Database Health Check
 ```bash
-# Quick DB validation using new CLI
-python scripts/rap_scraper_cli.py status              # Comprehensive overview
+# Unified CLI health check (preferred)
+python scripts/rap_scraper_cli.py status                           # Comprehensive overview
 python scripts/rap_scraper_cli.py monitoring --component database  # Health check
+python scripts/tools/check_spotify_coverage.py                     # Coverage analysis
 
 # Legacy direct access (if needed)
-python src/utils/check_db.py                    # Basic stats
+python src/utils/check_db.py                                       # Basic stats  
 ```
 
 ---
@@ -303,11 +336,11 @@ python src/utils/check_db.py                    # Basic stats
 ### If Agent Seems Lost
 ```markdown
 **RESET PROTOCOL**: 
-1. read_file("docs/claude.md") - восстанови основной контекст
-2. read_file("README.md") - изучи новую CLI архитектуру
+1. read_file("docs/claude.md") - восстанови обновленный контекст
+2. list_dir("scripts/") - изучи новую организованную структуру
 3. Объясни твою конкретную задачу в 1-2 предложениях  
 4. Выбери подходящий persona workflow выше
-5. Следуй step-by-step инструкциям для твоего типа задачи
+5. Используй scripts/tools/ для production, scripts/development/ для testing
 ```
 
 ### If Database Issues
@@ -333,18 +366,19 @@ python src/utils/check_db.py                    # Basic stats
 ```markdown
 **CLI TROUBLESHOOTING**:
 - Command not found: Убедись что используешь python scripts/rap_scraper_cli.py
-- Import errors: Проверь что все файлы в src/ структуре
-- Path issues: Используй CLI вместо прямых вызовов
+- Import errors: Проверь что все файлы в организованной src/ структуре
+- Path issues: Используй CLI вместо прямых вызовов удаленных скриптов
 - Legacy scripts: Доступны в scripts/legacy/ если нужно
+- Production tools: Используй scripts/tools/ для batch operations
 ```
 
 ### If Performance Issues
 ```markdown
 **PERFORMANCE DEBUG**:
-1. Check available memory: run_terminal("python -c 'import psutil; print(psutil.virtual_memory())'")
-2. Database size: run_terminal("du -h rap_lyrics.db")  
-3. Enable batch processing: Use --batch-size parameter
-4. Monitor progress: All scripts show progress bars
+1. Check system resources: run_terminal("python -c 'import psutil; print(psutil.virtual_memory())'")
+2. Database size: run_terminal("python scripts/rap_scraper_cli.py status")  
+3. Use batch processing: run_terminal("python scripts/tools/batch_ai_analysis.py --batch-size 25 --dry-run")
+4. Monitor progress: run_terminal("python scripts/rap_scraper_cli.py monitoring --component analysis")
 ```
 
 ---
@@ -403,17 +437,23 @@ echo "Updated: $(date)" >> AI_ONBOARDING_CHECKLIST.md
 
 ```yaml
 Project: Production-ready ML rap lyrics generation (conditional)
-Stack: Python 3.13 + Pydantic + SQLite + APIs + CLI
-Architecture: src/{scrapers,enhancers,analyzers,models,utils}/ + scripts/
-Data: 48.5K+ tracks, 265 artists, rich metadata, 11.8K+ AI analyses
-Status: Реструктуризация завершена, Gemma анализ активен (прогресс: 24.4%)
+Stack: Python 3.13 + Pydantic + SQLite + APIs + Unified CLI
+Architecture: scripts/{tools,development,legacy}/ + src/{scrapers,enhancers,analyzers,models,utils}/
+Data: 53K+ tracks, 328 artists, rich metadata, 38K+ pending AI analysis
+Status: Полная реорганизация завершена (авг 2025), batch processing tools готовы
 Goal: artist + genre + mood → generated lyrics
 
 Key Files:
-  - docs/claude.md: Central context
+  - docs/claude.md: Central context (UPDATED!)
   - src/models/models.py: Data schemas  
-  - README.md: CLI interface & new architecture
-  - docs/PROJECT_DIARY.md: Complete history
+  - scripts/rap_scraper_cli.py: Unified CLI interface
+  - docs/PROJECT_DIARY.md: Complete history + cleanup case
+
+Organized Structure:
+  - scripts/tools/: batch_ai_analysis.py, check_spotify_coverage.py
+  - scripts/development/: test_fixed_scraper.py, scrape_artist_one.py
+  - scripts/legacy/: backward compatibility
+  - src/: core modules (scrapers, enhancers, analyzers, models)
 
 APIs: 
   - Genius: lyrics + metadata (1 req/sec)
@@ -421,18 +461,19 @@ APIs:
 
 CLI Commands:
   - Status: python scripts/rap_scraper_cli.py status
-  - Scraping: python scripts/rap_scraper_cli.py scraping
+  - Batch AI: python scripts/tools/batch_ai_analysis.py --batch-size 25
+  - Coverage: python scripts/tools/check_spotify_coverage.py
   - Analysis: python scripts/rap_scraper_cli.py analysis --analyzer gemma
   - Monitoring: python scripts/rap_scraper_cli.py monitoring --component all
 
 Entry Modes:
   - Express: read_file("docs/claude.md")
-  - Standard: + src/models/models.py + CLI status  
-  - Deep: + README.md + docs/PROJECT_DIARY.md
+  - Standard: + list_dir("scripts/") + CLI status  
+  - Deep: + PROJECT_DIARY.md + tools exploration
 
-Emergency: Reset with docs/claude.md + README.md, define task clearly
+Emergency: Reset with docs/claude.md + list organized structure
 ```
 
 ---
 
-*Created: 2025-08-26 | Version: 3.0 - Post-Restructure | Updated: 2025-08-26 | Next Review: После завершения Gemma анализа*
+*Created: 2025-08-26 | Version: 4.0 - Post-Cleanup | Updated: 2025-08-27 | Next Review: После завершения batch AI анализа*

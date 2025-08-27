@@ -1,4 +1,5 @@
 import lyricsgenius
+from requests.exceptions import ProxyError, RequestException
 import sqlite3
 import time
 import random
@@ -260,10 +261,14 @@ class OptimizedGeniusScraper:
     def __init__(self, token: str, db_name: str = None, memory_limit_mb: int = 2048):
         if db_name is None:
             db_name = str(DB_PATH)
+        
+        # Убираем проблемные прокси переменные перед созданием клиента
+        self._clear_proxy_env()
+        
         self.genius = lyricsgenius.Genius(
             token,
-            timeout=20,
-            retries=3,
+            timeout=30,  # Увеличили timeout
+            retries=2,   # Уменьшили retries для быстрого переключения
             remove_section_headers=True,
             skip_non_songs=True,
             excluded_terms=["(Remix)", "(Live)", "(Instrumental)", "(Skit)"]
@@ -286,7 +291,29 @@ class OptimizedGeniusScraper:
         self.songs_since_gc = 0
         self.gc_interval = 50  # Принудительная очистка каждые 50 песен
         
+        # Сохраняем удаленные прокси переменные
+        self.cleared_proxies = {}
+        
         self._setup_signal_handlers()
+        
+    def _clear_proxy_env(self):
+        """Убираем все проблемные прокси переменные"""
+        proxy_vars = [
+            'HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy',
+            'FTP_PROXY', 'ftp_proxy', 'ALL_PROXY', 'all_proxy',
+            'NO_PROXY', 'no_proxy'
+        ]
+        
+        self.cleared_proxies = {}
+        for var in proxy_vars:
+            if var in os.environ:
+                self.cleared_proxies[var] = os.environ.pop(var)
+                logger.debug(f"🚫 Убрали прокси переменную: {var}")
+                
+    def _restore_proxy_env(self):
+        """Восстанавливаем прокси переменные если нужно"""
+        for var, value in self.cleared_proxies.items():
+            os.environ[var] = value
         
     def _setup_signal_handlers(self):
         """Настройка обработчиков сигналов"""
@@ -395,17 +422,81 @@ class OptimizedGeniusScraper:
         return metadata
 
     def get_songs_generator(self, artist_name: str, max_songs: int = 500) -> Generator[Tuple[any, int], None, None]:
-        """Генератор для пошаговой загрузки песен (экономия памяти)"""
+        """Генератор для пошаговой загрузки песен (экономия памяти) с улучшенной обработкой ошибок"""
         try:
             logger.info(f"🎵 Поиск артиста: {artist_name}")
-            artist = self.genius.search_artist(artist_name, max_songs=max_songs, sort="popularity", get_full_info=False)
+            artist = None
             
-            if not artist or not artist.songs:
-                logger.warning(f"❌ Артист {artist_name} не найден")
+            # Попытка 1: Обычный поиск
+            try:
+                artist = self.genius.search_artist(
+                    artist_name, 
+                    max_songs=min(max_songs, 50),  # Ограничиваем первую попытку
+                    sort="popularity", 
+                    get_full_info=False
+                )
+                if artist and artist.songs:
+                    logger.info(f"✅ Найден артист: {artist.name} с {len(artist.songs)} песнями")
+                
+            except Exception as e:
+                error_msg = str(e).lower()
+                logger.error(f"❌ Ошибка при поиске артиста {artist_name}: {e}")
+                
+                # Проверяем на прокси/сетевые ошибки
+                if any(keyword in error_msg for keyword in ['proxy', 'connection', 'timeout', 'retries exceeded']):
+                    logger.warning("🔄 Детектирована сетевая проблема, пробуем альтернативы...")
+                    
+                    # Попытка 2: Изменяем настройки сессии
+                    try:
+                        logger.info("🔧 Попытка 2: Изменяем User-Agent и headers...")
+                        self.genius._session.headers.update({
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                            'Accept': 'application/json, text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                            'Accept-Language': 'en-US,en;q=0.5',
+                            'Connection': 'keep-alive'
+                        })
+                        
+                        artist = self.genius.search_artist(
+                            artist_name, 
+                            max_songs=min(max_songs, 20),  # Еще меньше песен
+                            sort="popularity"
+                        )
+                        if artist and artist.songs:
+                            logger.info(f"✅ Попытка 2 успешна: {len(artist.songs)} песен")
+                            
+                    except Exception as e2:
+                        logger.warning(f"⚠️ Попытка 2 не удалась: {e2}")
+                        
+                        # Попытка 3: Минимальный поиск
+                        try:
+                            logger.info("🔧 Попытка 3: Минимальный поиск...")
+                            artist = self.genius.search_artist(
+                                artist_name, 
+                                max_songs=5,
+                                sort="popularity"
+                            )
+                            if artist and artist.songs:
+                                logger.info(f"✅ Попытка 3 успешна: {len(artist.songs)} песен")
+                        except Exception as e3:
+                            logger.error(f"❌ Все попытки исчерпаны: {e3}")
+                            return
+                else:
+                    # Не сетевая ошибка, просто логируем и завершаем
+                    logger.error(f"❌ Неизвестная ошибка поиска: {e}")
+                    return
+            
+            # Проверяем результат
+            if not artist or not hasattr(artist, 'songs') or not artist.songs:
+                logger.warning(f"❌ Артист {artist_name} не найден или нет песен")
                 return
             
             total_songs = len(artist.songs)
             logger.info(f"📀 Найдено {total_songs} песен для {artist_name}")
+            
+            # Показываем первые несколько песен для подтверждения
+            logger.info("🎵 Первые найденные песни:")
+            for i, song in enumerate(artist.songs[:5], 1):
+                logger.info(f"  {i}. {song.title}")
             
             # Возвращаем песни по одной
             for i, song in enumerate(artist.songs):
@@ -426,7 +517,8 @@ class OptimizedGeniusScraper:
                 del song
                 
         except Exception as e:
-            logger.error(f"❌ Ошибка получения списка песен для {artist_name}: {e}")
+            logger.error(f"❌ Критическая ошибка получения списка песен для {artist_name}: {e}")
+            return
 
     def scrape_artist_songs(self, artist_name: str, max_songs: int = 500) -> int:
         """Скрапинг песен артиста с оптимизацией памяти"""
@@ -515,6 +607,12 @@ class OptimizedGeniusScraper:
                             logger.error(f"⏰ Timeout для {song.title}: {e}")
                             self.session_stats["errors"] += 1
                             self.safe_delay(is_error=True)
+                        elif any(keyword in str(e).lower() for keyword in ['proxy', 'connection', 'retries exceeded']):
+                            logger.error(f"🌐 Сетевая ошибка для {song.title}: {e}")
+                            self.session_stats["errors"] += 1
+                            # Увеличиваем паузу при сетевых ошибках
+                            logger.info("⏳ Дополнительная пауза при сетевой ошибке...")
+                            time.sleep(10)
                         else:
                             logger.error(f"❌ Ошибка с песней {song.title}: {e}")
                             self.session_stats["errors"] += 1
@@ -641,6 +739,8 @@ class OptimizedGeniusScraper:
     def close(self):
         logger.info("🔒 Закрытие соединения с БД...")
         self.db.close()
+        # Восстанавливаем прокси настройки если они были
+        self._restore_proxy_env()
 
 def load_artist_list(filename: str = "rap_artists.json") -> List[str]:
     """Загрузка списка артистов с приоритетом remaining_artists.json"""

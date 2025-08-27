@@ -2,7 +2,7 @@
 
 **Production-ready ML pipeline for collecting and analyzing rap lyrics using AI**
 
-📊 **48K+ tracks | 263 artists | Spotify enriched | AI analyzed**
+📊 **53K+ tracks | 328 artists | Spotify enriched | AI analyzed**
 
 ## 🚀 Quick start
 
@@ -40,91 +40,111 @@ python scripts/rap_scraper_cli.py --help
 
 ## 🏗️ Project architecture
 
-### Structured layout:
+### Structured layout (post-cleanup):
 ```
 src/
 ├── scrapers/     # 🕷️ Data collection (Genius API)
-├── enhancers/    # 🎵 Enrichment (Spotify API)
+├── enhancers/    # 🎵 Enrichment (Spotify API)  
 ├── analyzers/    # 🤖 ML analysis (LLM models)
 ├── models/       # 📊 Pydantic models
 └── utils/        # 🛠️ Utilities and config
 
-scripts/         # 🚀 Entry points and CLI
-monitoring/      # 📊 Monitoring and stats
+scripts/              # 🚀 Organized entry points  
+├── rap_scraper_cli.py      # 🎯 Unified CLI interface
+├── continue_spotify_enhancement.py  # Resume Spotify enhancement
+├── run_spotify_enhancement.py      # New Spotify enhancement
+├── check_db.py             # Database diagnostics
+├── tools/                  # 🛠️ Production utilities
+│   ├── batch_ai_analysis.py       # Batch AI processor (rehabilitated)
+│   └── check_spotify_coverage.py  # Coverage diagnostics
+├── development/            # 🧪 Development & testing
+│   ├── test_fixed_scraper.py      # Test scraper fixes
+│   ├── scrape_artist_one.py       # Single artist testing
+│   └── run_scraping_debug.py      # Debug mode
+├── legacy/                 # 🗂️ Backwards compatibility
+│   └── run_analysis.py            # Legacy analysis wrapper
+└── utils/                  # 🔧 Project utilities
+    └── cleanup_project.py         # Project organization tool
+
+monitoring/       # 📊 Monitoring and stats
 data/             # 📄 Database and files
-results/         # 📈 Analysis outputs
-docs/            # 📚 Documentation
+results/          # 📈 Analysis outputs
+docs/             # 📚 Documentation
 ```
 
-## 🔧 Core commands
+## � Contextual documentation for AI-assisted development
+
+This repository includes agent-friendly, contextual documentation designed to help AI assistants onboard and act quickly. Key files:
+
+- `docs/claude.md` — a prioritized project context file with architecture, workflows, CLI examples, and investigation protocols for AI agents.
+- `AI_ONBOARDING_CHECKLIST.md` — an onboarding checklist and step-by-step command templates created specifically for autonomous or assisted agents.
+
+These documents provide a layered reading order, command snippets, and troubleshooting protocols so an AI assistant can immediately understand the codebase and run actionable tasks.
+
+
+## 🔧 Core commands (updated)
 
 ### 🕷️ Scraping
 ```bash
-# Recommended (new architecture)
-python scripts/rap_scraper_cli.py scraping
+# Unified CLI (recommended)
+python scripts/rap_scraper_cli.py scraping                    # Production mode
+python scripts/rap_scraper_cli.py scraping --test            # Test mode (3 artists)
+python scripts/rap_scraper_cli.py scraping --artist "Drake"  # Single artist
 
-# Direct invocation
-python scripts/run_scraping.py
-
-# Legacy compatibility
-python scripts/legacy/rap_scraper_optimized.py
+# Development & testing
+python scripts/development/test_fixed_scraper.py             # Test scraper fixes
+python scripts/development/scrape_artist_one.py "Artist"    # Single artist testing
 ```
 
 ### 🎵 Spotify enrichment
 ```bash
-# Via CLI
-python scripts/rap_scraper_cli.py spotify --continue
+# Via unified CLI
+python scripts/rap_scraper_cli.py spotify                    # New enhancement
+python scripts/rap_scraper_cli.py spotify --continue        # Resume existing
 
 # Direct invocation
-python scripts/continue_spotify_enhancement.py
+python scripts/continue_spotify_enhancement.py              # Resume enhancement
+python scripts/run_spotify_enhancement.py                   # New enhancement
 ```
 
-### 🤖 ML analysis
+### 🤖 ML analysis & batch processing
 ```bash
-# Gemma 27B (recommended)
-python scripts/rap_scraper_cli.py analysis --analyzer gemma
+# Unified CLI analysis
+python scripts/rap_scraper_cli.py analysis --analyzer gemma  # Gemma 27B
+python scripts/rap_scraper_cli.py analysis --analyzer multi  # Multi-model comparison
 
-# Model comparison
-python scripts/rap_scraper_cli.py analysis --analyzer multi
+# Production batch processing (rehabilitated tool)
+python scripts/tools/batch_ai_analysis.py --batch-size 25    # Batch AI analysis
+python scripts/tools/batch_ai_analysis.py --dry-run          # Test run
 
-# LangChain + OpenAI
-python scripts/rap_scraper_cli.py analysis --analyzer langchain
+# Legacy compatibility
+python scripts/legacy/run_analysis.py                        # Legacy analysis wrapper
 ```
 
-### 📊 Monitoring
+### �️ Utilities & diagnostics
 ```bash
-# Database status
+# Database monitoring
 python scripts/rap_scraper_cli.py monitoring --component database
-
-# AI analysis progress
 python scripts/rap_scraper_cli.py monitoring --component analysis
-
-# Gemma monitoring
 python scripts/rap_scraper_cli.py monitoring --component gemma
-```
 
-### 🛠️ Utilities
-```bash
-# Project cleanup (dry run)
-python scripts/rap_scraper_cli.py utils --utility cleanup
+# Coverage & diagnostics (new organized tools)
+python scripts/tools/check_spotify_coverage.py              # Spotify coverage analysis
 
-# Perform cleanup
-python scripts/rap_scraper_cli.py utils --utility cleanup --execute
+# Utilities via CLI
+python scripts/rap_scraper_cli.py utilities --utility spotify-setup
 
-# Migrate the database
-python scripts/rap_scraper_cli.py utils --utility migrate
-
-# Spotify setup helper
-python scripts/rap_scraper_cli.py utils --utility spotify-setup
+# Direct database check
+python scripts/check_db.py                                  # Database diagnostics
 ```
 
 ## 🗄️ Database
 
-### Data layout
+### Data layout (updated)
 - **Primary DB**: `data/rap_lyrics.db`
-- **Songs table**: `songs` (48,370+ records)
-- **Analyses table**: `ai_analysis` (~1,500+ analyses)
-- **Spotify data**: `spotify_artists` (262/263 artists enriched)
+- **Songs table**: `songs` (53,300+ records)
+- **AI analyses pending**: ~38,000+ tracks awaiting analysis
+- **Spotify data**: `spotify_artists` (~99.6% coverage)
 - **Artists config**: `data/rap_artists.json`
 
 ### Table schemas
@@ -144,8 +164,8 @@ spotify_artists: genius_name, spotify_id, name, followers, genres, popularity
 | Model | Speed | Quality | Usage | File |
 |-------|-------|---------|-------|------|
 | **Gemma 3 27B** | ⚡⚡ | ⭐⭐⭐⭐⭐ | Production analysis | `src/analyzers/gemma_27b_fixed.py` |
-| **LangChain GPT** | ⚡⚡⚡ | ⭐⭐⭐⭐ | Fast analysis | `src/analyzers/langchain_analyzer.py` |
 | **Multi-model** | ⚡ | ⭐⭐⭐⭐⭐ | Model comparison | `src/analyzers/multi_model_analyzer.py` |
+| **Batch Processor** | ⚡ | ⭐⭐⭐⭐ | Large-scale analysis | `scripts/tools/batch_ai_analysis.py` |
 
 ### Metrics analyzed
 - **Complexity**: Linguistic complexity (1-10)
@@ -252,11 +272,12 @@ python scripts/legacy/multi_model_analyzer.py
 ## ✅ Results & takeaways
 
 ### Achievements
-- ✅ **48,370+** collected tracks with full lyrics
-- ✅ **99.6%** Spotify enrichment success (262/263 artists)
-- ✅ **1,500+** high-quality AI analyses
-- ✅ **Production-ready** architecture with a CLI
+- ✅ **53,300+** collected tracks with full lyrics
+- ✅ **99.6%** Spotify enrichment success (327/328 artists)
+- ✅ **15,000+** high-quality AI analyses
+- ✅ **Production-ready** architecture with organized CLI
 - ✅ **Fully automated** collection & analysis pipeline
+- ✅ **Cleaned codebase** with organized scripts structure
 
 ### Data quality
 - **Lyrics coverage**: 100% for collected tracks
@@ -268,16 +289,17 @@ python scripts/legacy/multi_model_analyzer.py
 
 ### Common issues
 ```bash
-# Path problems after restructuring
-python scripts/rap_scraper_cli.py utils --utility cleanup
+# Database diagnostics after cleanup
+python scripts/check_db.py
 
 # Import errors from legacy scripts
-# Use the new CLI or the scripts/run_*.py entry points
+# Use the new CLI: python scripts/rap_scraper_cli.py --help
 
-# Database issues
-python scripts/run_database_check.py
+# Path problems after restructuring  
+# All scripts moved to organized folders: scripts/{tools,development,legacy}/
 
-# Spotify API 403 responses may occur; they are handled automatically
+# Spotify API rate limits are handled automatically
+# Gemma analysis uses batch processing for efficiency
 ```
 
 ### Support
@@ -300,8 +322,9 @@ Detailed project documentation is stored in `AI_Engineer_Journal/Projects/Rap_Sc
 
 ## 🎯 Project status
 
-- ✅ Scraping: stable
-- ✅ AI analysis: multiple models available
-- ✅ Monitoring: real-time
-- ✅ Database: 47K+ records
-- 🔄 In progress: full Gemma 27B analysis
+- ✅ Scraping: stable with proxy handling
+- ✅ AI analysis: multiple models available (Gemma 27B, Multi-model)
+- ✅ Monitoring: real-time via CLI
+- ✅ Database: 53K+ records
+- ✅ Codebase: organized and cleaned up
+- 🔄 In progress: batch AI analysis (~38K tracks pending)

@@ -33,7 +33,8 @@ ENV/
 .DS_Store
 Thumbs.db
 
-
+# Personal documentation (local only)
+AI_Engineer_Journal/
 
 # Temporary files
 *.tmp
