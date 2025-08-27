@@ -16,7 +16,7 @@
 
 ### Prerequisites
 ```bash
-# Требования
+# Requirements
 Python 3.13+
 SQLite 3.x
 API keys: Genius, Spotify (optional)
@@ -24,26 +24,28 @@ API keys: Genius, Spotify (optional)
 
 ### Установка за 2 минуты
 ```bash
-# 1. Зависимости
+# 1. Dependencies
 pip install -r requirements.txt
 
-# 2. Конфигурация  
-cp .env.example .env  # добавь свои API keys
+# 2. Configuration
+Copy .env.example to .env and fill your API keys
+# PowerShell example:
+# Copy-Item .env.example .env; notepad .env
 
-# 3. Проверка состояния
-python check_db.py
+# 3. Health check
+# Use the unified CLI for status and monitoring
+python scripts/rap_scraper_cli.py status
 ```
 
-### Первый запуск
+### Первый запуск (рекомендуемый — через CLI)
 ```bash
-# Базовый пайплайн (10 треков для теста)
-python rap_scraper_optimized.py --limit 10
+# Run a quick end-to-end smoke test (scrape + enrich limited sample)
+python scripts/rap_scraper_cli.py scraping --limit 10
+python scripts/rap_scraper_cli.py spotify --limit 10 --continue
+python scripts/rap_scraper_cli.py analysis --analyzer multi --limit 5
 
-# Проверить результаты
-python check_db.py --stats
-
-# Анализ данных  
-python multi_model_analyzer.py --sample 5
+# Check DB stats
+python scripts/rap_scraper_cli.py monitoring --component database
 ```
 
 ---
@@ -59,13 +61,13 @@ python multi_model_analyzer.py --sample 5
 
 ### Активные компоненты
 ```python
-# Проверить статус
-python project_status.py  # TODO: создать этот скрипт
+# Проверить статус через CLI
+python scripts/rap_scraper_cli.py status
 
 # Основные файлы состояния
-- rap_lyrics.db (47K треков)
-- analysis_results/ (ML выходы)
-- enhanced_data/ (обогащенные JSONL)
+- data/rap_lyrics.db (47K+ tracks)
+- analysis_results/ (ML outputs)
+- enhanced_data/ (enriched JSONL)
 ```
 
 ---
@@ -89,9 +91,9 @@ graph TD
 ### Основные компоненты
 
 #### Data Collection Layer
-- **`rap_scraper_optimized.py`** - оптимизированный Genius API scraper с батчингом
-- **`spotify_enhancer.py`** - обогащение метаданными через Spotify Web API
-- **`bulk_spotify_enhancement.py`** - массовая обработка треков
+- **`src/scrapers/rap_scraper_optimized.py`** - optimized Genius API scraper with batching (legacy wrapper available under `scripts/legacy/`)
+- **`src/enhancers/spotify_enhancer.py`** - Spotify metadata enrichment
+- **`src/enhancers/bulk_spotify_enhancement.py`** - bulk enhancement utilities
 
 #### Data Models & Storage  
 - **`models.py`** - Pydantic модели для типизации (SpotifyArtist, SpotifyTrack, etc.)
@@ -201,37 +203,48 @@ get_changed_files()            # последние изменения
 
 ## 🔧 Commands Reference
 
-### Основной пайплайн
+### Canonical pipeline (use CLI)
 ```bash
-# Data Collection
-python rap_scraper_optimized.py              # Новые треки с Genius
-python bulk_spotify_enhancement.py           # Массовое обогащение метаданными  
-python spotify_enhancer.py --artist "Drake"  # Конкретный артист
+# Data Collection (via CLI)
+python scripts/rap_scraper_cli.py scraping
 
-# ML Analysis
-python langchain_analyzer.py     # OpenAI анализ (требует API key)
-python ollama_analyzer.py       # Локальный анализ (Llama/Mistral)
-python multi_model_analyzer.py  # Сравнение разных моделей
-python optimized_analyzer.py    # Production пайплайн
+# Spotify enrichment (continue or start)
+python scripts/rap_scraper_cli.py spotify --continue
 
-# Утилиты и проверки
-python check_db.py                    # Состояние базы данных
-python check_db.py --stats           # Детальная статистика  
-python setup_spotify.py              # Настройка Spotify OAuth
-python migrate_database.py           # Миграции схемы DB
-python project_status.py             # Live dashboard (TODO)
+# Run ML analysis via CLI
+python scripts/rap_scraper_cli.py analysis --analyzer langchain
+python scripts/rap_scraper_cli.py analysis --analyzer ollama
+python scripts/rap_scraper_cli.py analysis --analyzer multi
+
+# Monitoring and checks
+python scripts/rap_scraper_cli.py monitoring --component all
+python scripts/rap_scraper_cli.py monitoring --component database
+python scripts/rap_scraper_cli.py status
+```
+
+### Direct / advanced invocations (legacy / for debugging)
+```bash
+# Direct module entry points (advanced users)
+python src/scrapers/rap_scraper_optimized.py --limit 10  # or scripts/legacy/rap_scraper_optimized.py
+python src/enhancers/bulk_spotify_enhancement.py
+python src/enhancers/spotify_enhancer.py --artist "Drake"
+
+# Utilities (preferred via src/utils)
+python src/utils/check_db.py --stats
+python src/utils/setup_spotify.py --refresh
+python src/utils/migrate_database.py --repair
 ```
 
 ### Режимы запуска
 ```bash
-# Development mode (безопасно для тестирования)
-python rap_scraper_optimized.py --limit 10 --dry-run
+# Development mode (safe)
+python scripts/rap_scraper_cli.py scraping --limit 10 --dry-run
 
-# Production mode (полная обработка)  
-python rap_scraper_optimized.py --batch-size 100
+# Production mode
+python scripts/rap_scraper_cli.py scraping --batch-size 100
 
-# Debug mode (подробные логи)
-python spotify_enhancer.py --verbose --log-level DEBUG
+# Debug mode (verbose logs)
+python scripts/rap_scraper_cli.py spotify --verbose --log-level DEBUG
 ```
 
 ---
