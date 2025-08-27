@@ -1,34 +1,5 @@
 # 🎵 Rap Lyrics Scraper & Analyzer
 
-**Production-ready ML pipeline для сбора и анализа рэп-лирики с использованием AI**
-
-📊 **48K+ треков | 263 артиста | Spotify enriched | AI analyzed**
-
-## 🚀 Быстрый старт
-
-### 1. Установка зависимостей
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Настройка API ключей
-Создайте файл `.env`:
-```bash
-GENIUS_TOKEN=your_genius_token_here
-SPOTIFY_CLIENT_ID=your_spotify_client_id
-SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-GOOGLE_API_KEY=your_google_api_key_here  # Опционально
-```
-
-### 3. Главный CLI интерфейс
-```bash
-# Проверка статуса проекта
-python scripts/rap_scraper_cli.py status
-
-# Скрапинг новых данных
-````markdown
-# 🎵 Rap Lyrics Scraper & Analyzer
-
 **Production-ready ML pipeline for collecting and analyzing rap lyrics using AI**
 
 📊 **48K+ tracks | 263 artists | Spotify enriched | AI analyzed**
@@ -318,8 +289,6 @@ python scripts/run_database_check.py
 ---
 
 **Created with ❤️ by AI Engineer | Production ML Pipeline | 2025**
-
-````
 
 ## 📚 Documentation
 
