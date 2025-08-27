@@ -12,11 +12,9 @@ import os
 import gc
 import psutil
 from typing import List, Optional, Dict, Generator, Tuple
-from dotenv import load_dotenv
-from ..utils.config import GENIUS_TOKEN, DB_PATH, LOG_FORMAT, LOG_FILE
+from ..utils.config import GENIUS_TOKEN, DB_PATH, LOG_FORMAT, LOG_FILE, DATA_DIR
 
-# Загрузка переменных окружения из .env
-load_dotenv()
+# Проверка токена
 TOKEN = GENIUS_TOKEN
 
 # Настройка логирования с правильной кодировкой
@@ -646,15 +644,16 @@ class OptimizedGeniusScraper:
 
 def load_artist_list(filename: str = "rap_artists.json") -> List[str]:
     """Загрузка списка артистов с приоритетом remaining_artists.json"""
-    remaining_file = "remaining_artists.json"
-    if os.path.exists(remaining_file):
+    remaining_file = DATA_DIR / "remaining_artists.json"
+    if remaining_file.exists():
         logger.info(f"📂 Загружаем оставшихся артистов из {remaining_file}")
         with open(remaining_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     
-    if os.path.exists(filename):
-        logger.info(f"📂 Загружаем полный список артистов из {filename}")
-        with open(filename, 'r', encoding='utf-8') as f:
+    full_file = DATA_DIR / filename
+    if full_file.exists():
+        logger.info(f"📂 Загружаем полный список артистов из {full_file}")
+        with open(full_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     else:
         logger.info("📂 Используем встроенный список артистов")
@@ -670,7 +669,8 @@ def load_artist_list(filename: str = "rap_artists.json") -> List[str]:
             "YG", "Nipsey Hussle", "The Game", "Ice Cube", "Eazy-E",
             "Dr. Dre", "Snoop Dogg", "Warren G", "Nate Dogg", "Xzibit"
         ]
-        with open(filename, 'w', encoding='utf-8') as f:
+        full_file = DATA_DIR / filename
+        with open(full_file, 'w', encoding='utf-8') as f:
             json.dump(artists, f, indent=2, ensure_ascii=False)
         return artists
 

@@ -1,9 +1,14 @@
 """Centralized configuration management."""
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Project root
 PROJECT_ROOT = Path(__file__).parent.parent.parent
+
+# Load .env from project root
+env_path = PROJECT_ROOT / ".env"
+load_dotenv(env_path)
 
 # Data paths
 DATA_DIR = PROJECT_ROOT / "data"

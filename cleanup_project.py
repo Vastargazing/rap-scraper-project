@@ -34,7 +34,7 @@ class ProjectCleaner:
                 "test_analysis.py"
             ],
             
-            # Устаревшие анализаторы
+            # Устаревшие анализаторы (перемещены в src/)
             "deprecated_analyzers": [
                 "check_gemini.py",
                 "gemini_simple_analyzer.py", 
@@ -51,9 +51,18 @@ class ProjectCleaner:
                 "calculate_analysis_time.py"
             ],
             
-            # Устаревшие основные файлы
+            # Устаревшие основные файлы (заменены или перемещены)
             "deprecated_core": [
-                "rap_scraper.py"  # Заменен на rap_scraper_optimized.py
+                "rap_scraper.py",  # Заменен на rap_scraper_optimized.py
+                # Старые файлы, которые теперь в src/
+                # Они будут перемещены в archive, а не удалены
+            ],
+            
+            # Старые скрипты для перемещения в archive
+            "archive_candidates": [
+                "run_full_analysis.py",
+                "test_langchain.py", 
+                "test_optimized_scraper.py"
             ],
             
             # Логи и временные файлы
@@ -61,6 +70,10 @@ class ProjectCleaner:
                 "ai_analysis.log",
                 "gemini_simple_analysis.log",
                 "gemma_analysis.log",
+                "gemma_27b_analysis.log",
+                "production_analysis.log",
+                "spotify_enhancement.log",
+                "scraping.log",
                 "cleanup_plan.md"
             ],
             
@@ -68,6 +81,12 @@ class ProjectCleaner:
             "sqlite_temp": [
                 "rap_lyrics.db-shm",
                 "rap_lyrics.db-wal"
+            ],
+            
+            # Backup файлы (по pattern)
+            "backup_files": [
+                "data_backup_*.db",
+                "rap_lyrics_backup_*.db"
             ],
             
             # Системные папки

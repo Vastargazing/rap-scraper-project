@@ -11,12 +11,8 @@ import json
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 import logging
-from dotenv import load_dotenv
-
-from models import SpotifyArtist, SpotifyTrack, SpotifyAudioFeatures, SpotifyEnrichmentResult
-
-# Загружаем переменные окружения
-load_dotenv()
+from ..utils.config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
+from ..models.models import SpotifyArtist, SpotifyTrack, SpotifyAudioFeatures, SpotifyEnrichmentResult
 
 # Настройка логирования
 logging.basicConfig(
@@ -32,10 +28,11 @@ logger = logging.getLogger(__name__)
 class SpotifyEnhancer:
     """Класс для обогащения базы данных метаданными из Spotify API"""
     
-    def __init__(self, client_id: str, client_secret: str, db_path: str = "rap_lyrics.db"):
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.db_path = db_path
+    def __init__(self, client_id: str = None, client_secret: str = None, db_path: str = None):
+        from ..utils.config import DB_PATH
+        self.client_id = client_id or SPOTIFY_CLIENT_ID
+        self.client_secret = client_secret or SPOTIFY_CLIENT_SECRET  
+        self.db_path = db_path or str(DB_PATH)
         self.access_token = None
         self.token_expires_at = None
         self.api_calls_count = 0
@@ -428,7 +425,45 @@ class SpotifyEnhancer:
             logger.error(f"Ошибка при получении статистики: {e}")
             return {}
 
-if __name__ == "__main__":
-    # Пример использования
+def main():
+    """Entry point для spotify enhancement."""
     print("🎵 Spotify Enhancer для рэп-базы")
-    print("Для использования нужны SPOTIFY_CLIENT_ID и SPOTIFY_CLIENT_SECRET")
+    
+    if not SPOTIFY_CLIENT_ID or not SPOTIFY_CLIENT_SECRET:
+        print("❌ Для использования нужны SPOTIFY_CLIENT_ID и SPOTIFY_CLIENT_SECRET в .env")
+        return
+    
+    enhancer = SpotifyEnhancer()
+    print("✅ SpotifyEnhancer инициализирован")
+    
+    # Создаем таблицы если их нет
+    enhancer.create_spotify_tables()
+    
+    # Получаем список артистов из базы
+    artists = enhancer.get_db_artists()
+    print(f"👤 Найдено {len(artists)} артистов для обогащения")
+    
+    enriched_count = 0
+    for i, artist_name in enumerate(artists[:10], 1):  # Ограничиваем первыми 10 для теста
+        print(f"🎤 Обрабатываем {i}/{min(10, len(artists))}: {artist_name}")
+        
+        result = enhancer.enhance_artist(artist_name)
+        if result.success and result.artist_data:
+            enhancer.save_artist_to_db(artist_name, result.artist_data)
+            enriched_count += 1
+            print(f"✅ {artist_name} обогащен")
+        else:
+            print(f"⚠️ {artist_name}: {result.error_message or 'Unknown error'}")
+        
+        # Небольшая пауза между запросами
+        import time
+        time.sleep(0.1)
+    
+    print(f"� Обогащено {enriched_count} из {min(10, len(artists))} артистов")
+    
+    # Показываем статистику
+    stats = enhancer.get_stats()
+    print(f"📊 Итоговая статистика: {stats}")
+
+if __name__ == "__main__":
+    main()

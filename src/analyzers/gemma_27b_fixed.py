@@ -18,6 +18,9 @@ from dotenv import load_dotenv
 # Загружаем переменные из .env файла
 load_dotenv()
 
+# Импортируем конфигурацию
+from ..utils.config import DB_PATH
+
 # Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
@@ -507,7 +510,8 @@ def analyze_songs_from_db(api_key: str, db_path: str = "rap_lyrics.db",
         💡 Совет: При такой скорости оставшиеся {stats['remaining_songs']} песен займут ~{stats['remaining_songs']/rate:.1f} часов
     """)
 
-if __name__ == "__main__":
+def main():
+    """Главная функция для запуска анализа"""
     # Настройки
     API_KEY = os.getenv("GOOGLE_API_KEY")
     
@@ -522,7 +526,11 @@ if __name__ == "__main__":
     
     analyze_songs_from_db(
         api_key=API_KEY,
-        limit=None,      # None = анализировать ВСЕ песни
-        offset=0,        # Автоматически рассчитается при resume=True
-        resume=True      # Продолжить с места остановки
+        db_path=DB_PATH,  # Используем путь из конфигурации
+        limit=None,       # None = анализировать ВСЕ песни
+        offset=0,         # Автоматически рассчитается при resume=True
+        resume=True       # Продолжить с места остановки
     )
+
+if __name__ == "__main__":
+    main()
