@@ -56,6 +56,7 @@ python scripts/rap_scraper_cli.py monitoring --component database
 - 🎯 **Spotify Coverage**: ~99.6% artists enriched, 38K+ tracks pending AI analysis
 - 🔄 **Pipeline Status**: Cleaned and optimized - removed 5+ redundant scripts
 - 🤖 **AI Analysis**: Multi-model pipeline ready (Ollama, Gemma 27B, fallback modes)
+- ✨ **NEW: ML Features**: 17-feature extraction pipeline (rhyme density, TTR, metaphor detection, flow patterns)
 - 🚀 **CLI-First**: Unified interface via `rap_scraper_cli.py` - single entry point
 
 ### Active components (quick checks)
@@ -106,6 +107,8 @@ graph TD
 #### ML analysis layer
 - `src/analyzers/multi_model_analyzer.py` — multi-provider AI analysis (Ollama → Gemma → Mock)
 - `src/analyzers/gemma_27b_fixed.py` — Gemma 27B integration
+- `src/analyzers/simplified_feature_analyzer.py` — **NEW**: ML feature engineering (17 features)
+- `src/analyzers/advanced_feature_analyzer.py` — **NEW**: NLTK-powered advanced features
 - `src/analyzers/create_visual_analysis.py` — portfolio-ready dashboard generation
 
 #### Tools & utilities
@@ -216,6 +219,11 @@ python scripts/rap_scraper_cli.py spotify --continue         # Resume existing
 # AI analysis workflow
 python scripts/rap_scraper_cli.py analysis --analyzer gemma  # Gemma 27B
 python scripts/rap_scraper_cli.py analysis --analyzer multi  # Multi-model comparison
+
+# NEW: ML Feature Engineering (17 features)
+python scripts/rap_scraper_cli.py mlfeatures                 # All tracks with simplified features
+python scripts/rap_scraper_cli.py mlfeatures --limit 50      # Process 50 tracks only
+python scripts/rap_scraper_cli.py mlfeatures --export results.json  # Export to JSON
 
 # Monitoring & utilities
 python scripts/rap_scraper_cli.py monitoring --component database
@@ -407,6 +415,7 @@ monitoring/
 - `docs/PROJECT_DIARY.md` — detailed project case history
 - `docs/TECH_SUMMARY.md` — technical summary
 - `docs/PROJECT_EVOLUTION.md` — architecture change log
+- `FEATURE_ENGINEERING_GUIDE.md` — **NEW**: ML features documentation (17 features)
 
 ### Data & results
 - `data/rap_lyrics.db` — primary SQLite DB

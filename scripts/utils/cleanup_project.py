@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 """
 Автоматическая очистка проекта от ненужных файлов
-Версия: 2.0 с категоризацией и smart detection
+Версия: 3.0 - обновлено после большой организации проекта (27.08.2025)
+
+ВАЖНО: Проект был полностью реорганизован:
+- Создана структура src/ с модулями
+- Scripts организованы в scripts/{tools,development,legacy}/
+- Удалены дублирующиеся и устаревшие файлы
+- Добавлен единый CLI интерфейс
+
+Этот скрипт учитывает новую структуру и защищает актуальные файлы.
 """
 
 import os
@@ -34,7 +42,7 @@ class ProjectCleaner:
                 "test_analysis.py"
             ],
             
-            # Устаревшие анализаторы (перемещены в src/)
+            # Устаревшие анализаторы (уже удалены или перемещены)
             "deprecated_analyzers": [
                 "check_gemini.py",
                 "gemini_simple_analyzer.py", 
@@ -51,18 +59,12 @@ class ProjectCleaner:
                 "calculate_analysis_time.py"
             ],
             
-            # Устаревшие основные файлы (заменены или перемещены)
-            "deprecated_core": [
-                "rap_scraper.py",  # Заменен на rap_scraper_optimized.py
-                # Старые файлы, которые теперь в src/
-                # Они будут перемещены в archive, а не удалены
-            ],
-            
-            # Старые скрипты для перемещения в archive
-            "archive_candidates": [
-                "batch_ai_analysis.py",         # Moved to tools/ - batch processing
-                "test_langchain.py", 
-                "test_optimized_scraper.py"
+            # Устаревшие файлы уже удалены в процессе cleanup
+            "already_cleaned": [
+                # Эти файлы уже были удалены:
+                # "production_analyzer.py", "project_status.py", 
+                # "_spotify_db_stats.py", "enhanced_scraper.py", 
+                # "check_spotify_status.py"
             ],
             
             # Логи и временные файлы
@@ -102,52 +104,67 @@ class ProjectCleaner:
         return [
             # Core infrastructure  
             "rap_lyrics.db",                    # Основная база данных
-            "models.py",                        # Pydantic модели
+            "rap_artists.json",                 # Артисты конфигурация
             "requirements.txt",                 # Зависимости
             "claude.md",                        # AI контекст
             "AI_ONBOARDING_CHECKLIST.md",       # AI onboarding
+            "README.md",                        # Проектная документация
             "Makefile",                         # TDD workflow
             ".env",                             # API credentials
             ".env.example",                     # Template
             ".gitignore",                       # Git config
             
-            # Active scrapers & enhancers
-            "rap_scraper_optimized.py",         # Основной скрапер
-            "spotify_enhancer.py",              # Spotify API
-            "bulk_spotify_enhancement.py",      # Массовая обработка
-            "setup_spotify.py",                 # Spotify setup
-            "migrate_database.py",              # DB migrations
+            # Unified CLI and entry points
+            "rap_scraper_cli.py",               # Главный CLI интерфейс
+            "scripts/rap_scraper_cli.py",       # CLI в scripts папке
             
-            # Active tests (Case 9+)
-            "test_langchain.py",                # LangChain анализ
-            "test_optimized_scraper.py",        # Scraper testing
-            "test_artists.json",                # Тестовые данные
+            # Core components in src/
+            "src/models/models.py",             # Pydantic модели
+            "src/scrapers/rap_scraper_optimized.py",  # Основной скрапер
+            "src/enhancers/spotify_enhancer.py",      # Spotify API
+            "src/analyzers/multi_model_analyzer.py",  # AI анализ
+            "src/analyzers/gemma_27b_fixed.py",       # Gemma модель
+            
+            # Production tools (rehabilitated)
+            "scripts/tools/batch_ai_analysis.py",     # Batch AI processor
+            "scripts/tools/check_spotify_coverage.py", # Coverage analysis
+            
+            # Active scripts
+            "scripts/continue_spotify_enhancement.py", # Resume Spotify
+            "scripts/run_spotify_enhancement.py",      # New Spotify
+            "scripts/check_db.py",                     # Database diagnostics
+            
+            # Development scripts
+            "scripts/development/test_fixed_scraper.py",   # Test fixes
+            "scripts/development/scrape_artist_one.py",    # Single artist test
+            "scripts/development/run_scraping_debug.py",   # Debug mode
+            
+            # Legacy compatibility
+            "scripts/legacy/run_analysis.py",          # Legacy wrapper
             
             # Test infrastructure
             "tests/conftest.py",                # Pytest fixtures
             "tests/test_models.py",             # Model tests  
             "tests/test_spotify_enhancer.py",   # API tests
-            "tests/test_database.py",           # DB tests
             
-            # Analyzers (полезны для ML)
-            "langchain_analyzer.py",            # LangChain integration
-            "ollama_analyzer.py",               # Local AI
-            "optimized_analyzer.py",            # Optimized analysis
-            "multi_model_analyzer.py",          # Model comparison
+            # Data files
+            "data/rap_lyrics.db",               # Main database
+            "data/rap_artists.json",            # Artists config
+            "data/test_artists.json",           # Test data
             
-            # Utilities
-            "check_db.py",                      # Database status
-            "check_analysis_status.py",         # Analysis monitoring
-            "monitor_gemma_progress.py",        # Progress tracking
-            "gemma_27b_fixed.py",               # Gemma integration
+            # Monitoring
+            "monitoring/check_analysis_status.py",     # Analysis monitoring
+            "monitoring/monitor_gemma_progress.py",    # Progress tracking
             
-            # Documentation (вся папка)
-            "AI_Engineer_Journal/",             # Полная документация
-            
-            # Data directories
+            # Documentation directories (вся папка)
+            "docs/",                            # Project documentation
             "analysis_results/",                # ML outputs
             "enhanced_data/",                   # Enriched datasets
-            "tests/"                            # Test suite
+            "tests/",                           # Test suite
+            "src/",                             # Core source code
+            "scripts/",                         # Organized scripts
+            "monitoring/",                      # Monitoring tools
+            "data/"                             # Data directory
         ]
     
     def find_backup_files(self) -> List[Path]:
@@ -377,11 +394,13 @@ class ProjectCleaner:
         print("-" * 50)
         
         categories = {
-            "Core": ["rap_lyrics.db", "models.py", "claude.md", "requirements.txt"],
-            "Scrapers": ["rap_scraper_optimized.py", "spotify_enhancer.py", "bulk_spotify_enhancement.py"],
-            "Analyzers": ["langchain_analyzer.py", "ollama_analyzer.py", "multi_model_analyzer.py"],
-            "Tests": ["test_langchain.py", "test_optimized_scraper.py", "tests/"],
-            "Utils": ["check_db.py", "setup_spotify.py", "migrate_database.py"]
+            "Core": ["rap_lyrics.db", "src/models/models.py", "claude.md", "requirements.txt", "README.md"],
+            "CLI": ["scripts/rap_scraper_cli.py", "rap_scraper_cli.py"],
+            "Scrapers": ["src/scrapers/rap_scraper_optimized.py", "src/enhancers/spotify_enhancer.py"],
+            "Analyzers": ["src/analyzers/multi_model_analyzer.py", "src/analyzers/gemma_27b_fixed.py"],
+            "Tools": ["scripts/tools/batch_ai_analysis.py", "scripts/tools/check_spotify_coverage.py"],
+            "Tests": ["tests/test_models.py", "tests/test_spotify_enhancer.py", "tests/"],
+            "Utils": ["scripts/check_db.py", "monitoring/check_analysis_status.py"]
         }
         
         for category, examples in categories.items():
@@ -446,10 +465,10 @@ class ProjectCleaner:
         
         # Проверяем imports и mentions в основных файлах
         main_files = [
-            "rap_scraper_optimized.py",
-            "spotify_enhancer.py", 
-            "bulk_spotify_enhancement.py",
-            "multi_model_analyzer.py"
+            "src/scrapers/rap_scraper_optimized.py",
+            "src/enhancers/spotify_enhancer.py", 
+            "src/analyzers/multi_model_analyzer.py",
+            "scripts/rap_scraper_cli.py"
         ]
         
         for main_file in main_files:

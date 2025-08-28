@@ -32,6 +32,26 @@ python scripts/tools/batch_ai_analysis.py --dry-run
 python scripts/tools/check_spotify_coverage.py
 ```
 
+### 📈 comprehensive_ai_stats.py
+**AI Analysis Statistics Generator** - Comprehensive analytics for 17K+ AI analyses.
+
+```bash
+# Generate full comprehensive report
+python scripts/tools/comprehensive_ai_stats.py
+
+# Output: ai_analysis_comprehensive_report_YYYYMMDD_HHMMSS.json
+```
+
+**Features:**
+- 📊 **Genre & mood analysis** - Distribution across 54K+ tracks
+- ⭐ **Quality metrics** - Authenticity, creativity, commercial appeal
+- 🎤 **Artist insights** - Top performers by quality and quantity
+- 🧠 **Complexity analysis** - Wordplay, rhyme schemes, linguistic depth
+- 📅 **Temporal trends** - Analysis patterns over time
+- 💰 **Commercial insights** - High-potential tracks identification
+
+**Output:** Detailed JSON report with visualizable statistics for research and presentations.
+
 ### 🎨 create_cli_showcase.py  
 **CLI Showcase Generator** - Creates demonstration materials for project presentation.
 

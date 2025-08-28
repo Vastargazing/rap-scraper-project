@@ -35,7 +35,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Импорт моделей данных
-from models import SongMetadata, LyricsAnalysis, QualityMetrics
+from ..models.models import SongMetadata, LyricsAnalysis, QualityMetrics
 
 class SafetyValidator:
     """Валидатор для проверки достоверности AI анализа и детекции галлюцинаций"""

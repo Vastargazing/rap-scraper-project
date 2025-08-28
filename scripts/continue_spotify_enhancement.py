@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Продолжение Spotify enhancement для оставшихся артистов и треков."""
+"""Продолжение Spotify enhancement для оставшихся артистов и треков. 
+находит артистов в БД и обогащает оставшихся (и затем берет выборку 
+до 50 треков для трек-обогащения), он более осторожный / incremental."""
+
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))

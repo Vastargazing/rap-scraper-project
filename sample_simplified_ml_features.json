@@ -1,0 +1,35 @@
+{
+  "lyrics": "Я поднимаюсь над городом как солнце рассветное\n    Мои рифмы — это пули, летящие в цель метко\n    В лабиринте из слов я нашёл дорогу к свету\n    Флоу льётся как река, несёт меня к победе\n    \n    Время — деньги, но мудрость дороже золота\n    В игре теней я создаю новую эпоху\n    Слова танцуют на битах, рождая магию звука\n    Это искусство rap'а — моя вечная наука",
+  "extracted_features": {
+    "rhyme_density": 0.125,
+    "rhyme_detection_confidence": 0.55,
+    "perfect_rhymes": 1.0,
+    "internal_rhymes": 0.0,
+    "alliteration_score": 0.0,
+    "rhyme_scheme_confidence": 0.75,
+    "ttr_score": 0.9777777777777777,
+    "average_word_length": 5.4,
+    "complex_words_ratio": 0.17777777777777778,
+    "metaphor_count": 2.0,
+    "metaphor_confidence": 0.3650793650793651,
+    "wordplay_instances": 0.0,
+    "wordplay_confidence": 0.0,
+    "creativity_score": 0.4444444444444445,
+    "creativity_confidence": 0.18253968253968256,
+    "average_syllables_per_line": 11.875,
+    "stress_pattern_consistency": 0.9265625,
+    "stress_pattern_confidence": 0.908203125,
+    "flow_breaks": 4.0,
+    "flow_analysis_confidence": 0.9,
+    "overall_complexity": 0.6184461805555556,
+    "artistic_sophistication": 0.47111111111111115,
+    "technical_skill": 0.62796875,
+    "innovation_score": 0.29333333333333333
+  },
+  "feature_count": 24,
+  "extraction_info": {
+    "timestamp": "2025-08-28 21:18:37",
+    "analyzer_version": "simplified_v1.0",
+    "method": "basic_nlp_without_external_libs"
+  }
+}
