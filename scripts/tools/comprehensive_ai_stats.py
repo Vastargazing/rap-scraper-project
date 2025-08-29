@@ -334,7 +334,9 @@ class AIAnalysisStatsGenerator:
         """Генерация полного отчета"""
         if not output_file:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_file = f"ai_analysis_comprehensive_report_{timestamp}.json"
+            output_file = f"results/ai_analysis_comprehensive_report_{timestamp}.json"
+        elif not output_file.startswith('results/'):
+            output_file = f"results/{output_file}"
         
         print("📊 Генерация всеобъемлющей статистики AI-анализов...")
         

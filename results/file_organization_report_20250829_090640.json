@@ -1,0 +1,140 @@
+{
+  "timestamp": "2025-08-29T09:06:40.795510",
+  "project_root": ".",
+  "total_moves": 18,
+  "moves": [
+    {
+      "source": "ai_analysis.log",
+      "target": "monitoring\\ai_analysis.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:06:40.773293",
+      "status": "completed"
+    },
+    {
+      "source": "ai_analysis_comprehensive_report_20250828_201848.json",
+      "target": "results\\ai_analysis_comprehensive_report_20250828_201848.json",
+      "reason": "Analysis reports belong in results/ directory",
+      "timestamp": "2025-08-29T09:06:40.774162",
+      "status": "completed"
+    },
+    {
+      "source": "ai_analysis_comprehensive_report_20250828_201904.json",
+      "target": "results\\ai_analysis_comprehensive_report_20250828_201904.json",
+      "reason": "Analysis reports belong in results/ directory",
+      "timestamp": "2025-08-29T09:06:40.775387",
+      "status": "completed"
+    },
+    {
+      "source": "batch_features_demo.json",
+      "target": "results\\batch_features_demo.json",
+      "reason": "ML feature outputs belong in results/ directory",
+      "timestamp": "2025-08-29T09:06:40.776379",
+      "status": "completed"
+    },
+    {
+      "source": "confidence_test.json",
+      "target": "results\\confidence_test.json",
+      "reason": "ML feature outputs belong in results/ directory",
+      "timestamp": "2025-08-29T09:06:40.777137",
+      "status": "completed"
+    },
+    {
+      "source": "confidence_test_updated.json",
+      "target": "results\\confidence_test_updated.json",
+      "reason": "ML feature outputs belong in results/ directory",
+      "timestamp": "2025-08-29T09:06:40.777899",
+      "status": "completed"
+    },
+    {
+      "source": "data_backup_20250826_202936.db",
+      "target": "data\\data_backup_20250826_202936.db",
+      "reason": "Database files belong in data/ directory",
+      "timestamp": "2025-08-29T09:06:40.778585",
+      "status": "completed"
+    },
+    {
+      "source": "gemma_27b_analysis.log",
+      "target": "monitoring\\gemma_27b_analysis.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:06:40.779295",
+      "status": "failed",
+      "error": "[WinError 32] The process cannot access the file because it is being used by another process: 'gemma_27b_analysis.log'"
+    },
+    {
+      "source": "production_analysis.log",
+      "target": "monitoring\\production_analysis.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:06:40.785080",
+      "status": "completed"
+    },
+    {
+      "source": "rap_lyrics.db-shm",
+      "target": "data\\rap_lyrics.db-shm",
+      "reason": "Database files belong in data/ directory",
+      "timestamp": "2025-08-29T09:06:40.786408",
+      "status": "completed"
+    },
+    {
+      "source": "sample_simplified_ml_features.json",
+      "target": "results\\sample_simplified_ml_features.json",
+      "reason": "ML feature outputs belong in results/ directory",
+      "timestamp": "2025-08-29T09:06:40.787564",
+      "status": "completed"
+    },
+    {
+      "source": "scraping.log",
+      "target": "monitoring\\scraping.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:06:40.788916",
+      "status": "completed"
+    },
+    {
+      "source": "spotify_analysis_report_20250827_205307.json",
+      "target": "results\\spotify_analysis_report_20250827_205307.json",
+      "reason": "Analysis reports belong in results/ directory",
+      "timestamp": "2025-08-29T09:06:40.789972",
+      "status": "completed"
+    },
+    {
+      "source": "spotify_enhancement.log",
+      "target": "monitoring\\spotify_enhancement.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:06:40.790906",
+      "status": "completed"
+    },
+    {
+      "source": "spotify_enhancement_checkpoint.json",
+      "target": "data\\spotify_enhancement_checkpoint.json",
+      "reason": "Process checkpoints belong with data",
+      "timestamp": "2025-08-29T09:06:40.791955",
+      "status": "completed"
+    },
+    {
+      "source": "spotify_enhancement_improved.log",
+      "target": "monitoring\\spotify_enhancement_improved.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:06:40.792882",
+      "status": "completed"
+    },
+    {
+      "source": "style_comparison.json",
+      "target": "results\\style_comparison.json",
+      "reason": "ML feature outputs belong in results/ directory",
+      "timestamp": "2025-08-29T09:06:40.793726",
+      "status": "completed"
+    },
+    {
+      "source": "test_features.json",
+      "target": "results\\test_features.json",
+      "reason": "ML feature outputs belong in results/ directory",
+      "timestamp": "2025-08-29T09:06:40.794550",
+      "status": "completed"
+    }
+  ],
+  "target_directories": {
+    "data": "data",
+    "results": "results",
+    "monitoring": "monitoring",
+    "analysis_results": "analysis_results"
+  }
+}

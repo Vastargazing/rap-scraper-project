@@ -282,7 +282,7 @@ def save_sample_features():
     }
     
     # Сохраняем в файл
-    output_file = "sample_simplified_ml_features.json"
+    output_file = "results/sample_simplified_ml_features.json"
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(sample_data, f, ensure_ascii=False, indent=2)
     
@@ -336,7 +336,7 @@ def create_feature_comparison():
         print()
     
     # Сохраняем сравнение
-    with open("style_comparison.json", 'w', encoding='utf-8') as f:
+    with open("results/style_comparison.json", 'w', encoding='utf-8') as f:
         json.dump(comparison_results, f, ensure_ascii=False, indent=2)
     
     print("💾 Сравнительный анализ сохранен в style_comparison.json")

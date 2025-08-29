@@ -384,7 +384,7 @@ class ImprovedBulkSpotifyEnhancement:
                 'not_found': 0
             }
         }
-        self.checkpoint_file = "spotify_enhancement_checkpoint.json"
+        self.checkpoint_file = "data/spotify_enhancement_checkpoint.json"
     
     def enhance_all_tracks_improved(self, start_from: int = 0, batch_size: int = 1000):
         """Улучшенное массовое обогащение с checkpoint'ами"""

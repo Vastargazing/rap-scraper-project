@@ -169,10 +169,16 @@ def run_mlfeatures(args):
                     print(f"   {key}: {value}")
             
             if args.export and args.output:
+                # Ensure output goes to results/ directory
+                if not args.output.startswith('results/'):
+                    output_path = f"results/{args.output}"
+                else:
+                    output_path = args.output
+                    
                 if args.export == "json":
-                    with open(args.output, 'w', encoding='utf-8') as f:
+                    with open(output_path, 'w', encoding='utf-8') as f:
                         json.dump({'text': args.text, 'features': features}, f, ensure_ascii=False, indent=2)
-                    print(f"\n💾 Результаты сохранены в: {args.output}")
+                    print(f"\n💾 Результаты сохранены в: {output_path}")
                     
         except Exception as e:
             print(f"❌ Ошибка анализа текста: {e}")
@@ -197,10 +203,16 @@ def run_mlfeatures(args):
                     print(f"   {key}: {value}")
             
             if args.export and args.output:
+                # Ensure output goes to results/ directory
+                if not args.output.startswith('results/'):
+                    output_path = f"results/{args.output}"
+                else:
+                    output_path = args.output
+                    
                 if args.export == "json":
-                    with open(args.output, 'w', encoding='utf-8') as f:
+                    with open(output_path, 'w', encoding='utf-8') as f:
                         json.dump({'file': args.file, 'text': text, 'features': features}, f, ensure_ascii=False, indent=2)
-                    print(f"\n💾 Результаты сохранены в: {args.output}")
+                    print(f"\n💾 Результаты сохранены в: {output_path}")
                         
         except Exception as e:
             print(f"❌ Ошибка анализа файла: {e}")
@@ -253,8 +265,14 @@ def run_mlfeatures(args):
             
             # Сохраняем результаты
             if args.export and args.output:
+                # Ensure output goes to results/ directory
+                if not args.output.startswith('results/'):
+                    output_path = f"results/{args.output}"
+                else:
+                    output_path = args.output
+                    
                 if args.export == "json":
-                    with open(args.output, 'w', encoding='utf-8') as f:
+                    with open(output_path, 'w', encoding='utf-8') as f:
                         json.dump({
                             'processing_info': {
                                 'total_processed': len(results),
@@ -263,7 +281,7 @@ def run_mlfeatures(args):
                             },
                             'results': results
                         }, f, ensure_ascii=False, indent=2)
-                    print(f"💾 Результаты сохранены в: {args.output}")
+                    print(f"💾 Результаты сохранены в: {output_path}")
                 elif args.export == "csv":
                     try:
                         import pandas as pd

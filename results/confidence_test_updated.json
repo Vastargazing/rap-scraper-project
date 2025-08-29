@@ -1,0 +1,69 @@
+{
+  "processing_info": {
+    "total_processed": 2,
+    "processing_time": 0.010445594787597656,
+    "timestamp": "2025-08-28 21:13:35"
+  },
+  "results": [
+    {
+      "artist": "Kendrick Lamar",
+      "title": "Not Like Us",
+      "features": {
+        "rhyme_density": 1.0,
+        "rhyme_detection_confidence": 0.85,
+        "perfect_rhymes": 119.0,
+        "internal_rhymes": 141.0,
+        "alliteration_score": 0.08284883720930232,
+        "rhyme_scheme_confidence": 0.75,
+        "ttr_score": 0.515625,
+        "average_word_length": 4.572443181818182,
+        "complex_words_ratio": 0.11363636363636363,
+        "metaphor_count": 48.0,
+        "metaphor_confidence": 0.6266233766233766,
+        "wordplay_instances": 14.0,
+        "wordplay_confidence": 0.3596590909090909,
+        "creativity_score": 0.8806818181818182,
+        "creativity_confidence": 0.49314123376623376,
+        "average_syllables_per_line": 6.931372549019608,
+        "stress_pattern_consistency": 0.0,
+        "stress_pattern_confidence": 0.3,
+        "flow_breaks": 147.0,
+        "flow_analysis_confidence": 0.9,
+        "overall_complexity": 0.5990767045454546,
+        "artistic_sophistication": 0.531814878435518,
+        "technical_skill": 0.7,
+        "innovation_score": 0.7857954545454545
+      }
+    },
+    {
+      "artist": "Kendrick Lamar",
+      "title": "HUMBLE.",
+      "features": {
+        "rhyme_density": 1.0,
+        "rhyme_detection_confidence": 0.85,
+        "perfect_rhymes": 391.0,
+        "internal_rhymes": 117.0,
+        "alliteration_score": 0.037422037422037424,
+        "rhyme_scheme_confidence": 0.75,
+        "ttr_score": 0.4170403587443946,
+        "average_word_length": 4.647982062780269,
+        "complex_words_ratio": 0.09192825112107623,
+        "metaphor_count": 12.0,
+        "metaphor_confidence": 0.4202434336963485,
+        "wordplay_instances": 14.0,
+        "wordplay_confidence": 0.39417040358744393,
+        "creativity_score": 0.5829596412556054,
+        "creativity_confidence": 0.4072069186418962,
+        "average_syllables_per_line": 6.573529411764706,
+        "stress_pattern_consistency": 0.0,
+        "stress_pattern_confidence": 0.3,
+        "flow_breaks": 132.0,
+        "flow_analysis_confidence": 0.9,
+        "overall_complexity": 0.5,
+        "artistic_sophistication": 0.36952257535217176,
+        "technical_skill": 0.6502242152466368,
+        "innovation_score": 0.6282511210762332
+      }
+    }
+  ]
+}

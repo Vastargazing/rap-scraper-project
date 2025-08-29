@@ -1,0 +1,9 @@
+{
+  "last_processed_id": 43591,
+  "timestamp": "2025-08-28T18:37:14.160647",
+  "stats": {
+    "tracks_processed": 23249,
+    "tracks_success": 11151,
+    "tracks_failed": 12098,
+    "total_api_calls": 39273,
+    "start_time": 

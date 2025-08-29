@@ -174,21 +174,48 @@ spotify_artists: genius_name, spotify_id, name, followers, genres, popularity
 | **Advanced ML Features** | ⚡⚡ | ⭐⭐⭐⭐⭐ | NLTK-powered analysis | `src/analyzers/advanced_feature_analyzer.py` |
 | **Batch Processor** | ⚡ | ⭐⭐⭐⭐ | Large-scale analysis | `scripts/tools/batch_ai_analysis.py` |
 
+### 🔬 Hybrid Analysis Approach
+
+The project uses a **two-tier analysis architecture** for maximum efficiency:
+
+#### 🚀 **Tier 1: Algorithmic Analysis** (190+ tracks/sec)
+- **Purpose**: Basic structural metrics  
+- **File**: `src/analyzers/simplified_feature_analyzer.py`
+- **Features**: TTR, rhyme density, syllable count, word statistics, flow patterns
+- **Confidence scores**: 7 reliability metrics for each analysis
+- **Use case**: Fast processing of large datasets, stable ML features
+
+#### 🤖 **Tier 2: AI-driven Analysis** (Gemma 27B)
+- **Purpose**: Semantic and contextual analysis
+- **File**: `src/analyzers/multi_model_analyzer.py`  
+- **Features**: Metaphor detection, cultural references, artistic sophistication, mood analysis
+- **Use case**: Deep content analysis, qualitative assessment
+
+#### 💡 **Why hybrid approach is better?**
+```python
+# Performance comparison:
+Algorithmic: ~10ms/track  →  54K tracks = 9 minutes
+AI analysis: ~3s/track   →  54K tracks = 45 hours
+Hybrid: Best of both worlds = speed + quality
+```
+
 ### Metrics analyzed
-**AI Analysis:**
+**AI Analysis (Tier 2 - Semantic):**
 - **Complexity**: Linguistic complexity (1-10)
 - **Mood**: Sentiment / tonal classification (positive/negative/neutral)
 - **Genre**: Rap subgenre (trap, conscious, etc.)
 - **Quality**: Text quality score (1-10)
 - **Themes**: Key themes and motifs
+- **Cultural context**: References, authenticity, innovation
 
-**ML Feature Engineering (17 features):**
+**ML Feature Engineering (Tier 1 - Algorithmic, 17 features + 7 confidence scores):**
 - **Rhyme Analysis**: Rhyme density, perfect/near rhymes, rhyme scheme patterns
 - **Vocabulary Diversity**: Type-Token Ratio (TTR), unique word percentages
 - **Metaphor Detection**: Metaphorical language patterns and wordplay
 - **Flow Patterns**: Syllable analysis, stress patterns, rhythm metrics
 - **Structural Features**: Verse/chorus detection, repetition analysis
 - **Linguistic Metrics**: Sentence complexity, word lengths, readability scores
+- **Confidence Scoring**: Reliability assessment for each algorithmic metric
 
 ## 📈 Current stats
 

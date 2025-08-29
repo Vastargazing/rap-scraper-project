@@ -212,6 +212,10 @@ class SpotifyEnhancementAnalyzer:
             'optimization_targets': self.suggest_optimization_targets()
         }
         
+        # Ensure report goes to results/ directory
+        if not filename.startswith('results/'):
+            filename = f"results/{filename}"
+            
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
         
