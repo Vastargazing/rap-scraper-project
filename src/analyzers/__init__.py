@@ -8,10 +8,16 @@ Analyzers module for the rap scraper project.
 """
 
 from .algorithmic_analyzer import AlgorithmicAnalyzer
+from .gemma_analyzer import GemmaAnalyzer
+from .ollama_analyzer import OllamaAnalyzer
+from .hybrid_analyzer import HybridAnalyzer
 
 # При создании новых анализаторов они будут автоматически зарегистрированы
 # благодаря декоратору @register_analyzer
 
 __all__ = [
-    "AlgorithmicAnalyzer"
+    "AlgorithmicAnalyzer",
+    "GemmaAnalyzer", 
+    "OllamaAnalyzer",
+    "HybridAnalyzer"
 ]

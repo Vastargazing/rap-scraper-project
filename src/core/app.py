@@ -140,8 +140,13 @@ class Application:
     def _setup_analyzers(self) -> None:
         """Setup analyzer factory and register available analyzers"""
         try:
-            # Import and register analyzers here
-            # This will be expanded as we implement specific analyzers
+            # Импортируем модули анализаторов для автоматической регистрации
+            from src.analyzers import (
+                AlgorithmicAnalyzer, 
+                GemmaAnalyzer, 
+                OllamaAnalyzer, 
+                HybridAnalyzer
+            )
             
             available_analyzers = AnalyzerFactory.list_available()
             self.logger.info(f"Analyzers available: {available_analyzers}")
