@@ -1,14 +1,12 @@
-# 🐳 Dockerfile for Rap Scraper Project
-# Фаза 4: Интеграция и тестирование
-
+# 🐳 Production-ready Docker image for Rap Lyrics Analyzer API
 FROM python:3.11-slim
 
-# Метаданные
-LABEL maintainer="Vastargazing"
-LABEL description="Rap Scraper Project - Advanced lyrics analysis system"
+# Metadata
+LABEL maintainer="Rap Lyrics Analyzer Team"
+LABEL description="Enterprise microservices API for rap lyrics analysis"
 LABEL version="1.0.0"
 
-# Устанавливаем системные зависимости
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
@@ -17,45 +15,45 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Создаем пользователя для приложения
+# Security: Create non-root user
 RUN useradd -m -u 1000 rapuser
 
-# Устанавливаем рабочую директорию
+# Set working directory
 WORKDIR /app
 
-# Копируем requirements
+# Copy requirements first for better caching
 COPY requirements.txt .
 
-# Устанавливаем Python зависимости
+# Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Копируем исходный код
+# Copy application code
 COPY . .
 
-# Создаем необходимые директории
-RUN mkdir -p logs data results && \
+# Create necessary directories
+RUN mkdir -p logs data results temp && \
     chown -R rapuser:rapuser /app
 
-# Переключаемся на непривилегированного пользователя
+# Security: Switch to non-root user
 USER rapuser
 
-# Переменные окружения
-ENV PYTHONPATH=/app/src
+# Environment variables
+ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
-ENV ENVIRONMENT=production
+ENV RAP_ANALYZER_ENV=production
 
-# Expose порт для web интерфейса (если будет добавлен)
+# Expose ports
 EXPOSE 8000
 
-# Health check
+# Health check for API
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "from src.core.app import Application; app = Application(); print('OK')" || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
-# Команда по умолчанию
-CMD ["python", "main.py"]
+# Default command - FastAPI server
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
 
-# Альтернативные команды:
-# docker run rap-scraper python main.py --analyze "text"
-# docker run rap-scraper python main.py --batch input.json
-# docker run rap-scraper python main.py --benchmark
+# Alternative commands:
+# CLI: docker run rap-analyzer python main.py
+# Single analysis: docker run rap-analyzer python main.py --analyze "text"
+# Batch: docker run rap-analyzer python main.py --batch input.json
