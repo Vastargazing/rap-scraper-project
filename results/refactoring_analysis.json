@@ -1,0 +1,2008 @@
+{
+  "timestamp": "2025-08-29T10:01:07.910054",
+  "project_root": ".",
+  "file_sizes": [
+    {
+      "file": "src\\analyzers\\multi_model_analyzer.py",
+      "lines": 1634,
+      "category": "analyzer"
+    },
+    {
+      "file": "src\\scrapers\\rap_scraper_optimized.py",
+      "lines": 803,
+      "category": "scraper"
+    },
+    {
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py",
+      "lines": 676,
+      "category": "enhancer"
+    },
+    {
+      "file": "src\\analyzers\\gemma_27b_fixed.py",
+      "lines": 536,
+      "category": "analyzer"
+    },
+    {
+      "file": "scripts\\rap_scraper_cli.py",
+      "lines": 525,
+      "category": "scraper"
+    },
+    {
+      "file": "src\\analyzers\\simplified_feature_analyzer.py",
+      "lines": 486,
+      "category": "analyzer"
+    },
+    {
+      "file": "src\\enhancers\\spotify_enhancer.py",
+      "lines": 469,
+      "category": "enhancer"
+    },
+    {
+      "file": "scripts\\tools\\comprehensive_ai_stats.py",
+      "lines": 410,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\development\\demo_simplified_ml_features.py",
+      "lines": 385,
+      "category": "other"
+    },
+    {
+      "file": "src\\enhancers\\spotify_analysis_utils.py",
+      "lines": 285,
+      "category": "enhancer"
+    },
+    {
+      "file": "src\\analyzers\\create_visual_analysis.py",
+      "lines": 278,
+      "category": "analyzer"
+    },
+    {
+      "file": "scripts\\utils\\code_analyzer.py",
+      "lines": 278,
+      "category": "analyzer"
+    },
+    {
+      "file": "scripts\\archive\\test_optimized_scraper.py",
+      "lines": 270,
+      "category": "scraper"
+    },
+    {
+      "file": "src\\utils\\merge_databases.py",
+      "lines": 260,
+      "category": "utility"
+    },
+    {
+      "file": "scripts\\archive\\test_langchain.py",
+      "lines": 235,
+      "category": "test"
+    },
+    {
+      "file": "tests\\test_spotify_enhancer.py",
+      "lines": 223,
+      "category": "enhancer"
+    },
+    {
+      "file": "src\\utils\\migrate_database.py",
+      "lines": 198,
+      "category": "utility"
+    },
+    {
+      "file": "tests\\test_models.py",
+      "lines": 188,
+      "category": "test"
+    },
+    {
+      "file": "scripts\\tools\\create_cli_showcase.py",
+      "lines": 181,
+      "category": "cli"
+    },
+    {
+      "file": "scripts\\tools\\batch_ai_analysis.py",
+      "lines": 180,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\archive\\run_full_analysis.py",
+      "lines": 175,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\development\\run_scraping_improved.py",
+      "lines": 160,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\development\\demo_confidence_scores.py",
+      "lines": 153,
+      "category": "other"
+    },
+    {
+      "file": "monitoring\\monitor_gemma_progress.py",
+      "lines": 148,
+      "category": "other"
+    },
+    {
+      "file": "tests\\conftest.py",
+      "lines": 148,
+      "category": "test"
+    },
+    {
+      "file": "src\\utils\\setup_spotify.py",
+      "lines": 143,
+      "category": "utility"
+    },
+    {
+      "file": "scripts\\development\\analyze_confidence_results.py",
+      "lines": 124,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\development\\run_scraping_debug.py",
+      "lines": 123,
+      "category": "other"
+    },
+    {
+      "file": "src\\models\\models.py",
+      "lines": 118,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\continue_spotify_enhancement.py",
+      "lines": 98,
+      "category": "other"
+    },
+    {
+      "file": "src\\utils\\check_db.py",
+      "lines": 95,
+      "category": "utility"
+    },
+    {
+      "file": "monitoring\\check_analysis_status.py",
+      "lines": 90,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\tools\\check_spotify_coverage.py",
+      "lines": 90,
+      "category": "other"
+    },
+    {
+      "file": "src\\utils\\config.py",
+      "lines": 30,
+      "category": "utility"
+    },
+    {
+      "file": "scripts\\development\\run_remaining_artists.py",
+      "lines": 29,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\legacy\\run_scraping.py",
+      "lines": 20,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\check_db.py",
+      "lines": 10,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\run_spotify_enhancement.py",
+      "lines": 10,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\legacy\\check_db.py",
+      "lines": 10,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\legacy\\multi_model_analyzer.py",
+      "lines": 10,
+      "category": "analyzer"
+    },
+    {
+      "file": "scripts\\legacy\\rap_scraper_optimized.py",
+      "lines": 10,
+      "category": "scraper"
+    },
+    {
+      "file": "scripts\\legacy\\run_analysis.py",
+      "lines": 10,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\legacy\\run_gemma_analysis.py",
+      "lines": 10,
+      "category": "other"
+    },
+    {
+      "file": "monitoring\\__init__.py",
+      "lines": 1,
+      "category": "other"
+    },
+    {
+      "file": "scripts\\__init__.py",
+      "lines": 1,
+      "category": "other"
+    },
+    {
+      "file": "src\\__init__.py",
+      "lines": 1,
+      "category": "other"
+    },
+    {
+      "file": "tests\\__init__.py",
+      "lines": 1,
+      "category": "test"
+    },
+    {
+      "file": "src\\analyzers\\__init__.py",
+      "lines": 1,
+      "category": "analyzer"
+    },
+    {
+      "file": "src\\enhancers\\__init__.py",
+      "lines": 1,
+      "category": "enhancer"
+    },
+    {
+      "file": "src\\models\\__init__.py",
+      "lines": 1,
+      "category": "other"
+    },
+    {
+      "file": "src\\scrapers\\__init__.py",
+      "lines": 1,
+      "category": "scraper"
+    },
+    {
+      "file": "src\\utils\\__init__.py",
+      "lines": 1,
+      "category": "utility"
+    },
+    {
+      "file": "src\\enhancers\\bulk_spotify_enhancement_improved.py",
+      "lines": 0,
+      "category": "enhancer"
+    }
+  ],
+  "function_names": [
+    {
+      "function": "check_analysis_status",
+      "file": "monitoring\\check_analysis_status.py"
+    },
+    {
+      "function": "monitor_analysis_progress",
+      "file": "monitoring\\monitor_gemma_progress.py"
+    },
+    {
+      "function": "show_quick_stats",
+      "file": "monitoring\\monitor_gemma_progress.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\continue_spotify_enhancement.py"
+    },
+    {
+      "function": "print_banner",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "function": "show_status",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "function": "run_scraping",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "function": "run_spotify_enhancement",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "function": "run_analysis",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "function": "run_mlfeatures",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "function": "run_monitoring",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "function": "run_utilities",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "function": "create_parser",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "function": "temp_db",
+      "file": "tests\\conftest.py"
+    },
+    {
+      "function": "mock_spotify_enhancer",
+      "file": "tests\\conftest.py"
+    },
+    {
+      "function": "sample_spotify_artist",
+      "file": "tests\\conftest.py"
+    },
+    {
+      "function": "sample_spotify_track",
+      "file": "tests\\conftest.py"
+    },
+    {
+      "function": "sample_audio_features",
+      "file": "tests\\conftest.py"
+    },
+    {
+      "function": "mock_spotify_api_response",
+      "file": "tests\\conftest.py"
+    },
+    {
+      "function": "test_spotify_artist_valid",
+      "file": "tests\\test_models.py"
+    },
+    {
+      "function": "test_spotify_artist_required_fields",
+      "file": "tests\\test_models.py"
+    },
+    {
+      "function": "test_spotify_artist_popularity_validation",
+      "file": "tests\\test_models.py"
+    },
+    {
+      "function": "test_spotify_track_valid",
+      "file": "tests\\test_models.py"
+    },
+    {
+      "function": "test_spotify_audio_features_valid",
+      "file": "tests\\test_models.py"
+    },
+    {
+      "function": "test_spotify_audio_features_range_validation",
+      "file": "tests\\test_models.py"
+    },
+    {
+      "function": "test_spotify_enrichment_result_success",
+      "file": "tests\\test_models.py"
+    },
+    {
+      "function": "test_spotify_enrichment_result_failure",
+      "file": "tests\\test_models.py"
+    },
+    {
+      "function": "test_spotify_track_with_audio_features",
+      "file": "tests\\test_models.py"
+    },
+    {
+      "function": "setUp",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_initialization",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_get_access_token_success",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_get_access_token_failure",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_search_artist_success",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_search_artist_not_found",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_search_track_success",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_enhance_artist_success",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_enhance_artist_not_found",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_create_spotify_tables",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_save_artist_to_db",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "test_rate_limiting",
+      "file": "tests\\test_spotify_enhancer.py"
+    },
+    {
+      "function": "get_database_stats",
+      "file": "src\\analyzers\\create_visual_analysis.py"
+    },
+    {
+      "function": "create_dashboard",
+      "file": "src\\analyzers\\create_visual_analysis.py"
+    },
+    {
+      "function": "create_cli_showcase",
+      "file": "src\\analyzers\\create_visual_analysis.py"
+    },
+    {
+      "function": "__post_init__",
+      "file": "src\\analyzers\\gemma_27b_fixed.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\analyzers\\gemma_27b_fixed.py"
+    },
+    {
+      "function": "_check_rate_limits",
+      "file": "src\\analyzers\\gemma_27b_fixed.py"
+    },
+    {
+      "function": "_make_request",
+      "file": "src\\analyzers\\gemma_27b_fixed.py"
+    },
+    {
+      "function": "analyze_song",
+      "file": "src\\analyzers\\gemma_27b_fixed.py"
+    },
+    {
+      "function": "get_songs_from_db",
+      "file": "src\\analyzers\\gemma_27b_fixed.py"
+    },
+    {
+      "function": "save_analysis_to_db",
+      "file": "src\\analyzers\\gemma_27b_fixed.py"
+    },
+    {
+      "function": "analyze_songs_from_db",
+      "file": "src\\analyzers\\gemma_27b_fixed.py"
+    },
+    {
+      "function": "main",
+      "file": "src\\analyzers\\gemma_27b_fixed.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "validate_analysis",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "detect_hallucinations",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "theme_present_in_lyrics",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "mood_supported_by_lyrics",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "detect_explicit_content",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "check_internal_consistency",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "validate_factual_claims",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "check_text_analysis_alignment",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "get_warning_flags",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_generate_validation_summary",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "analyze_with_explanation",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "explain_decision",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "calculate_confidence",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_calculate_genre_confidence",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_calculate_quality_consistency",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_calculate_detail_factor",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "extract_key_factors",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "find_influential_phrases",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "check_availability",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "analyze_song",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "check_availability",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_pull_model",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "analyze_song",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_create_analysis_prompt",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_parse_analysis",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "check_availability",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "analyze_song",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "check_availability",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "analyze_song",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_create_analysis_prompt",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_parse_analysis",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "analyze_with_explanations",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "explain_existing_analysis",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_init_providers",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "analyze_song",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "get_stats",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "batch_analyze_from_db",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "_save_analysis_to_db",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "analyze_song_with_safety",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "main",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "analyze_lyrics",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_tokenize_lyrics",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_analyze_rhymes_simple",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_detect_rhyme_scheme_simple",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_words_rhyme_simple",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_count_perfect_rhymes_simple",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_count_internal_rhymes_simple",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_calculate_alliteration_simple",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_analyze_vocabulary_simple",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_analyze_metaphors_simple",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_analyze_flow_simple",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_count_syllables_simple",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "_calculate_variance",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "extract_simplified_features",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "demo_simplified_analysis",
+      "file": "src\\analyzers\\simplified_feature_analyzer.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_make_request",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "search_track_improved",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_try_search_strategy",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_clean_track_name",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_clean_artist_name",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_get_basic_track_name",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_extract_keywords",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_find_best_match",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "similarity_score",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_create_spotify_track",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "enhance_all_tracks_improved",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_process_track",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_save_track_to_db",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_save_checkpoint",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_load_checkpoint",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_clear_checkpoint",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_show_progress",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "_show_final_stats",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "main",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\enhancers\\spotify_analysis_utils.py"
+    },
+    {
+      "function": "get_detailed_stats",
+      "file": "src\\enhancers\\spotify_analysis_utils.py"
+    },
+    {
+      "function": "find_problematic_tracks",
+      "file": "src\\enhancers\\spotify_analysis_utils.py"
+    },
+    {
+      "function": "get_artist_coverage_report",
+      "file": "src\\enhancers\\spotify_analysis_utils.py"
+    },
+    {
+      "function": "suggest_optimization_targets",
+      "file": "src\\enhancers\\spotify_analysis_utils.py"
+    },
+    {
+      "function": "export_analysis_report",
+      "file": "src\\enhancers\\spotify_analysis_utils.py"
+    },
+    {
+      "function": "main",
+      "file": "src\\enhancers\\spotify_analysis_utils.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "get_access_token",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "_make_request",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "search_artist",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "search_track",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "get_audio_features",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "enhance_artist",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "enhance_track",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "get_db_artists",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "create_spotify_tables",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "save_artist_to_db",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "get_stats",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "main",
+      "file": "src\\enhancers\\spotify_enhancer.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "get_memory_usage",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "get_cpu_usage",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "check_memory_limit",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "log_resources",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "force_garbage_collection",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "create_table",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "add_song",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "_calculate_lyrics_quality",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "song_exists",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "get_stats",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "get_recent_songs",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "close",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "_clear_proxy_env",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "_restore_proxy_env",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "_setup_signal_handlers",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "_signal_handler",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "safe_delay",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "clean_lyrics",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "_is_valid_lyrics",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "extract_metadata",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "get_songs_generator",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "scrape_artist_songs",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "show_current_results",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "run_scraping_session",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "close",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "load_artist_list",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "main",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "function": "check_database",
+      "file": "src\\utils\\check_db.py"
+    },
+    {
+      "function": "main",
+      "file": "src\\utils\\check_db.py"
+    },
+    {
+      "function": "__init__",
+      "file": "src\\utils\\merge_databases.py"
+    },
+    {
+      "function": "backup_databases",
+      "file": "src\\utils\\merge_databases.py"
+    },
+    {
+      "function": "create_new_schema",
+      "file": "src\\utils\\merge_databases.py"
+    },
+    {
+      "function": "get_table_columns",
+      "file": "src\\utils\\merge_databases.py"
+    },
+    {
+      "function": "merge_databases",
+      "file": "src\\utils\\merge_databases.py"
+    },
+    {
+      "function": "main",
+      "file": "src\\utils\\merge_databases.py"
+    },
+    {
+      "function": "migrate_database",
+      "file": "src\\utils\\migrate_database.py"
+    },
+    {
+      "function": "calculate_lyrics_quality",
+      "file": "src\\utils\\migrate_database.py"
+    },
+    {
+      "function": "main",
+      "file": "src\\utils\\migrate_database.py"
+    },
+    {
+      "function": "check_credentials",
+      "file": "src\\utils\\setup_spotify.py"
+    },
+    {
+      "function": "test_api_connection",
+      "file": "src\\utils\\setup_spotify.py"
+    },
+    {
+      "function": "test_track_search",
+      "file": "src\\utils\\setup_spotify.py"
+    },
+    {
+      "function": "show_database_preview",
+      "file": "src\\utils\\setup_spotify.py"
+    },
+    {
+      "function": "main",
+      "file": "src\\utils\\setup_spotify.py"
+    },
+    {
+      "function": "count_remaining",
+      "file": "scripts\\archive\\run_full_analysis.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\archive\\run_full_analysis.py"
+    },
+    {
+      "function": "__init__",
+      "file": "scripts\\archive\\test_langchain.py"
+    },
+    {
+      "function": "get_test_sample",
+      "file": "scripts\\archive\\test_langchain.py"
+    },
+    {
+      "function": "analyze_with_mock",
+      "file": "scripts\\archive\\test_langchain.py"
+    },
+    {
+      "function": "analyze_with_langchain",
+      "file": "scripts\\archive\\test_langchain.py"
+    },
+    {
+      "function": "parse_llm_response",
+      "file": "scripts\\archive\\test_langchain.py"
+    },
+    {
+      "function": "test_analysis_pipeline",
+      "file": "scripts\\archive\\test_langchain.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\archive\\test_langchain.py"
+    },
+    {
+      "function": "__init__",
+      "file": "scripts\\archive\\test_optimized_scraper.py"
+    },
+    {
+      "function": "load_test_artists",
+      "file": "scripts\\archive\\test_optimized_scraper.py"
+    },
+    {
+      "function": "get_db_stats",
+      "file": "scripts\\archive\\test_optimized_scraper.py"
+    },
+    {
+      "function": "test_scraper_functionality",
+      "file": "scripts\\archive\\test_optimized_scraper.py"
+    },
+    {
+      "function": "test_artist_coverage",
+      "file": "scripts\\archive\\test_optimized_scraper.py"
+    },
+    {
+      "function": "test_data_quality",
+      "file": "scripts\\archive\\test_optimized_scraper.py"
+    },
+    {
+      "function": "run_full_test_suite",
+      "file": "scripts\\archive\\test_optimized_scraper.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\archive\\test_optimized_scraper.py"
+    },
+    {
+      "function": "analyze_confidence_results",
+      "file": "scripts\\development\\analyze_confidence_results.py"
+    },
+    {
+      "function": "show_best_practices",
+      "file": "scripts\\development\\analyze_confidence_results.py"
+    },
+    {
+      "function": "test_confidence_scores",
+      "file": "scripts\\development\\demo_confidence_scores.py"
+    },
+    {
+      "function": "demonstrate_json_output",
+      "file": "scripts\\development\\demo_confidence_scores.py"
+    },
+    {
+      "function": "demo_rhyme_analysis",
+      "file": "scripts\\development\\demo_simplified_ml_features.py"
+    },
+    {
+      "function": "demo_vocabulary_diversity",
+      "file": "scripts\\development\\demo_simplified_ml_features.py"
+    },
+    {
+      "function": "demo_metaphor_detection",
+      "file": "scripts\\development\\demo_simplified_ml_features.py"
+    },
+    {
+      "function": "demo_flow_analysis",
+      "file": "scripts\\development\\demo_simplified_ml_features.py"
+    },
+    {
+      "function": "demo_composite_metrics",
+      "file": "scripts\\development\\demo_simplified_ml_features.py"
+    },
+    {
+      "function": "demo_performance",
+      "file": "scripts\\development\\demo_simplified_ml_features.py"
+    },
+    {
+      "function": "save_sample_features",
+      "file": "scripts\\development\\demo_simplified_ml_features.py"
+    },
+    {
+      "function": "create_feature_comparison",
+      "file": "scripts\\development\\demo_simplified_ml_features.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\development\\demo_simplified_ml_features.py"
+    },
+    {
+      "function": "debug_artist_loading",
+      "file": "scripts\\development\\run_scraping_debug.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\development\\run_scraping_debug.py"
+    },
+    {
+      "function": "setup_logging",
+      "file": "scripts\\development\\run_scraping_improved.py"
+    },
+    {
+      "function": "check_environment",
+      "file": "scripts\\development\\run_scraping_improved.py"
+    },
+    {
+      "function": "save_remaining_artists",
+      "file": "scripts\\development\\run_scraping_improved.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\development\\run_scraping_improved.py"
+    },
+    {
+      "function": "count_remaining",
+      "file": "scripts\\tools\\batch_ai_analysis.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\tools\\batch_ai_analysis.py"
+    },
+    {
+      "function": "table_exists",
+      "file": "scripts\\tools\\check_spotify_coverage.py"
+    },
+    {
+      "function": "get_count",
+      "file": "scripts\\tools\\check_spotify_coverage.py"
+    },
+    {
+      "function": "get_columns",
+      "file": "scripts\\tools\\check_spotify_coverage.py"
+    },
+    {
+      "function": "non_null_count",
+      "file": "scripts\\tools\\check_spotify_coverage.py"
+    },
+    {
+      "function": "__init__",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "get_comprehensive_stats",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "_get_overview_stats",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "_get_genre_stats",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "_get_mood_stats",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "_get_quality_stats",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "_get_artist_stats",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "_get_complexity_stats",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "_get_commercial_stats",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "_get_temporal_stats",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "generate_report",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "_print_summary",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\tools\\comprehensive_ai_stats.py"
+    },
+    {
+      "function": "get_database_stats",
+      "file": "scripts\\tools\\create_cli_showcase.py"
+    },
+    {
+      "function": "create_ascii_chart",
+      "file": "scripts\\tools\\create_cli_showcase.py"
+    },
+    {
+      "function": "create_beautiful_cli_showcase",
+      "file": "scripts\\tools\\create_cli_showcase.py"
+    },
+    {
+      "function": "__init__",
+      "file": "scripts\\utils\\code_analyzer.py"
+    },
+    {
+      "function": "analyze_file_sizes",
+      "file": "scripts\\utils\\code_analyzer.py"
+    },
+    {
+      "function": "analyze_function_names",
+      "file": "scripts\\utils\\code_analyzer.py"
+    },
+    {
+      "function": "analyze_imports",
+      "file": "scripts\\utils\\code_analyzer.py"
+    },
+    {
+      "function": "identify_refactoring_opportunities",
+      "file": "scripts\\utils\\code_analyzer.py"
+    },
+    {
+      "function": "_categorize_file",
+      "file": "scripts\\utils\\code_analyzer.py"
+    },
+    {
+      "function": "generate_report",
+      "file": "scripts\\utils\\code_analyzer.py"
+    },
+    {
+      "function": "save_report",
+      "file": "scripts\\utils\\code_analyzer.py"
+    },
+    {
+      "function": "print_summary",
+      "file": "scripts\\utils\\code_analyzer.py"
+    },
+    {
+      "function": "main",
+      "file": "scripts\\utils\\code_analyzer.py"
+    }
+  ],
+  "import_dependencies": {
+    "monitoring\\check_analysis_status.py": [
+      "os",
+      "datetime",
+      "sqlite3",
+      "sys",
+      "src.utils.config"
+    ],
+    "monitoring\\monitor_gemma_progress.py": [
+      "sqlite3",
+      "os",
+      "datetime",
+      "time"
+    ],
+    "scripts\\check_db.py": [
+      "os",
+      "src.utils.check_db",
+      "sys"
+    ],
+    "scripts\\continue_spotify_enhancement.py": [
+      "os",
+      "sqlite3",
+      "src.enhancers.spotify_enhancer",
+      "sys",
+      "src.utils.config",
+      "time"
+    ],
+    "scripts\\rap_scraper_cli.py": [
+      "argparse",
+      "os",
+      "pathlib",
+      "sys"
+    ],
+    "scripts\\run_spotify_enhancement.py": [
+      "src.enhancers.spotify_enhancer",
+      "os",
+      "sys"
+    ],
+    "tests\\conftest.py": [
+      "os",
+      "pytest",
+      "sqlite3",
+      "spotify_enhancer",
+      "models",
+      "unittest.mock",
+      "tempfile"
+    ],
+    "tests\\test_models.py": [
+      "unittest",
+      "pydantic",
+      "models"
+    ],
+    "tests\\test_spotify_enhancer.py": [
+      "sqlite3",
+      "spotify_enhancer",
+      "models",
+      "unittest.mock",
+      "unittest",
+      "json"
+    ],
+    "src\\analyzers\\create_visual_analysis.py": [
+      "os",
+      "matplotlib.pyplot",
+      "sqlite3",
+      "seaborn",
+      "collections",
+      "pandas",
+      "numpy",
+      "datetime"
+    ],
+    "src\\analyzers\\gemma_27b_fixed.py": [
+      "os",
+      "dataclasses",
+      "dotenv",
+      "sqlite3",
+      "..utils.config",
+      "requests",
+      "typing",
+      "json",
+      "logging",
+      "datetime",
+      "time"
+    ],
+    "src\\analyzers\\multi_model_analyzer.py": [
+      "os",
+      "dotenv",
+      "sqlite3",
+      "pydantic",
+      "collections",
+      "..models.models",
+      "re",
+      "requests",
+      "typing",
+      "json",
+      "logging",
+      "datetime",
+      "time"
+    ],
+    "src\\analyzers\\simplified_feature_analyzer.py": [
+      "math",
+      "pydantic",
+      "collections",
+      "logging",
+      "typing",
+      "re"
+    ],
+    "src\\enhancers\\bulk_spotify_enhancement.py": [
+      "os",
+      "dotenv",
+      "sqlite3",
+      "requests.adapters",
+      "urllib3.util.retry",
+      "re",
+      "requests",
+      "sys",
+      "typing",
+      "json",
+      "logging",
+      "datetime",
+      "time"
+    ],
+    "src\\enhancers\\spotify_analysis_utils.py": [
+      "typing",
+      "sqlite3",
+      "json",
+      "datetime"
+    ],
+    "src\\enhancers\\spotify_enhancer.py": [
+      "os",
+      "sqlite3",
+      "base64",
+      "..utils.config",
+      "..models.models",
+      "requests",
+      "typing",
+      "json",
+      "logging",
+      "datetime",
+      "time"
+    ],
+    "src\\models\\models.py": [
+      "typing",
+      "pydantic",
+      "datetime"
+    ],
+    "src\\scrapers\\rap_scraper_optimized.py": [
+      "typing",
+      "os",
+      "sqlite3",
+      "gc",
+      "..utils.config",
+      "lyricsgenius",
+      "signal",
+      "re",
+      "random",
+      "requests.exceptions",
+      "sys",
+      "psutil",
+      "json",
+      "logging",
+      "datetime",
+      "time"
+    ],
+    "src\\utils\\check_db.py": [
+      "sqlite3",
+      "os",
+      ".config"
+    ],
+    "src\\utils\\config.py": [
+      "pathlib",
+      "os",
+      "dotenv"
+    ],
+    "src\\utils\\merge_databases.py": [
+      "os",
+      "sqlite3",
+      "shutil",
+      "logging",
+      "datetime"
+    ],
+    "src\\utils\\migrate_database.py": [
+      "os",
+      "sqlite3",
+      "shutil",
+      "logging",
+      "datetime"
+    ],
+    "src\\utils\\setup_spotify.py": [
+      "os",
+      "json",
+      "dotenv",
+      "spotify_enhancer"
+    ],
+    "scripts\\archive\\run_full_analysis.py": [
+      "sqlite3",
+      "src.analyzers.multi_model_analyzer",
+      "argparse",
+      "pathlib",
+      "sys",
+      "typing",
+      "logging",
+      "time"
+    ],
+    "scripts\\archive\\test_langchain.py": [
+      "typing",
+      "sqlite3",
+      "os",
+      "dotenv"
+    ],
+    "scripts\\archive\\test_optimized_scraper.py": [
+      "typing",
+      "sqlite3",
+      "json",
+      "time"
+    ],
+    "scripts\\development\\analyze_confidence_results.py": [
+      "json"
+    ],
+    "scripts\\development\\demo_confidence_scores.py": [
+      "src.analyzers.simplified_feature_analyzer",
+      "os",
+      "json",
+      "sys"
+    ],
+    "scripts\\development\\demo_simplified_ml_features.py": [
+      "pathlib",
+      "sys",
+      "src.analyzers.simplified_feature_analyzer",
+      "json",
+      "time"
+    ],
+    "scripts\\development\\run_remaining_artists.py": [
+      "pathlib",
+      "os",
+      "src.scrapers.rap_scraper_optimized",
+      "sys"
+    ],
+    "scripts\\development\\run_scraping_debug.py": [
+      "os",
+      "src.scrapers.rap_scraper_optimized",
+      "pathlib",
+      "sys",
+      "json",
+      "logging",
+      "src.utils.config"
+    ],
+    "scripts\\development\\run_scraping_improved.py": [
+      "os",
+      "src.scrapers.rap_scraper_optimized",
+      "pathlib",
+      "sys",
+      "json",
+      "logging",
+      "src.utils.config",
+      "time"
+    ],
+    "scripts\\legacy\\check_db.py": [
+      "os",
+      "src.utils.check_db",
+      "sys"
+    ],
+    "scripts\\legacy\\multi_model_analyzer.py": [
+      "src.analyzers.multi_model_analyzer",
+      "os",
+      "sys"
+    ],
+    "scripts\\legacy\\rap_scraper_optimized.py": [
+      "os",
+      "src.scrapers.rap_scraper_optimized",
+      "sys"
+    ],
+    "scripts\\legacy\\run_analysis.py": [
+      "src.analyzers.multi_model_analyzer",
+      "os",
+      "sys"
+    ],
+    "scripts\\legacy\\run_gemma_analysis.py": [
+      "os",
+      "src.analyzers.gemma_27b_fixed",
+      "sys"
+    ],
+    "scripts\\legacy\\run_scraping.py": [
+      "os",
+      "src.scrapers.rap_scraper_optimized",
+      "sys"
+    ],
+    "scripts\\tools\\batch_ai_analysis.py": [
+      "sqlite3",
+      "argparse",
+      "pathlib",
+      "sys",
+      "typing",
+      "logging",
+      "time"
+    ],
+    "scripts\\tools\\check_spotify_coverage.py": [
+      "sqlite3",
+      "pathlib"
+    ],
+    "scripts\\tools\\comprehensive_ai_stats.py": [
+      "sqlite3",
+      "collections",
+      "typing",
+      "json",
+      "datetime"
+    ],
+    "scripts\\tools\\create_cli_showcase.py": [
+      "datetime",
+      "sqlite3",
+      "os",
+      "collections"
+    ],
+    "scripts\\utils\\code_analyzer.py": [
+      "os",
+      "ast",
+      "collections",
+      "pathlib",
+      "json",
+      "re",
+      "datetime"
+    ]
+  },
+  "large_files": [
+    {
+      "file": "src\\analyzers\\multi_model_analyzer.py",
+      "lines": 1634,
+      "refactor_priority": "high"
+    },
+    {
+      "file": "src\\scrapers\\rap_scraper_optimized.py",
+      "lines": 803,
+      "refactor_priority": "medium"
+    },
+    {
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py",
+      "lines": 676,
+      "refactor_priority": "medium"
+    },
+    {
+      "file": "src\\analyzers\\gemma_27b_fixed.py",
+      "lines": 536,
+      "refactor_priority": "medium"
+    },
+    {
+      "file": "scripts\\rap_scraper_cli.py",
+      "lines": 525,
+      "refactor_priority": "medium"
+    }
+  ],
+  "potential_duplicates": [
+    {
+      "function": "main",
+      "count": 21,
+      "files": [
+        "scripts\\continue_spotify_enhancement.py",
+        "scripts\\rap_scraper_cli.py",
+        "src\\analyzers\\gemma_27b_fixed.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\enhancers\\bulk_spotify_enhancement.py",
+        "src\\enhancers\\spotify_analysis_utils.py",
+        "src\\enhancers\\spotify_enhancer.py",
+        "src\\scrapers\\rap_scraper_optimized.py",
+        "src\\utils\\check_db.py",
+        "src\\utils\\merge_databases.py",
+        "src\\utils\\migrate_database.py",
+        "src\\utils\\setup_spotify.py",
+        "scripts\\archive\\run_full_analysis.py",
+        "scripts\\archive\\test_langchain.py",
+        "scripts\\archive\\test_optimized_scraper.py",
+        "scripts\\development\\demo_simplified_ml_features.py",
+        "scripts\\development\\run_scraping_debug.py",
+        "scripts\\development\\run_scraping_improved.py",
+        "scripts\\tools\\batch_ai_analysis.py",
+        "scripts\\tools\\comprehensive_ai_stats.py",
+        "scripts\\utils\\code_analyzer.py"
+      ]
+    },
+    {
+      "function": "__init__",
+      "count": 21,
+      "files": [
+        "src\\analyzers\\gemma_27b_fixed.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\simplified_feature_analyzer.py",
+        "src\\enhancers\\bulk_spotify_enhancement.py",
+        "src\\enhancers\\bulk_spotify_enhancement.py",
+        "src\\enhancers\\spotify_analysis_utils.py",
+        "src\\enhancers\\spotify_enhancer.py",
+        "src\\scrapers\\rap_scraper_optimized.py",
+        "src\\scrapers\\rap_scraper_optimized.py",
+        "src\\scrapers\\rap_scraper_optimized.py",
+        "src\\utils\\merge_databases.py",
+        "scripts\\archive\\test_langchain.py",
+        "scripts\\archive\\test_optimized_scraper.py",
+        "scripts\\tools\\comprehensive_ai_stats.py",
+        "scripts\\utils\\code_analyzer.py"
+      ]
+    },
+    {
+      "function": "analyze_song",
+      "count": 6,
+      "files": [
+        "src\\analyzers\\gemma_27b_fixed.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py"
+      ]
+    },
+    {
+      "function": "check_availability",
+      "count": 4,
+      "files": [
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py"
+      ]
+    },
+    {
+      "function": "_make_request",
+      "count": 3,
+      "files": [
+        "src\\analyzers\\gemma_27b_fixed.py",
+        "src\\enhancers\\bulk_spotify_enhancement.py",
+        "src\\enhancers\\spotify_enhancer.py"
+      ]
+    },
+    {
+      "function": "get_stats",
+      "count": 3,
+      "files": [
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\enhancers\\spotify_enhancer.py",
+        "src\\scrapers\\rap_scraper_optimized.py"
+      ]
+    },
+    {
+      "function": "get_database_stats",
+      "count": 2,
+      "files": [
+        "src\\analyzers\\create_visual_analysis.py",
+        "scripts\\tools\\create_cli_showcase.py"
+      ]
+    },
+    {
+      "function": "_create_analysis_prompt",
+      "count": 2,
+      "files": [
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py"
+      ]
+    },
+    {
+      "function": "_parse_analysis",
+      "count": 2,
+      "files": [
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py"
+      ]
+    },
+    {
+      "function": "close",
+      "count": 2,
+      "files": [
+        "src\\scrapers\\rap_scraper_optimized.py",
+        "src\\scrapers\\rap_scraper_optimized.py"
+      ]
+    },
+    {
+      "function": "count_remaining",
+      "count": 2,
+      "files": [
+        "scripts\\archive\\run_full_analysis.py",
+        "scripts\\tools\\batch_ai_analysis.py"
+      ]
+    },
+    {
+      "function": "generate_report",
+      "count": 2,
+      "files": [
+        "scripts\\tools\\comprehensive_ai_stats.py",
+        "scripts\\utils\\code_analyzer.py"
+      ]
+    }
+  ],
+  "refactoring_opportunities": [
+    {
+      "type": "large_file",
+      "description": "Large file: scripts\\rap_scraper_cli.py (525 lines)",
+      "recommendation": "Consider splitting into smaller modules",
+      "priority": "medium",
+      "file": "scripts\\rap_scraper_cli.py"
+    },
+    {
+      "type": "large_file",
+      "description": "Large file: src\\analyzers\\gemma_27b_fixed.py (536 lines)",
+      "recommendation": "Consider splitting into smaller modules",
+      "priority": "medium",
+      "file": "src\\analyzers\\gemma_27b_fixed.py"
+    },
+    {
+      "type": "large_file",
+      "description": "Large file: src\\analyzers\\multi_model_analyzer.py (1634 lines)",
+      "recommendation": "Consider splitting into smaller modules",
+      "priority": "high",
+      "file": "src\\analyzers\\multi_model_analyzer.py"
+    },
+    {
+      "type": "large_file",
+      "description": "Large file: src\\enhancers\\bulk_spotify_enhancement.py (676 lines)",
+      "recommendation": "Consider splitting into smaller modules",
+      "priority": "medium",
+      "file": "src\\enhancers\\bulk_spotify_enhancement.py"
+    },
+    {
+      "type": "large_file",
+      "description": "Large file: src\\scrapers\\rap_scraper_optimized.py (803 lines)",
+      "recommendation": "Consider splitting into smaller modules",
+      "priority": "medium",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    },
+    {
+      "type": "function_duplication",
+      "description": "Function 'main' appears in 21 files",
+      "recommendation": "Consider creating a shared utility function",
+      "priority": "medium",
+      "files": [
+        "scripts\\continue_spotify_enhancement.py",
+        "scripts\\rap_scraper_cli.py",
+        "src\\analyzers\\gemma_27b_fixed.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\enhancers\\bulk_spotify_enhancement.py",
+        "src\\enhancers\\spotify_analysis_utils.py",
+        "src\\enhancers\\spotify_enhancer.py",
+        "src\\scrapers\\rap_scraper_optimized.py",
+        "src\\utils\\check_db.py",
+        "src\\utils\\merge_databases.py",
+        "src\\utils\\migrate_database.py",
+        "src\\utils\\setup_spotify.py",
+        "scripts\\archive\\run_full_analysis.py",
+        "scripts\\archive\\test_langchain.py",
+        "scripts\\archive\\test_optimized_scraper.py",
+        "scripts\\development\\demo_simplified_ml_features.py",
+        "scripts\\development\\run_scraping_debug.py",
+        "scripts\\development\\run_scraping_improved.py",
+        "scripts\\tools\\batch_ai_analysis.py",
+        "scripts\\tools\\comprehensive_ai_stats.py",
+        "scripts\\utils\\code_analyzer.py"
+      ]
+    },
+    {
+      "type": "function_duplication",
+      "description": "Function '__init__' appears in 21 files",
+      "recommendation": "Consider creating a shared utility function",
+      "priority": "medium",
+      "files": [
+        "src\\analyzers\\gemma_27b_fixed.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\simplified_feature_analyzer.py",
+        "src\\enhancers\\bulk_spotify_enhancement.py",
+        "src\\enhancers\\bulk_spotify_enhancement.py",
+        "src\\enhancers\\spotify_analysis_utils.py",
+        "src\\enhancers\\spotify_enhancer.py",
+        "src\\scrapers\\rap_scraper_optimized.py",
+        "src\\scrapers\\rap_scraper_optimized.py",
+        "src\\scrapers\\rap_scraper_optimized.py",
+        "src\\utils\\merge_databases.py",
+        "scripts\\archive\\test_langchain.py",
+        "scripts\\archive\\test_optimized_scraper.py",
+        "scripts\\tools\\comprehensive_ai_stats.py",
+        "scripts\\utils\\code_analyzer.py"
+      ]
+    },
+    {
+      "type": "function_duplication",
+      "description": "Function '_make_request' appears in 3 files",
+      "recommendation": "Consider creating a shared utility function",
+      "priority": "medium",
+      "files": [
+        "src\\analyzers\\gemma_27b_fixed.py",
+        "src\\enhancers\\bulk_spotify_enhancement.py",
+        "src\\enhancers\\spotify_enhancer.py"
+      ]
+    },
+    {
+      "type": "function_duplication",
+      "description": "Function 'analyze_song' appears in 6 files",
+      "recommendation": "Consider creating a shared utility function",
+      "priority": "medium",
+      "files": [
+        "src\\analyzers\\gemma_27b_fixed.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py"
+      ]
+    },
+    {
+      "type": "function_duplication",
+      "description": "Function 'check_availability' appears in 4 files",
+      "recommendation": "Consider creating a shared utility function",
+      "priority": "medium",
+      "files": [
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\analyzers\\multi_model_analyzer.py"
+      ]
+    },
+    {
+      "type": "function_duplication",
+      "description": "Function 'get_stats' appears in 3 files",
+      "recommendation": "Consider creating a shared utility function",
+      "priority": "medium",
+      "files": [
+        "src\\analyzers\\multi_model_analyzer.py",
+        "src\\enhancers\\spotify_enhancer.py",
+        "src\\scrapers\\rap_scraper_optimized.py"
+      ]
+    },
+    {
+      "type": "high_coupling",
+      "description": "File src\\scrapers\\rap_scraper_optimized.py has 16 imports",
+      "recommendation": "Consider reducing dependencies or splitting file",
+      "priority": "low",
+      "file": "src\\scrapers\\rap_scraper_optimized.py"
+    }
+  ],
+  "summary": {
+    "total_files": 53,
+    "total_lines": 10323,
+    "average_file_size": 194.8,
+    "large_files_count": 5,
+    "potential_duplicates_count": 12,
+    "refactoring_opportunities_count": 12
+  }
+}
