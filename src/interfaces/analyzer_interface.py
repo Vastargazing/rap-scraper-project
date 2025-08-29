@@ -15,9 +15,18 @@ AnalyzerFactory - фабрика для создания анализаторо�
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
+from enum import Enum
 
 # Import будет исправлен после создания всех компонентов
 # from src.models.models import EnhancedSongData
+
+
+class AnalyzerType(Enum):
+    """Enum для типов анализаторов"""
+    ALGORITHMIC = "algorithmic_basic"  # Используем правильное имя
+    GEMMA = "gemma" 
+    OLLAMA = "ollama"
+    HYBRID = "hybrid"
 
 
 @dataclass

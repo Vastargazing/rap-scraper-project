@@ -39,9 +39,18 @@ AI_Engineer_Journal/
 # Temporary files
 *.tmp
 *.temp
+temp/
+cache/
 
 # Large data files
 *.jsonl
 enhanced_data/
 langchain_results/
 analysis_results/
+
+# Archive and legacy files
+archive/
+docs/legacy/
+
+# JSON outputs (organized)
+results/json_outputs/

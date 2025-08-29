@@ -91,7 +91,8 @@ class Application:
         logging.basicConfig(
             level=getattr(logging, log_config.level.upper()),
             format=log_config.format,
-            force=True
+            force=True,
+            encoding=getattr(log_config, 'encoding', 'utf-8')
         )
         
         # Setup file logging if configured
@@ -103,7 +104,8 @@ class Application:
             file_handler = RotatingFileHandler(
                 log_path,
                 maxBytes=log_config.max_file_size,
-                backupCount=log_config.backup_count
+                backupCount=log_config.backup_count,
+                encoding=getattr(log_config, 'encoding', 'utf-8')
             )
             file_handler.setFormatter(logging.Formatter(log_config.format))
             
@@ -112,7 +114,7 @@ class Application:
         
         self.logger = logging.getLogger(__name__)
         
-        # Log configuration info
+        # Log configuration info (без эмодзи для Windows)
         self.logger.info(f"Logging configured: level={log_config.level}")
         if log_config.file_path:
             self.logger.info(f"Log file: {log_config.file_path}")

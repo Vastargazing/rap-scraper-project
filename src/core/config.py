@@ -72,6 +72,7 @@ class LoggingConfig:
     file_path: Optional[str] = None
     max_file_size: int = 10 * 1024 * 1024  # 10MB
     backup_count: int = 5
+    encoding: str = "utf-8"  # Явная кодировка для Windows
 
 
 @dataclass
