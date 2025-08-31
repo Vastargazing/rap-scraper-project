@@ -10,7 +10,7 @@ import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
-from src.interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, AnalyzerFactory, register_analyzer
+from interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, AnalyzerFactory, register_analyzer
 
 logger = logging.getLogger(__name__)
 

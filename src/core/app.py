@@ -142,14 +142,7 @@ class Application:
     def _setup_analyzers(self) -> None:
         """Setup analyzer factory and register available analyzers"""
         try:
-            # Импортируем модули анализаторов для автоматической регистрации
-            from src.analyzers import (
-                AlgorithmicAnalyzer, 
-                GemmaAnalyzer, 
-                OllamaAnalyzer, 
-                HybridAnalyzer
-            )
-            
+            # Анализаторы уже импортированы в начале файла
             available_analyzers = AnalyzerFactory.list_available()
             self.logger.info(f"Analyzers available: {available_analyzers}")
             
@@ -241,6 +234,28 @@ class Application:
 _app_instance: Optional[Application] = None
 
 
+def init_analyzers():
+    """Инициализируем анализаторы"""
+    try:
+        # Регистрируем анализаторы напрямую (обход проблем с issubclass)
+        from analyzers.algorithmic_analyzer import AlgorithmicAnalyzer
+        from analyzers.qwen_analyzer import QwenAnalyzer
+        from analyzers.ollama_analyzer import OllamaAnalyzer
+        from analyzers.hybrid_analyzer import HybridAnalyzer
+        
+        AnalyzerFactory._analyzers["algorithmic_basic"] = AlgorithmicAnalyzer
+        AnalyzerFactory._analyzers["qwen"] = QwenAnalyzer
+        AnalyzerFactory._analyzers["ollama"] = OllamaAnalyzer
+        AnalyzerFactory._analyzers["hybrid"] = HybridAnalyzer
+        
+        registered = list(AnalyzerFactory._analyzers.keys())
+        logging.info(f"Analyzers registered: {registered}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to initialize analyzers: {e}")
+        return False
+
+
 def create_app(config: Optional[AppConfig] = None, 
                config_file: Optional[str] = None,
                **config_kwargs) -> Application:
@@ -260,6 +275,9 @@ def create_app(config: Optional[AppConfig] = None,
     if config is None:
         # Load configuration
         config = load_config(config_file=config_file, **config_kwargs)
+    
+    # Инициализируем анализаторы перед созданием приложения
+    init_analyzers()
     
     _app_instance = Application(config)
     return _app_instance

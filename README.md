@@ -31,7 +31,7 @@ graph TB
     
     C --> G[4 AI Analyzers]
     G --> G1[Algorithmic Basic]
-    G --> G2[Gemma AI]
+    G --> G2[Qwen AI]
     G --> G3[Ollama Local]
     G --> G4[Hybrid Multi-Model]
 ```
@@ -49,13 +49,37 @@ graph TB
 ## � Enterprise Features
 
 - **Production FastAPI Microservice**: RESTful API with OpenAPI documentation
-- **Multi-Model AI Integration**: 4 analyzers with hybrid approach  
+- **Multi-Model AI Integration**: 4 analyzers with hybrid approach + LangChain support
+- **LangChain Integration**: Advanced LLM-powered analysis pipeline  
 - **Docker-First Deployment**: Complete containerized stack
 - **Performance Optimized**: 50-500ms response times
-- **Enterprise Monitoring**: Health checks, metrics, observability
+- **Enterprise Monitoring**: Prometheus + Grafana, health checks, metrics, observability
 - **Developer Experience**: Interactive docs, web interface, examples
 
-## 📋 API Endpoints
+## 🧠 AI Analysis Pipeline
+
+### Core Analyzers
+| Analyzer | Technology | Purpose | Status |
+|----------|------------|---------|--------|
+| 🔢 **Algorithmic Basic** | Pure Python | Fast baseline analysis | ✅ Production |
+| 🤖 **Qwen AI** | Novita AI + Qwen3-4B-FP8 | Advanced cloud LLM analysis | ✅ Production |
+| 🔗 **LangChain** | OpenAI + LangChain | Advanced LLM pipeline | 🧪 Experimental |
+| 🎯 **Hybrid Multi-Model** | Combined approach | Best-of-all analysis | ✅ Production |
+
+### LangChain Integration
+- **LLM-Powered Analysis**: OpenAI GPT integration via LangChain
+- **Structured Prompting**: Advanced prompt engineering for rap analysis
+- **Multi-Criteria Evaluation**: Complexity, emotion, social impact, creativity
+- **Results Available**: Pre-analyzed datasets in `langchain_results/`
+
+```python
+# LangChain analyzer example
+from scripts.archive.test_langchain import LangChainAnalyzer
+
+analyzer = LangChainAnalyzer()
+result = analyzer.analyze_with_langchain(lyrics, artist, title)
+# Returns: complexity, emotion, social, creativity, technical scores
+```
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -110,9 +134,13 @@ analyzers:
   algorithmic_basic:
     enabled: true
     weight: 0.3
-  gemma:
+  qwen:
     enabled: true
-    model: "gemma2:27b"
+    model: "qwen/qwen3-4b-fp8"
+    api_key: "your-novita-api-key"
+  langchain:
+    enabled: false  # Requires OpenAI API key
+    model: "gpt-3.5-turbo"
   hybrid:
     enabled: true
     combine_weights: [0.4, 0.4, 0.2]
@@ -162,7 +190,7 @@ response = requests.post("http://localhost:8000/analyze", json={
 # Batch processing
 response = requests.post("http://localhost:8000/batch", json={
     "texts": ["Text 1", "Text 2", "Text 3"],
-    "analyzer": "gemma"
+    "analyzer": "qwen"
 })
 ```
 
@@ -170,6 +198,9 @@ response = requests.post("http://localhost:8000/batch", json={
 ```bash
 # Interactive mode
 python main.py
+
+# LangChain analysis
+python scripts/rap_scraper_cli.py analyze --analyzer langchain
 
 # Direct analysis
 python -c "
@@ -186,6 +217,7 @@ print(result)
 - **Performance Metrics**: Real-time benchmarking
 - **Error Tracking**: Comprehensive logging
 - **Database Monitoring**: Record count tracking
+ - **Metrics & Dashboards**: Prometheus (http://localhost:9090) and Grafana (http://localhost:3000)
 
 ## 🛠️ Development
 
@@ -215,9 +247,12 @@ rap-scraper-project/
 ├── src/                 # 📦 Core components
 │   ├── cli/            # 🖥️  Command interfaces
 │   ├── models/         # 📋 Data models
-│   ├── analyzers/      # 🧠 AI analyzers
+│   ├── analyzers/      # 🧠 AI analyzers (4 types)
 │   └── utils/          # 🛠️  Utilities
 ├── data/               # 📊 Database & datasets
+├── langchain_results/  # 🔗 LangChain analysis outputs
+├── scripts/            # 🔧 Automation & CLI tools
+│   └── archive/        # 📦 LangChain integration
 ├── tests/              # 🧪 Test suites
 └── docs/               # 📚 Documentation
 ```
@@ -235,6 +270,29 @@ rap-scraper-project/
 - [AI_ONBOARDING_CHECKLIST.md](AI_ONBOARDING_CHECKLIST.md) - Quick start guide
 - [docs/claude.md](docs/claude.md) - AI assistant context
 - [SPOTIFY_OPTIMIZATION_GUIDE.md](SPOTIFY_OPTIMIZATION_GUIDE.md) - Performance tuning
+
+## 🧠 AI Technologies Stack
+
+| Technology | Usage | Status |
+|------------|-------|--------|
+| **Novita AI + Qwen3-4B-FP8** | Production cloud LLM for deep analysis | ✅ Active |
+| **LangChain + OpenAI** | Advanced LLM pipeline (experimental) | 🧪 Available |
+| **FastAPI + Pydantic** | API framework with data validation | ✅ Production |
+| **SQLite** | Data storage with 54K+ analyzed records | ✅ Production |
+| **Docker** | Containerization and deployment | ✅ Production |
+| **Prometheus + Grafana** | Monitoring & visualization stack | ✅ Available |
+
+### LangChain Setup (Optional)
+```bash
+# Install LangChain dependencies
+pip install langchain>=0.1.0 langchain-openai>=0.0.5
+
+# Set OpenAI API key
+export OPENAI_API_KEY="your-key-here"
+
+# Test LangChain integration
+python scripts/archive/test_langchain.py
+```
 
 ## 📈 Roadmap
 

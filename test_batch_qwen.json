@@ -1,0 +1,17 @@
+[
+  {
+    "artist": "Test Artist",
+    "title": "Sample Track 1",
+    "lyrics": "Money on my mind, grinding every day, making my way to the top"
+  },
+  {
+    "artist": "Test Artist",
+    "title": "Sample Track 2", 
+    "lyrics": "Living life with passion, chasing dreams and fashion, never backing down"
+  },
+  {
+    "artist": "Test Artist",
+    "title": "Sample Track 3",
+    "lyrics": "Street smart with a vision, making moves with precision, success is my mission"
+  }
+]

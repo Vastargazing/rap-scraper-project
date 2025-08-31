@@ -17,12 +17,16 @@ import argparse
 import json
 from pathlib import Path
 from typing import Dict, Any, List, Optional
+from dotenv import load_dotenv
+
+# Загружаем переменные окружения
+load_dotenv()
 
 # Добавляем src в Python path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 try:
-    from core.app import Application
+    from core.app import create_app
     from cli import AnalyzerCLI, BatchProcessor, PerformanceMonitor
     from interfaces.analyzer_interface import AnalyzerFactory
 except ImportError as e:
@@ -40,7 +44,7 @@ class RapScraperMainApp:
         print("=" * 50)
         
         try:
-            self.app = Application()
+            self.app = create_app()
             self.cli = AnalyzerCLI()
             self.batch_processor = BatchProcessor()
             self.performance_monitor = PerformanceMonitor()

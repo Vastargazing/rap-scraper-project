@@ -8,7 +8,7 @@ Analyzers module for the rap scraper project.
 """
 
 from .algorithmic_analyzer import AlgorithmicAnalyzer
-from .gemma_analyzer import GemmaAnalyzer
+from .qwen_analyzer import QwenAnalyzer
 from .ollama_analyzer import OllamaAnalyzer
 from .hybrid_analyzer import HybridAnalyzer
 
@@ -17,7 +17,7 @@ from .hybrid_analyzer import HybridAnalyzer
 
 __all__ = [
     "AlgorithmicAnalyzer",
-    "GemmaAnalyzer", 
+    "QwenAnalyzer", 
     "OllamaAnalyzer",
     "HybridAnalyzer"
 ]

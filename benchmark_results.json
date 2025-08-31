@@ -1,0 +1,72 @@
+{
+  "timestamp": "2025-08-31 09:51:26",
+  "test_config": {
+    "analyzers": [
+      "algorithmic_basic"
+    ],
+    "test_count": 10,
+    "total_chars": 654
+  },
+  "individual_results": {
+    "algorithmic_basic": {
+      "analyzer_name": "algorithmic_basic",
+      "test_count": 10,
+      "total_time": 0.0008032321929931641,
+      "avg_time": 7.832050323486328e-05,
+      "min_time": 4.267692565917969e-05,
+      "max_time": 0.0003292560577392578,
+      "median_time": 4.661083221435547e-05,
+      "avg_cpu_percent": 0.14589591337757596,
+      "avg_memory_mb": 58.744049893031786,
+      "peak_memory_mb": 58.96875,
+      "success_rate": 100.0,
+      "error_count": 0,
+      "items_per_second": 12449.700207776788
+    }
+  },
+  "comparison": {
+    "fastest": {
+      "analyzer": "algorithmic_basic",
+      "avg_time": 7.832050323486328e-05,
+      "improvement_factor": 1.0
+    },
+    "highest_throughput": {
+      "analyzer": "algorithmic_basic",
+      "items_per_second": 12449.700207776788
+    },
+    "most_reliable": {
+      "analyzer": "algorithmic_basic",
+      "success_rate": 100.0
+    },
+    "most_memory_efficient": {
+      "analyzer": "algorithmic_basic",
+      "avg_memory_mb": 58.744049893031786
+    },
+    "rankings": {
+      "by_speed": [
+        [
+          "algorithmic_basic",
+          7.832050323486328e-05
+        ]
+      ],
+      "by_throughput": [
+        [
+          "algorithmic_basic",
+          12449.700207776788
+        ]
+      ],
+      "by_success_rate": [
+        [
+          "algorithmic_basic",
+          100.0
+        ]
+      ],
+      "by_memory": [
+        [
+          "algorithmic_basic",
+          58.744049893031786
+        ]
+      ]
+    }
+  }
+}

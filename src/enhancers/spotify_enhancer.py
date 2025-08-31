@@ -459,7 +459,7 @@ def main():
         import time
         time.sleep(0.1)
     
-    print(f"� Обогащено {enriched_count} из {min(10, len(artists))} артистов")
+    print(f"✅ Обогащено {enriched_count} из {min(10, len(artists))} артистов")
     
     # Показываем статистику
     stats = enhancer.get_stats()

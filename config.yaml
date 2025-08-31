@@ -37,13 +37,14 @@ analyzers:
         structure: 0.3
         themes: 0.4
       
-  gemma:
+  qwen:
     enabled: true
     config:
-      model: "gemma-2-27b-it"
-      api_key_env: "GOOGLE_API_KEY"
-      temperature: 0.3
-      max_tokens: 1000
+      model_name: "qwen/qwen3-4b-fp8"
+      base_url: "https://api.novita.ai/openai/v1"
+      api_key_env: "NOVITA_API_KEY"
+      temperature: 0.1
+      max_tokens: 1500
       timeout: 30
       retry_attempts: 3
       
@@ -61,7 +62,7 @@ analyzers:
     config:
       algorithms:
         - "algorithmic_basic"
-        - "gemma"
+        - "qwen"
       consensus_threshold: 0.7
       fallback_analyzer: "algorithmic_basic"
 

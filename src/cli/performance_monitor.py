@@ -137,7 +137,10 @@ class PerformanceMonitor:
         
         # Останавливаем мониторинг
         self.is_monitoring = False
-        await monitoring_task
+        try:
+            await monitoring_task
+        except asyncio.CancelledError:
+            pass  # Ожидаемая отмена мониторинга
         
         # Вычисляем метрики
         success_count = len(execution_times)
@@ -232,8 +235,10 @@ class PerformanceMonitor:
         """Мониторинг системных ресурсов во время выполнения"""
         self.is_monitoring = True
         process = psutil.Process()
+        max_monitoring_time = 300  # Максимум 5 минут
+        start_time = time.time()
         
-        while self.is_monitoring:
+        while self.is_monitoring and (time.time() - start_time < max_monitoring_time):
             try:
                 # CPU (в процентах)
                 cpu_percent = process.cpu_percent()
@@ -246,9 +251,14 @@ class PerformanceMonitor:
                 
                 await asyncio.sleep(self.monitoring_interval)
                 
+            except asyncio.CancelledError:
+                # Корректно обрабатываем отмену
+                break
             except Exception:
                 # Игнорируем ошибки мониторинга
                 pass
+        
+        self.is_monitoring = False
     
     def _create_comparison_report(
         self,

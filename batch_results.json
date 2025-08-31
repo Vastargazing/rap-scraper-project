@@ -1,0 +1,234 @@
+{
+  "metadata": {
+    "total_processed": 3,
+    "successful": 3,
+    "failed": 0,
+    "total_time": 39.96870756149292,
+    "avg_time_per_item": 13.32290252049764,
+    "timestamp": "2025-08-31 09:48:43"
+  },
+  "results": [
+    {
+      "index": 0,
+      "analysis_time": 14.173,
+      "text_length": 128,
+      "timestamp": "2025-08-31 09:48:20",
+      "result": {
+        "sentiment": "neutral",
+        "confidence": 0.7952380952380952,
+        "analysis_type": "batch_analysis",
+        "metadata": {
+          "model_name": "qwen/qwen3-4b-fp8",
+          "model_version": "qwen3-4b-fp8",
+          "processing_date": "2025-08-31T09:48:20.527682",
+          "lyrics_length": 123,
+          "temperature": 0.1,
+          "max_tokens": 1500,
+          "provider": "Novita AI",
+          "usage": {
+            "prompt_tokens": 707,
+            "completion_tokens": 1199,
+            "total_tokens": 1906
+          }
+        },
+        "raw_output": {
+          "genre_analysis": {
+            "primary_genre": "rap",
+            "subgenre": "gangsta",
+            "confidence": 0.8
+          },
+          "mood_analysis": {
+            "primary_mood": "confident",
+            "emotional_intensity": "medium",
+            "energy_level": "high",
+            "valence": "positive"
+          },
+          "content_analysis": {
+            "explicit_content": false,
+            "explicit_level": "none",
+            "main_themes": [
+              "money",
+              "success",
+              "struggle"
+            ],
+            "narrative_style": "boastful"
+          },
+          "technical_analysis": {
+            "rhyme_scheme": "simple",
+            "flow_pattern": "steady",
+            "complexity_level": "intermediate",
+            "wordplay_quality": "basic",
+            "metaphor_usage": "none",
+            "structure": "traditional"
+          },
+          "quality_metrics": {
+            "lyrical_creativity": 0.4,
+            "technical_skill": 0.6,
+            "authenticity": 0.8,
+            "commercial_appeal": 0.9,
+            "originality": 0.5,
+            "overall_quality": 0.6,
+            "ai_generated_likelihood": 0.3
+          },
+          "cultural_context": {
+            "era_estimate": "2010s",
+            "regional_style": "international",
+            "cultural_references": [
+              "urban hustle",
+              "success themes"
+            ],
+            "social_commentary": false
+          }
+        }
+      }
+    },
+    {
+      "index": 1,
+      "analysis_time": 9.123,
+      "text_length": 138,
+      "timestamp": "2025-08-31 09:48:29",
+      "result": {
+        "sentiment": "neutral",
+        "confidence": 0.8647619047619047,
+        "analysis_type": "batch_analysis",
+        "metadata": {
+          "model_name": "qwen/qwen3-4b-fp8",
+          "model_version": "qwen3-4b-fp8",
+          "processing_date": "2025-08-31T09:48:29.650627",
+          "lyrics_length": 133,
+          "temperature": 0.1,
+          "max_tokens": 1500,
+          "provider": "Novita AI",
+          "usage": {
+            "prompt_tokens": 705,
+            "completion_tokens": 796,
+            "total_tokens": 1501
+          }
+        },
+        "raw_output": {
+          "genre_analysis": {
+            "primary_genre": "rap",
+            "subgenre": "alternative-hip-hop",
+            "confidence": 0.95
+          },
+          "mood_analysis": {
+            "primary_mood": "confident",
+            "emotional_intensity": "medium",
+            "energy_level": "high",
+            "valence": "positive"
+          },
+          "content_analysis": {
+            "explicit_content": false,
+            "explicit_level": "none",
+            "main_themes": [
+              "success",
+              "ambition",
+              "fashion"
+            ],
+            "narrative_style": "boastful"
+          },
+          "technical_analysis": {
+            "rhyme_scheme": "simple",
+            "flow_pattern": "steady",
+            "complexity_level": "intermediate",
+            "wordplay_quality": "basic",
+            "metaphor_usage": "none",
+            "structure": "traditional"
+          },
+          "quality_metrics": {
+            "lyrical_creativity": 0.65,
+            "technical_skill": 0.72,
+            "authenticity": 0.81,
+            "commercial_appeal": 0.78,
+            "originality": 0.62,
+            "overall_quality": 0.7,
+            "ai_generated_likelihood": 0.23
+          },
+          "cultural_context": {
+            "era_estimate": "2020s",
+            "regional_style": "international",
+            "cultural_references": [
+              "fashion",
+              "modern ambition"
+            ],
+            "social_commentary": false
+          }
+        }
+      }
+    },
+    {
+      "index": 2,
+      "analysis_time": 13.502,
+      "text_length": 144,
+      "timestamp": "2025-08-31 09:48:43",
+      "result": {
+        "sentiment": "neutral",
+        "confidence": 0.7333333333333334,
+        "analysis_type": "batch_analysis",
+        "metadata": {
+          "model_name": "qwen/qwen3-4b-fp8",
+          "model_version": "qwen3-4b-fp8",
+          "processing_date": "2025-08-31T09:48:43.152262",
+          "lyrics_length": 139,
+          "temperature": 0.1,
+          "max_tokens": 1500,
+          "provider": "Novita AI",
+          "usage": {
+            "prompt_tokens": 707,
+            "completion_tokens": 1214,
+            "total_tokens": 1921
+          }
+        },
+        "raw_output": {
+          "genre_analysis": {
+            "primary_genre": "rap/trap/drill/old-school/gangsta/emo-rap/alternative-hip-hop",
+            "subgenre": "gangsta rap",
+            "confidence": 0.7
+          },
+          "mood_analysis": {
+            "primary_mood": "confident",
+            "emotional_intensity": "high",
+            "energy_level": "high",
+            "valence": "positive"
+          },
+          "content_analysis": {
+            "explicit_content": false,
+            "explicit_level": "none",
+            "main_themes": [
+              "success",
+              "street_life",
+              "mission"
+            ],
+            "narrative_style": "boastful"
+          },
+          "technical_analysis": {
+            "rhyme_scheme": "simple",
+            "flow_pattern": "steady",
+            "complexity_level": "intermediate",
+            "wordplay_quality": "basic",
+            "metaphor_usage": "none",
+            "structure": "traditional"
+          },
+          "quality_metrics": {
+            "lyrical_creativity": 0.3,
+            "technical_skill": 0.6,
+            "authenticity": 0.7,
+            "commercial_appeal": 0.8,
+            "originality": 0.4,
+            "overall_quality": 0.5,
+            "ai_generated_likelihood": 0.2
+          },
+          "cultural_context": {
+            "era_estimate": "2020s",
+            "regional_style": "south",
+            "cultural_references": [
+              "street culture",
+              "success mindset"
+            ],
+            "social_commentary": false
+          }
+        }
+      }
+    }
+  ]
+}

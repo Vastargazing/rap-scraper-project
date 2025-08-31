@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, Any, List
 from collections import Counter
 
-from src.interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, register_analyzer
+from interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, register_analyzer
 
 
 @register_analyzer("algorithmic_basic")

@@ -26,7 +26,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('gemma_27b_analysis.log', encoding='utf-8'),
+        logging.FileHandler('logs/gemma_27b_analysis.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
