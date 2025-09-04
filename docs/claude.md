@@ -1,4 +1,4 @@
-# Rap Scraper Project — AI Agent Context (Updated)
+# Rap Scraper Project — AI Agent Context (Updated: 2025-01-29)
 
 > **Enterprise-ready microservices ML pipeline** for rap lyrics analysis with modern Docker-first architecture
 
@@ -44,7 +44,7 @@ docker-compose up -d
 
 # Check services
 docker-compose ps
-docker-compose logs -f rap-scraper
+docker-compose logs -f rap-analyzer-api
 
 # Access monitoring
 # Grafana: http://localhost:3000
@@ -59,7 +59,7 @@ docker-compose logs -f rap-scraper
 - 📁 **Dataset**: 54,568 tracks, 345 artists (complete corpus)
 - 🎯 **Architecture**: Microservices design with unified main.py entry point
 - 🔄 **Pipeline Status**: ✅ 4 phases complete - production ready
-- 🤖 **AI Analyzers**: 4 specialized components (algorithmic_basic, gemma, ollama, hybrid)
+- 🤖 **AI Analyzers**: 4 specialized components (algorithmic_basic, qwen, ollama, hybrid)
 - ✨ **Docker Ready**: Full containerization with monitoring stack
 - 🚀 **Testing**: Comprehensive pytest suite with 100% pass rate
 
@@ -101,11 +101,11 @@ graph TD
     B --> F[Analyzer Comparison]
     
     G[4 Specialized Analyzers] --> H[algorithmic_basic]
-    G --> I[gemma_analyzer]
+    G --> I[qwen_analyzer]
     G --> J[ollama_analyzer]
     G --> K[hybrid_analyzer]
     
-    L[Docker Stack] --> M[rap-scraper container]
+    L[Docker Stack] --> M[rap-analyzer-api container]
     L --> N[ollama AI service]
     L --> O[nginx proxy]
     L --> P[prometheus monitoring]
@@ -118,7 +118,7 @@ graph TD
 ### Core microservices architecture
 
 #### 🎯 Unified Entry Point
-- `main.py` — Central application (653 lines)
+- `main.py` — Central application (~550 lines)
   - Interactive menu with 7 options
   - Command-line interface with flags
   - Error handling and logging
@@ -126,9 +126,9 @@ graph TD
 
 #### 🤖 Specialized Analyzers
 - `src/analyzers/algorithmic_basic.py` — Fast baseline analysis
-- `src/analyzers/gemma_analyzer.py` — Google Gemma integration  
-- `src/analyzers/ollama_analyzer.py` — Local LLM support
-- `src/analyzers/hybrid_analyzer.py` — Combined approach
+- `src/analyzers/qwen_analyzer.py` — Qwen API integration (cloud-based LLM)
+- `src/analyzers/ollama_analyzer.py` — Local LLM support (Ollama)
+- `src/analyzers/hybrid_analyzer.py` — Combined approach (Qwen + Ollama)
 
 #### 🖥️ CLI Component System
 - `src/cli/text_analyzer.py` — Single text analysis
@@ -152,7 +152,7 @@ graph TD
 
 ### Context priority (post-refactoring)
 1. `docs/claude.md` — this document (updated AI agent context)
-2. `main.py` — unified entry point (653 lines of integration)
+2. `main.py` — unified entry point (~550 lines of integration)
 3. `config.yaml` — centralized configuration reference
 4. `tests/test_integration_comprehensive.py` — test specifications
 5. `FINAL_COMPLETION_REPORT.md` — refactoring achievement summary
@@ -262,6 +262,7 @@ python main.py
 
 # Command-line interface (CI/CD friendly)
 python main.py --analyze "Your text here"           # Quick analysis
+python main.py --analyzer qwen                      # Use Qwen API analyzer
 python main.py --analyzer algorithmic_basic         # Specify analyzer
 python main.py --batch input.txt                    # Batch processing
 python main.py --benchmark                          # Performance test
@@ -274,11 +275,11 @@ python main.py --test                              # Run test suite
 # Production deployment
 docker-compose up -d                               # Start all services
 docker-compose ps                                  # Check service status
-docker-compose logs -f rap-scraper                 # View app logs
+docker-compose logs -f rap-analyzer-api                 # View app logs
 
 # Execute commands in container
-docker-compose exec rap-scraper python main.py --info
-docker-compose exec rap-scraper python main.py --test
+docker-compose exec rap-analyzer-api python main.py --info
+docker-compose exec rap-analyzer-api python main.py --test
 
 # Monitoring access
 # Grafana dashboard: http://localhost:3000
@@ -303,7 +304,7 @@ python main.py --analyze "Test text" --analyzer hybrid  # Single analysis test
 python scripts/rap_scraper_cli.py status                    # System status
 python scripts/rap_scraper_cli.py scraping                  # Data collection
 python scripts/rap_scraper_cli.py spotify --continue        # Spotify enrichment  
-python scripts/rap_scraper_cli.py analysis --analyzer gemma # AI analysis
+python scripts/rap_scraper_cli.py analysis --analyzer qwen # AI analysis
 python scripts/rap_scraper_cli.py monitoring --component all # Monitoring
 
 # Legacy tools (organized)
@@ -381,8 +382,8 @@ python main.py --info                   # System health check
 ```bash
 # Container validation
 docker-compose up -d --build            # Fresh build and deploy
-docker-compose exec rap-scraper python main.py --test  # Test in container
-docker-compose exec rap-scraper python main.py --info  # Container health
+docker-compose exec rap-analyzer-api python main.py --test  # Test in container
+docker-compose exec rap-analyzer-api python main.py --info  # Container health
 
 # Service integration testing
 curl http://localhost:9090/metrics       # Prometheus metrics
@@ -404,7 +405,7 @@ python main.py --analyze "test"         # Quick functionality test
 # - Analysis time: 0.0s
 # - Sentiment: "neutral" or "positive"  
 # - Confidence: >0.7
-# - 4/4 analyzers ready
+# - 4/4 analyzers ready (algorithmic_basic, qwen, ollama, hybrid)
 ```
 
 ### Configuration issues
@@ -423,7 +424,7 @@ python main.py --info                   # Verify config loading
 ```bash
 # Container diagnostics
 docker-compose ps                       # Service status
-docker-compose logs rap-scraper         # Application logs
+docker-compose logs rap-analyzer-api         # Application logs
 docker-compose logs ollama              # AI service logs
 
 # Common Docker problems:
@@ -494,13 +495,13 @@ src/
 │   └── bulk_spotify_enhancement.py # Bulk processing
 ├── analyzers/
 │   ├── multi_model_analyzer.py    # Multi-provider AI analysis
-│   ├── gemma_27b_fixed.py         # Gemma 27B integration
+│   ├── qwen_analyzer.py           # Qwen API integration
 │   └── create_visual_analysis.py  # Portfolio dashboard
 └── models/
     └── models.py                   # Pydantic schemas
 
 monitoring/
-├── monitor_gemma_progress.py      # Real-time Gemma monitoring
+├── monitor_qwen_progress.py       # Real-time Qwen monitoring
 └── check_analysis_status.py       # Analysis status overview
 ```
 
@@ -512,7 +513,7 @@ monitoring/
 ### Training pipeline
 1. Data collection: 53K+ tracks with rich metadata ✅
 2. Feature engineering: sentiment, complexity, audio features 🔄
-3. AI analysis: Multi-model pipeline (Ollama, Gemma 27B) 🔄  
+3. AI analysis: Multi-model pipeline (Ollama local + Qwen cloud API) 🔄  
 4. Model training: fine-tuning on structured dataset 📋
 5. Generation: controlled sampling for style/mood 📋
 
@@ -558,7 +559,7 @@ monitoring/
 ✅ Phase 2: Analyzer Refactoring (Complete)  
 ├── Split monolithic analyzer → 4 specialized components
 ├── algorithmic_basic.py - Fast baseline analysis
-├── gemma_analyzer.py - Google Gemma integration
+├── qwen_analyzer.py - Qwen API integration
 ├── ollama_analyzer.py - Local LLM support
 ├── hybrid_analyzer.py - Combined approach
 └── Comprehensive error handling & validation
@@ -572,7 +573,7 @@ monitoring/
 └── Integration with legacy scripts preserved
 
 ✅ Phase 4: Integration & Testing (Complete)
-├── Unified main.py entry point (653 lines)
+├── Unified main.py entry point (~550 lines)
 ├── Comprehensive test suite (400+ lines)
 ├── Docker containerization with monitoring
 ├── Production-ready configuration management
@@ -584,7 +585,7 @@ monitoring/
 ```
 BEFORE (Monolithic):           AFTER (Microservices):
 ┌─────────────────────┐       ┌─────────────────────┐
-│   1,634 lines       │       │  main.py (653)      │
+│   1,634 lines       │       │  main.py (~550)     │
 │   Single file       │  ⟹   │  + 4 Analyzers      │
 │   Hard to test      │       │  + CLI Components   │
 │   No modularity     │       │  + Docker Stack     │

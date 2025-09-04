@@ -33,7 +33,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('spotify_enhancement_improved.log', encoding='utf-8'),
+        logging.FileHandler('logs/spotify_enhancement_improved.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )

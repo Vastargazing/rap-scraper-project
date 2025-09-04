@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 🎯 Центральная точка входа для rap-scraper-project
-Фаза 4: Интеграция и тестирование
+Интеграция и тестирование
 
 Этот файл предоставляет единый интерфейс для всех функций системы:
 - Анализ текстов и песен
@@ -230,13 +230,13 @@ class RapScraperMainApp:
             return
         
         # Настройки
-        output_file = input("Output file (default: batch_results.json): ").strip()
+        output_file = input("Output file (default: results/batch_results.json): ").strip()
         if not output_file:
-            output_file = "batch_results.json"
+            output_file = "results/batch_results.json"
         
-        checkpoint_file = input("Checkpoint file (default: batch_checkpoint.json): ").strip()
+        checkpoint_file = input("Checkpoint file (default: results/batch_checkpoint.json): ").strip()
         if not checkpoint_file:
-            checkpoint_file = "batch_checkpoint.json"
+            checkpoint_file = "results/batch_checkpoint.json"
         
         workers = input("Number of workers (default: 2): ").strip()
         try:
@@ -509,7 +509,7 @@ Examples:
             results = await app.batch_processor.process_batch(
                 texts=texts,
                 analyzer_type=args.analyzer,
-                output_file="batch_results.json"
+                output_file="results/batch_results.json"
             )
             print(f"Processed {len(results)} texts")
         
@@ -519,9 +519,9 @@ Examples:
             results = await app.performance_monitor.compare_analyzers(
                 analyzer_types=[args.analyzer],
                 test_texts=test_texts,
-                output_file="benchmark_results.json"
+                output_file="results/benchmark_results.json"
             )
-            print("Benchmark completed, results saved to benchmark_results.json")
+            print("Benchmark completed, results saved to results/benchmark_results.json")
         
         elif args.info:
             # System information

@@ -1,6 +1,19 @@
 # AI Assistant Onboarding Checklist (Post-Refactoring)
 
-> **Universal guide для любого AI агента**, начинающего работу с modernized rap-scraper проектом
+> **Universal guide для любого AI агента**, начинающего работу с moder### ML/Analysis Agent (Modernized for 4 Analyzers)
+```python  
+# Primary tasks: Analyzer development, performance optimization, ML pipeline
+def ml_onboarding():
+    read_file("docs/claude.md")                                # ML objectives updated
+    read_file("main.py", limit=50)                             # Analyzer integration
+    list_dir("src/analyzers/")                                # 4 specialized analyzers
+    read_file("src/analyzers/algorithmic_basic.py", limit=50)  # Fast baseline
+    read_file("src/analyzers/hybrid_analyzer.py", limit=50)    # Combined approach
+    run_terminal("python main.py --analyze 'test text'")      # Quick test
+    run_terminal("python main.py --benchmark")                # Performance metrics
+    semantic_search("sentiment OR confidence OR analysis")     # Analysis patterns
+    **Updated 2025-08-31:** Qwen replaced Gemma, Ollama may require local setup
+```aper проектом
 
 ## 🎯 Quick Start (выбери свой сценарий)
 
@@ -54,7 +67,8 @@ Key Info: 54K+ tracks, microservices design, main.py unified interface, Docker r
 File: main.py
 Purpose: Central application integration, CLI interface, component orchestration
 Read When: Understanding system integration, debugging workflows
-Key Info: 653 lines, 7-option interactive menu, command-line flags, error handling
+Key Info: ~550 lines (optimized), 7-option interactive menu, command-line flags, error handling
+**Updated 2025-08-31:** Optimized from 653 to ~550 lines, same functionality
 ```
 
 ### Layer 3: Microservices Components (HIGH PRIORITY - NEW!)
@@ -62,7 +76,8 @@ Key Info: 653 lines, 7-option interactive menu, command-line flags, error handli
 Structure: src/analyzers/, src/cli/, src/models/
 Purpose: Specialized analyzers, CLI components, data models
 Read When: Working with specific components, adding features
-Key Info: 4 analyzers (algorithmic_basic, gemma, ollama, hybrid), modular CLI system
+Key Info: 4 analyzers (algorithmic_basic, qwen, ollama, hybrid), modular CLI system
+**Updated 2025-08-31:** Qwen replaced Gemma, Ollama may be unavailable on Windows
 ```
 
 ### Layer 4: Configuration & Testing (HIGH PRIORITY - NEW!)
@@ -278,7 +293,7 @@ Python+Pydantic+SQLite+Docker stack. Цель: scalable text analysis с real-ti
 #### Current Status (что сейчас происходит):
 ```
 "Проект успешно завершил 4-фазный рефакторинг (авг 2025): microservices architecture, 
-unified main.py interface (653 lines), 4 specialized analyzers, Docker containerization, 
+unified main.py interface (~550 lines), 4 specialized analyzers, Docker containerization, 
 comprehensive testing (15 test methods), centralized config.yaml. Production ready.
 Status: 54,568 songs в БД, 4/4 analyzers operational, 100% test pass rate.
 Validated performance: analysis_time 0.0s, confidence 0.86, batch success 100%."
@@ -286,8 +301,8 @@ Validated performance: analysis_time 0.0s, confidence 0.86, batch success 100%."
 
 #### Technical Stack (для понимания технологий):
 ```
-"Python 3.8+, microservices architecture: main.py (653 lines) + src/{analyzers,cli,models}/, 
-4 specialized analyzers (algorithmic_basic, gemma, ollama, hybrid), 
+"Python 3.8+, microservices architecture: main.py (~550 lines) + src/{analyzers,cli,models}/, 
+4 specialized analyzers (algorithmic_basic, qwen, ollama, hybrid), 
 unified CLI с interactive menu, Pydantic validation, centralized config.yaml,
 Docker multi-service deployment (5 containers), Prometheus+Grafana monitoring,
 comprehensive pytest suite (400+ lines), async/await patterns, production-ready."
@@ -477,6 +492,7 @@ python -c "import os; print('✅ Genius key:', 'GENIUS_ACCESS_TOKEN' in os.envir
 3. Container resources: run_terminal("docker stats") (if using Docker)
 4. Database optimization: run_terminal("python scripts/rap_scraper_cli.py monitoring --component database")
 5. Memory usage: prefer algorithmic_basic for speed, hybrid for quality
+**Note:** Ollama may be unavailable on Windows - use algorithmic_basic or qwen for analysis
 ```
 
 ### If Docker Issues (New)
@@ -495,7 +511,7 @@ python -c "import os; print('✅ Genius key:', 'GENIUS_ACCESS_TOKEN' in os.envir
 
 ### Knowledge Acquisition Checklist (Updated)
 - [ ] **Microservices Architecture Clear**: Понимаю main.py + component structure
-- [ ] **4 Analyzers Mapped**: algorithmic_basic, gemma, ollama, hybrid capabilities  
+- [ ] **4 Analyzers Mapped**: algorithmic_basic, qwen, ollama, hybrid capabilities (Updated 2025-08-31)
 - [ ] **Docker Deployment**: Знаю containerization и monitoring stack
 - [ ] **Configuration System**: Понимаю config.yaml + legacy .env
 - [ ] **Testing Framework**: Знаю pytest suite и validation methods
@@ -557,28 +573,29 @@ echo "Updated: $(date)" >> AI_ONBOARDING_CHECKLIST.md
 ```yaml
 Project: Enterprise microservices ML rap lyrics analysis
 Stack: Python 3.8+ + Pydantic + SQLite + Docker + main.py unified interface
-Architecture: main.py (653 lines) + src/{analyzers,cli,models}/ + Docker stack
+Architecture: main.py (~550 lines) + src/{analyzers,cli,models}/ + Docker stack
 Data: 54,568 tracks, 345 artists, 4 specialized analyzers, production monitoring
 Status: 4-phase refactoring complete, production ready, 100% test pass rate
 Performance: analysis_time 0.0s, confidence 0.86, batch success 100%
 
 Key Files:
-  - main.py: Unified entry point (653 lines, 7-option menu)
+  - main.py: Unified entry point (~550 lines, optimized)
   - docs/claude.md: Microservices context (COMPLETELY UPDATED!)
   - config.yaml: Centralized configuration system
   - tests/test_integration_comprehensive.py: Test suite (400+ lines)
   - docker-compose.yml: Multi-service deployment
 
 Microservices Architecture:
-  - src/analyzers/: algorithmic_basic, gemma, ollama, hybrid
+  - src/analyzers/: algorithmic_basic, qwen, ollama, hybrid (Updated 2025-08-31)
   - src/cli/: text_analyzer, batch_processor, performance_monitor
   - src/models/: analysis_models, config_models, database_models
   - tests/: comprehensive pytest suite with 15 test methods
 
 Docker Stack:
-  - rap-scraper: Main application container
-  - ollama: AI model server  
+  - rap-analyzer-api: Main application container
+  - ollama: AI model server (may be unavailable on Windows)
   - nginx: Reverse proxy
+  - redis: Caching layer
   - prometheus: Metrics collection
   - grafana: Data visualization
 
@@ -593,8 +610,8 @@ Main.py Commands:
 Docker Commands:
   - Deploy: docker-compose up -d
   - Status: docker-compose ps
-  - Logs: docker-compose logs rap-scraper
-  - Execute: docker-compose exec rap-scraper python main.py --info
+  - Logs: docker-compose logs rap-analyzer-api
+  - Execute: docker-compose exec rap-analyzer-api python main.py --info
   - Monitoring: http://localhost:3000 (Grafana), http://localhost:9090 (Prometheus)
 
 Legacy Compatibility:
@@ -612,4 +629,4 @@ Emergency: Reset with docs/claude.md + main.py --info + component structure
 
 ---
 
-*Created: 2025-08-26 | Version: 5.0 - Post-Microservices Refactoring | Updated: 2025-08-29 | Next Review: After production deployment optimization*
+*Created: 2025-08-26 | Version: 5.1 - Updated for Qwen Integration | Updated: 2025-08-31 | Next Review: After production deployment optimization*

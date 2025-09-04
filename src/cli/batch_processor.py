@@ -329,8 +329,8 @@ async def main():
         results = await processor.process_batch(
             texts=test_texts,
             analyzer_type="algorithmic",
-            output_file="batch_results.json",
-            checkpoint_file="batch_checkpoint.json",
+            output_file="results/batch_results.json",
+            checkpoint_file="results/batch_checkpoint.json",
             resume_from_checkpoint=False
         )
         

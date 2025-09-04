@@ -27,4 +27,4 @@ SPOTIFY_RATE_LIMIT = 0.1
 
 # Logging configuration
 LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
-LOG_FILE = PROJECT_ROOT / "scraping.log"
+LOG_FILE = PROJECT_ROOT / "logs" / "scraping.log"
