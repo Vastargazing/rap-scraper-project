@@ -1,0 +1,31 @@
+{
+  "task_type": "analyze",
+  "relevant_files": [
+    "docs/claude.md",
+    "src/database/postgres_adapter.py",
+    "main.py",
+    "config.yaml",
+    "src\\analyzers\\simplified_feature_analyzer.py",
+    "src\\analyzers\\emotion_analyzer.py",
+    "src\\analyzers\\ollama_analyzer.py",
+    "src\\analyzers\\hybrid_analyzer.py",
+    "src\\analyzers\\algorithmic_analyzer.py",
+    "src\\analyzers\\gemma_27b_fixed.py",
+    "src\\analyzers\\create_visual_analysis.py",
+    "src\\analyzers\\multi_model_analyzer.py",
+    "src\\analyzers\\qwen_analyzer.py"
+  ],
+  "context_summary": "Контекст для задачи: ANALYZE\nФайлов в контексте: 13\n- docs: 1 файлов (1 высокого приоритета)\n- database: 1 файлов (1 высокого приоритета)\n- cli: 1 файлов (1 высокого приоритета)\n- config: 1 файлов (1 высокого приоритета)\n- analyzer: 9 файлов (0 высокого приоритета)\nФокус: анализ данных, производительность AI моделей",
+  "suggested_commands": [
+    "python main.py --info  # Статус системы",
+    "python main.py --test  # Валидация компонентов",
+    "python scripts/mass_qwen_analysis.py --test  # Тест массового анализа",
+    "python scripts/db_browser.py  # Интерактивный браузер БД",
+    "python main.py --benchmark  # Сравнение анализаторов"
+  ],
+  "warnings": [
+    "🔄 Проект мигрирован на PostgreSQL. Избегай sqlite3 импортов.",
+    "🏗️ Используй main.py как единую точку входа, не запускай компоненты напрямую.",
+    "🧪 Всегда тестируй изменения через python main.py --test."
+  ]
+}

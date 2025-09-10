@@ -1,0 +1,56 @@
+{
+  "name": "Rap Scraper AI Workspace",
+  "description": "PostgreSQL-powered rap lyrics analysis with microservices architecture",
+  "version": "2.0.0-postgresql",
+  "architecture": {
+    "type": "microservices",
+    "database": "PostgreSQL 15",
+    "entry_point": "main.py",
+    "key_components": [
+      "src/database/postgres_adapter.py",
+      "src/analyzers/",
+      "src/cli/",
+      "src/models/"
+    ]
+  },
+  "ai_context": {
+    "priority_files": [
+      {
+        "path": "main.py",
+        "priority": 5,
+        "category": "cli",
+        "description": "Единая точка входа, центральная оркестрация"
+      },
+      {
+        "path": "src/database/postgres_adapter.py",
+        "priority": 5,
+        "category": "database",
+        "description": "PostgreSQL адаптер, connection pooling, async операции"
+      },
+      {
+        "path": "config.yaml",
+        "priority": 4,
+        "category": "config",
+        "description": "Централизованная конфигурация системы"
+      },
+      {
+        "path": "docs/claude.md",
+        "priority": 5,
+        "category": "docs",
+        "description": "Основной контекст для AI ассистентов"
+      }
+    ],
+    "task_workflows": {
+      "debug": "Focus on database connectivity, error handling, integration issues",
+      "develop": "Use microservices patterns, PostgreSQL backend, test-driven development",
+      "analyze": "Leverage 5 AI analyzers, batch processing, performance optimization",
+      "refactor": "Maintain architectural boundaries, eliminate SQLite legacy, DRY principles"
+    }
+  },
+  "warnings": [
+    "Project migrated from SQLite to PostgreSQL - avoid legacy patterns",
+    "Use main.py unified interface instead of direct component calls",
+    "Test all changes with comprehensive test suite",
+    "Maintain microservices architectural boundaries"
+  ]
+}

@@ -1,0 +1,132 @@
+# 🎯 Rap Scraper Project - Spec Kit Configuration
+
+project:
+  name: "rap-scraper-project"
+  type: "ml-pipeline"
+  version: "1.0.0"
+  description: "Enterprise rap lyrics analysis with multi-model AI integration"
+  
+  architecture:
+    style: "microservices"
+    entry_point: "main.py"
+    deployment: "docker-compose"
+    
+  tech_stack:
+    language: "python"
+    version: "3.8+"
+    framework: "fastapi"
+    database: "sqlite"
+    containerization: "docker"
+    monitoring: "prometheus+grafana"
+
+components:
+  analyzers:
+    path: "src/analyzers/"
+    interface: "BaseAnalyzer"
+    registration: "decorator-based"
+    types:
+      - "algorithmic_basic"
+      - "qwen" 
+      - "ollama"
+      - "hybrid"
+      
+  scrapers:
+    path: "src/scrapers/"
+    interface: "BaseScraper"
+    sources:
+      - "genius.com"
+      - "spotify_api"
+      
+  cli:
+    path: "src/cli/"
+    entry_point: "main.py"
+    features:
+      - "interactive_menu"
+      - "command_flags"
+      - "batch_processing"
+
+specifications:
+  location: "docs/specs/"
+  format: "yaml+markdown"
+  
+  templates:
+    new_analyzer: "docs/specs/templates/new_analyzer_template.md"
+    new_scraper: "docs/specs/templates/new_scraper_template.md"
+    new_integration: "docs/specs/templates/integration_template.md"
+    
+  workflows:
+    location: "docs/specs/workflows/"
+    automation: "github_actions"
+
+development:
+  testing:
+    framework: "pytest"
+    coverage_target: "90%"
+    types: ["unit", "integration", "performance"]
+    
+  quality:
+    linting: "flake8"
+    formatting: "black" 
+    type_checking: "mypy"
+    
+  documentation:
+    api: "openapi/swagger"
+    user_guide: "markdown"
+    ai_context: "docs/claude.md"
+
+deployment:
+  development:
+    command: "python main.py"
+    requirements: "pip install -r requirements.txt"
+    
+  production:
+    command: "docker-compose up -d"
+    monitoring: "http://localhost:3000"
+    health_check: "http://localhost:8000/health"
+    
+  scaling:
+    horizontal: "docker-compose scale"
+    vertical: "resource limits in docker-compose.yml"
+
+integration_points:
+  external_apis:
+    - name: "genius_api"
+      purpose: "lyrics collection"
+      auth: "token"
+      
+    - name: "spotify_api" 
+      purpose: "metadata enrichment"
+      auth: "oauth2"
+      
+    - name: "novita_ai"
+      purpose: "qwen analysis"
+      auth: "api_key"
+      
+  data_stores:
+    - name: "rap_lyrics.db"
+      type: "sqlite"
+      location: "data/"
+      backup: true
+
+performance:
+  targets:
+    analysis_latency: "< 500ms"
+    batch_throughput: "100+ analyses/minute"
+    memory_usage: "< 8GB"
+    uptime: "99%+"
+    
+  monitoring:
+    metrics: ["response_time", "throughput", "error_rate"]
+    alerting: "grafana"
+    logging: "structured_json"
+
+extensibility:
+  plugin_system: "decorator_registration"
+  configuration: "yaml_based"
+  hot_reload: "config_only"
+  
+  extension_points:
+    - "new_analyzers"
+    - "new_data_sources" 
+    - "custom_metrics"
+    - "output_formats"

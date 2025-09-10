@@ -1,0 +1,63 @@
+# Environment variables
+.env
+
+# Database files - ALL db files excluded
+*.db
+*.db-shm
+*.db-wal
+*backup*.db
+backup_*.db*
+temp_*.db
+
+# Log files
+*.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Personal documentation (local only)
+AI_Engineer_Journal/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+cache/
+
+# Large data files
+*.jsonl
+enhanced_data/
+langchain_results/
+analysis_results/
+
+# Archive and legacy files
+archive/
+docs/legacy/
+
+# JSON outputs (organized)
+results/json_outputs/
+
+# PostgreSQL dumps and data
+*.sql
+*.dump
+*.pgdata
+pgdata/
+postgres_data/

@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-09-10T14:00:22.779087",
+  "project_root": "C:\\Users\\VA\\rap-scraper-project",
+  "dead_code": [],
+  "complexity_issues": [],
+  "duplications": [
+    "Дублирование функций анализа: 15 matches",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\algorithmic_analyzer.py:83: def analyze_song(self, artist: str, title: str, lyrics: str) -> AnalysisResult:",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\emotion_analyzer.py:120: def analyze_song(self, artist: str, title: str, lyrics: str) -> AnalysisResult:",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\gemma_27b_fixed.py:174: def analyze_song(self, song_metadata: SimpleSongMetadata) -> Optional[SimpleLyricsAnalysis]:",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\gemma_27b_fixed.py:361: def analyze_songs_from_db(api_key: str, db_path: str = \"rap_lyrics.db\",",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\hybrid_analyzer.py:95: def analyze_song(self, artist: str, title: str, lyrics: str) -> AnalysisResult:",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\multi_model_analyzer.py:650: def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\multi_model_analyzer.py:705: def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\multi_model_analyzer.py:854: def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\multi_model_analyzer.py:1038: def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\multi_model_analyzer.py:1297: def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:",
+    "Устаревшие SQLite импорты: 18 matches",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\create_visual_analysis.py:6: import sqlite3",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\gemma_27b_fixed.py:13: import sqlite3",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\multi_model_analyzer.py:19: import sqlite3",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\enhancers\\bulk_spotify_enhancement.py:30: import sqlite3",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\enhancers\\spotify_analysis_utils.py:24: import sqlite3",
+    "C:\\Users\\VA\\rap-scraper-project\\scripts\\continue_spotify_enhancement.py:32: import sqlite3",
+    "C:\\Users\\VA\\rap-scraper-project\\scripts\\migrate_to_postgresql.py:27: import sqlite3",
+    "C:\\Users\\VA\\rap-scraper-project\\scripts\\rap_scraper_cli.py:248: import sqlite3",
+    "C:\\Users\\VA\\rap-scraper-project\\scripts\\tools\\ai_code_audit.py:140: (\"import sqlite3\", \"Устаревшие SQLite импорты\"),",
+    "C:\\Users\\VA\\rap-scraper-project\\scripts\\tools\\ai_code_audit.py:201: if \"import sqlite3\" in content and \"scripts/archive\" not in str(py_file):"
+  ],
+  "architectural_issues": [
+    "SQLite legacy code found in 19 files",
+    "C:\\Users\\VA\\rap-scraper-project\\scripts\\continue_spotify_enhancement.py",
+    "C:\\Users\\VA\\rap-scraper-project\\scripts\\migrate_to_postgresql.py",
+    "C:\\Users\\VA\\rap-scraper-project\\scripts\\rap_scraper_cli.py",
+    "C:\\Users\\VA\\rap-scraper-project\\tests\\conftest.py",
+    "C:\\Users\\VA\\rap-scraper-project\\tests\\test_spotify_enhancer.py",
+    "Large files found (>500 lines): 10 files",
+    "C:\\Users\\VA\\rap-scraper-project\\main.py: 1049 lines",
+    "C:\\Users\\VA\\rap-scraper-project\\scripts\\rap_scraper_cli.py: 550 lines",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\gemma_27b_fixed.py: 536 lines",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\hybrid_analyzer.py: 548 lines",
+    "C:\\Users\\VA\\rap-scraper-project\\src\\analyzers\\multi_model_analyzer.py: 1634 lines"
+  ],
+  "recommendations": [
+    "🔄 Извлечение общих функций для уменьшения дублирования"
+  ]
+}

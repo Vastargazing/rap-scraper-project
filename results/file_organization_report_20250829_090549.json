@@ -1,0 +1,76 @@
+{
+  "timestamp": "2025-08-29T09:05:49.949306",
+  "project_root": ".",
+  "total_moves": 9,
+  "moves": [
+    {
+      "source": "ai_analysis.log",
+      "target": "monitoring\\ai_analysis.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:05:49.946895",
+      "status": "dry_run"
+    },
+    {
+      "source": "confidence_test.json",
+      "target": "results\\confidence_test.json",
+      "reason": "ML feature outputs belong in results/ directory",
+      "timestamp": "2025-08-29T09:05:49.947478",
+      "status": "dry_run"
+    },
+    {
+      "source": "confidence_test_updated.json",
+      "target": "results\\confidence_test_updated.json",
+      "reason": "ML feature outputs belong in results/ directory",
+      "timestamp": "2025-08-29T09:05:49.947666",
+      "status": "dry_run"
+    },
+    {
+      "source": "gemma_27b_analysis.log",
+      "target": "monitoring\\gemma_27b_analysis.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:05:49.947964",
+      "status": "dry_run"
+    },
+    {
+      "source": "production_analysis.log",
+      "target": "monitoring\\production_analysis.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:05:49.948145",
+      "status": "dry_run"
+    },
+    {
+      "source": "scraping.log",
+      "target": "monitoring\\scraping.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:05:49.948653",
+      "status": "dry_run"
+    },
+    {
+      "source": "spotify_enhancement.log",
+      "target": "monitoring\\spotify_enhancement.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:05:49.948829",
+      "status": "dry_run"
+    },
+    {
+      "source": "spotify_enhancement_improved.log",
+      "target": "monitoring\\spotify_enhancement_improved.log",
+      "reason": "Log files belong in monitoring/ directory",
+      "timestamp": "2025-08-29T09:05:49.948988",
+      "status": "dry_run"
+    },
+    {
+      "source": "style_comparison.json",
+      "target": "results\\style_comparison.json",
+      "reason": "ML feature outputs belong in results/ directory",
+      "timestamp": "2025-08-29T09:05:49.949095",
+      "status": "dry_run"
+    }
+  ],
+  "target_directories": {
+    "data": "data",
+    "results": "results",
+    "monitoring": "monitoring",
+    "analysis_results": "analysis_results"
+  }
+}

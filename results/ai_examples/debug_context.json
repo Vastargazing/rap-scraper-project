@@ -1,0 +1,32 @@
+{
+  "task_type": "debug",
+  "relevant_files": [
+    "docs/claude.md",
+    "src/database/postgres_adapter.py",
+    "main.py",
+    "config.yaml",
+    "src\\analyzers\\simplified_feature_analyzer.py",
+    "src\\analyzers\\emotion_analyzer.py",
+    "src\\analyzers\\ollama_analyzer.py",
+    "src\\analyzers\\hybrid_analyzer.py",
+    "src\\analyzers\\algorithmic_analyzer.py",
+    "src\\analyzers\\gemma_27b_fixed.py",
+    "src\\analyzers\\create_visual_analysis.py",
+    "src\\analyzers\\multi_model_analyzer.py",
+    "src\\analyzers\\qwen_analyzer.py"
+  ],
+  "context_summary": "Контекст для задачи: DEBUG\nФайлов в контексте: 13\n- docs: 1 файлов (1 высокого приоритета)\n- database: 1 файлов (1 высокого приоритета)\n- cli: 1 файлов (1 высокого приоритета)\n- config: 1 файлов (1 высокого приоритета)\n- analyzer: 9 файлов (0 высокого приоритета)\nФокус: диагностика проблем, анализ логики, проверка интеграции",
+  "suggested_commands": [
+    "python main.py --info  # Статус системы",
+    "python main.py --test  # Валидация компонентов",
+    "python check_stats.py  # PostgreSQL статистика",
+    "python check_overlap.py  # Проверка консистентности данных",
+    "grep -r 'ERROR\\|Exception' src/ --include='*.py'  # Поиск ошибок",
+    "docker-compose logs rap-analyzer-api  # Логи контейнера (если Docker)"
+  ],
+  "warnings": [
+    "🔄 Проект мигрирован на PostgreSQL. Избегай sqlite3 импортов.",
+    "🏗️ Используй main.py как единую точку входа, не запускай компоненты напрямую.",
+    "🧪 Всегда тестируй изменения через python main.py --test."
+  ]
+}

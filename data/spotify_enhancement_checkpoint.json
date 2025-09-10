@@ -1,0 +1,24 @@
+{
+  "last_processed_id": 11963,
+  "timestamp": "2025-09-07T13:00:05.894290",
+  "stats": {
+    "tracks_processed": 1539,
+    "tracks_success": 650,
+    "tracks_failed": 889,
+    "total_api_calls": 6135,
+    "start_time": "2025-09-07T11:53:29.180550",
+    "errors": {
+      "not_found": 889
+    },
+    "strategies_used": {
+      "exact": 0,
+      "basic": 0,
+      "no_feat": 0,
+      "keywords": 0,
+      "simple": 0,
+      "track_only": 0,
+      "alt_artist": 0,
+      "not_found": 0
+    }
+  }
+}
