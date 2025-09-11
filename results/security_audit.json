@@ -1,0 +1,208 @@
+{
+  "timestamp": "2025-09-11T10:01:09.593848",
+  "summary": {
+    "total_vulnerabilities": 0,
+    "critical_vulnerabilities": 0,
+    "outdated_packages": 21,
+    "critical_updates": 0,
+    "dependency_conflicts": 0,
+    "security_score": 100
+  },
+  "vulnerabilities": [],
+  "outdated_packages": [
+    {
+      "name": "beautifulsoup4",
+      "installed_version": "4.13.4",
+      "latest_version": "4.13.5",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "cachetools",
+      "installed_version": "5.5.2",
+      "latest_version": "6.2.0",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": true,
+      "update_priority": "low"
+    },
+    {
+      "name": "google-ai-generativelanguage",
+      "installed_version": "0.6.15",
+      "latest_version": "0.7.0",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "google-api-python-client",
+      "installed_version": "2.179.0",
+      "latest_version": "2.181.0",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "google-cloud-aiplatform",
+      "installed_version": "1.110.0",
+      "latest_version": "1.112.0",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "google-cloud-bigquery",
+      "installed_version": "3.36.0",
+      "latest_version": "3.37.0",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "google-cloud-storage",
+      "installed_version": "2.19.0",
+      "latest_version": "3.3.1",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": true,
+      "update_priority": "low"
+    },
+    {
+      "name": "google-genai",
+      "installed_version": "1.31.0",
+      "latest_version": "1.36.0",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "grpcio-status",
+      "installed_version": "1.71.2",
+      "latest_version": "1.74.0",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "httplib2",
+      "installed_version": "0.22.0",
+      "latest_version": "0.30.2",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "lyricsgenius",
+      "installed_version": "3.7.0",
+      "latest_version": "3.7.2",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "numpy",
+      "installed_version": "2.3.2",
+      "latest_version": "2.3.3",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "medium"
+    },
+    {
+      "name": "openai",
+      "installed_version": "1.102.0",
+      "latest_version": "1.107.1",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "protobuf",
+      "installed_version": "5.29.5",
+      "latest_version": "6.32.0",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": true,
+      "update_priority": "low"
+    },
+    {
+      "name": "pydantic",
+      "installed_version": "2.9.2",
+      "latest_version": "2.11.7",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "high"
+    },
+    {
+      "name": "pydantic_core",
+      "installed_version": "2.23.4",
+      "latest_version": "2.39.0",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "pytest",
+      "installed_version": "8.4.1",
+      "latest_version": "8.4.2",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "regex",
+      "installed_version": "2025.7.34",
+      "latest_version": "2025.9.1",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "safety-schemas",
+      "installed_version": "0.0.14",
+      "latest_version": "0.0.15",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "soupsieve",
+      "installed_version": "2.7",
+      "latest_version": "2.8",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    },
+    {
+      "name": "typing_extensions",
+      "installed_version": "4.14.1",
+      "latest_version": "4.15.0",
+      "is_outdated": true,
+      "days_behind": 30,
+      "breaking_changes": false,
+      "update_priority": "low"
+    }
+  ],
+  "conflicts": [],
+  "requirements_issues": [],
+  "recommendations": [
+    "📅 Запланируйте регулярные обновления зависимостей (еженедельно)"
+  ]
+}

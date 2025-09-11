@@ -1,0 +1,140 @@
+[
+  {
+    "timestamp": "2025-09-11T10:01:55.055679",
+    "dry_run": false,
+    "safe_updates": [
+      {
+        "package": "beautifulsoup4",
+        "old_version": "4.13.4",
+        "new_version": "4.13.5",
+        "status": "success"
+      },
+      {
+        "package": "cachetools",
+        "old_version": "5.5.2",
+        "new_version": "6.2.0",
+        "status": "success"
+      },
+      {
+        "package": "google-ai-generativelanguage",
+        "old_version": "0.6.15",
+        "new_version": "0.7.0",
+        "status": "success"
+      },
+      {
+        "package": "google-api-python-client",
+        "old_version": "2.179.0",
+        "new_version": "2.181.0",
+        "status": "success"
+      },
+      {
+        "package": "google-cloud-aiplatform",
+        "old_version": "1.110.0",
+        "new_version": "1.112.0",
+        "status": "success"
+      },
+      {
+        "package": "google-cloud-bigquery",
+        "old_version": "3.36.0",
+        "new_version": "3.37.0",
+        "status": "success"
+      },
+      {
+        "package": "google-cloud-storage",
+        "old_version": "2.19.0",
+        "new_version": "3.3.1",
+        "status": "success"
+      },
+      {
+        "package": "google-genai",
+        "old_version": "1.31.0",
+        "new_version": "1.36.0",
+        "status": "success"
+      },
+      {
+        "package": "grpcio-status",
+        "old_version": "1.71.2",
+        "new_version": "1.74.0",
+        "status": "success"
+      },
+      {
+        "package": "httplib2",
+        "old_version": "0.22.0",
+        "new_version": "0.30.2",
+        "status": "success"
+      },
+      {
+        "package": "lyricsgenius",
+        "old_version": "3.7.0",
+        "new_version": "3.7.2",
+        "status": "success"
+      },
+      {
+        "package": "openai",
+        "old_version": "1.102.0",
+        "new_version": "1.107.1",
+        "status": "success"
+      },
+      {
+        "package": "protobuf",
+        "old_version": "5.29.5",
+        "new_version": "6.32.0",
+        "status": "success"
+      },
+      {
+        "package": "pydantic",
+        "old_version": "2.9.2",
+        "new_version": "2.11.7",
+        "status": "success"
+      },
+      {
+        "package": "pydantic_core",
+        "old_version": "2.23.4",
+        "new_version": "2.39.0",
+        "status": "success"
+      },
+      {
+        "package": "pytest",
+        "old_version": "8.4.1",
+        "new_version": "8.4.2",
+        "status": "success"
+      },
+      {
+        "package": "regex",
+        "old_version": "2025.7.34",
+        "new_version": "2025.9.1",
+        "status": "success"
+      },
+      {
+        "package": "safety-schemas",
+        "old_version": "0.0.14",
+        "new_version": "0.0.15",
+        "status": "success"
+      },
+      {
+        "package": "soupsieve",
+        "old_version": "2.7",
+        "new_version": "2.8",
+        "status": "success"
+      },
+      {
+        "package": "typing_extensions",
+        "old_version": "4.14.1",
+        "new_version": "4.15.0",
+        "status": "success"
+      }
+    ],
+    "risky_updates": [
+      {
+        "name": "numpy",
+        "installed_version": "2.3.2",
+        "latest_version": "2.3.3",
+        "is_outdated": true,
+        "days_behind": 30,
+        "breaking_changes": false,
+        "update_priority": "medium"
+      }
+    ],
+    "errors": []
+  }
+]

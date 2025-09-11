@@ -89,6 +89,14 @@ Read When: Аудит архитектуры, автоматизация AI-на
 Key Info: AST-парсинг, приоритезация файлов, workspace генерация, метрики для микросервисов
 ```
 
+### Layer 6.1: Security & Dependency Tools (NEW!)
+```yaml
+Files: scripts/tools/dependency_manager.py
+Purpose: Автоматические аудиты зависимостей, обнаружение уязвимостей и безопасные обновления
+Read When: Перед релизом, при настройке окружения, при обнаружении подозрительных зависимостей
+Key Info: --security-report, --audit, --update-safe; генерирует UTF-8 JSON в results/security_audit.json
+```
+
 ### Layer 7: Legacy Compatibility (AS NEEDED - ARCHIVED)
 ```yaml
 Files: scripts/archive/, data/data_backup_*.db
@@ -207,6 +215,14 @@ run_terminal("python -c 'from src.database.postgres_adapter import PostgreSQLMan
 # 3. Performance analysis
 run_terminal("python check_overlap.py")               # Analysis efficiency
 semantic_search("connection pool OR async")           # Performance patterns
+
+### Dependency Security
+```bash
+# Dependency security audit (requires `safety` for full vulnerability scanning)
+python scripts/tools/dependency_manager.py --security-report
+pip install safety  # if missing, then run full audit:
+python scripts/tools/dependency_manager.py --audit
+```
 ```
 
 ### Analysis Development (PostgreSQL-Compatible)

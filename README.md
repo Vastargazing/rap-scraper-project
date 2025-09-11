@@ -109,6 +109,7 @@ graph TB
 | 🔍 **Performance Monitor** | Connection pool & query monitoring | PostgreSQL | ✅ Production |
 | 🤖 **AI Context Manager** | Intelligent project context generation for AI assistants | Results Archive | ✅ Production |
 | 📊 **AI Project Analyzer** | Automated code analysis, metrics & insights | Results Archive | ✅ Production |
+| 🔐 **Dependency Security Manager** | Dependency audits, vulnerability scanning, safe updates, structured JSON reports | Results Archive | ✅ Production |
 | 🐘 **PostgreSQL DB** | 57,717 tracks with concurrent access | PostgreSQL 15 | ✅ Production |
 
 ## 🚀 Enterprise Features
@@ -221,7 +222,7 @@ python scripts/tools/ai_context_manager.py analyze  # Analysis context for speci
 - 🛠️ **VS Code Tasks**: Pre-configured tasks for seamless development workflow
 - 🎯 **AI-Optimized**: Formats context specifically for AI assistant consumption
 
-### AI Project Analyzer (`scripts/tools/ai_project_analyzer.py`)
+### De Project Analyzer (`scripts/tools/ai_project_analyzer.py`)
 **Automated code analysis, metrics & architectural insights**
 
 ```bash
