@@ -7,19 +7,19 @@ Analyzers module for the rap scraper project.
 - Гибридные анализаторы
 """
 
-from .algorithmic_analyzer import AlgorithmicAnalyzer
+from .algorithmic_analyzer import AdvancedAlgorithmicAnalyzer
 from .qwen_analyzer import QwenAnalyzer
 from .ollama_analyzer import OllamaAnalyzer
-from .hybrid_analyzer import HybridAnalyzer
+# from .hybrid_analyzer import HybridAnalyzer  # Временно отключен
 from .emotion_analyzer import EmotionAnalyzer
 
 # При создании новых анализаторов они будут автоматически зарегистрированы
 # благодаря декоратору @register_analyzer
 
 __all__ = [
-    "AlgorithmicAnalyzer",
+    "AdvancedAlgorithmicAnalyzer",
     "QwenAnalyzer", 
     "OllamaAnalyzer",
-    "HybridAnalyzer",
+    # "HybridAnalyzer",  # Временно отключен
     "EmotionAnalyzer"
 ]

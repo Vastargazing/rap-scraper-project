@@ -65,6 +65,9 @@ class BaseAnalyzer(ABC):
         """Initialize analyzer with configuration"""
         self.config = config or {}
         self.name = self.__class__.__name__
+        self.available = True  # Default availability
+        self.model_name = None  # Default model name
+        self.api_url = None  # Default API URL
     
     @abstractmethod
     def analyze_song(self, artist: str, title: str, lyrics: str) -> AnalysisResult:

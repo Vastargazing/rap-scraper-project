@@ -60,14 +60,14 @@ import time
 import json
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 
 # Загружаем переменные окружения
 load_dotenv()
 
 # Добавляем корневую папку в path
-project_root = os.path.dirname(os.path.dirname(__file__))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, 'src'))
 
@@ -75,7 +75,10 @@ from src.core.app import create_app
 from src.interfaces.analyzer_interface import AnalyzerFactory
 from src.database.postgres_adapter import PostgreSQLManager
 
-async def mass_analyze_database(batch_size: int = 100, max_records: int = None):
+# Импортируем анализаторы для их регистрации
+from src.analyzers.qwen_analyzer import QwenAnalyzer
+
+async def mass_analyze_database(batch_size: int = 100, max_records: Optional[int] = None):
     """
     Массовый анализ всей базы данных с Qwen анализатором
     

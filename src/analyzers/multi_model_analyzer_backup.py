@@ -1,51 +1,4 @@
 """
-TO_DO
-🎉 **Отлично! Скрипт теперь работает полностью корректно!**
-
-## ✅ **Проблема решена:**
-- **NameError для `GemmaProvider` и `MockProvider`** - исправлен путем правильного порядка определения классов
-- **SyntaxError** - исправлен в предыдущих шагах
-- **Скрипт выполняется без ошибок**
-
-## 📊 **Результаты тестирования:**
-
-### 🔧 **Техническое состояние:**
-- ✅ **Ollama провайдер**: Недоступен (сервер не запущен) - нормально
-- ✅ **Gemma провайдер**: Недоступен (API ключ не настроен) - нормально  
-- ✅ **Mock провайдер**: Работает как надежный fallback
-- ✅ **PostgreSQL**: Подключение успешно
-- ✅ **AI Safety & Hallucination Detection**: Полностью функционален
-
-### 🎯 **Функциональность:**
-- ✅ **Многомодельный анализ**: Работает с fallback между провайдерами
-- ✅ **Интерпретируемость**: Показывает объяснения решений AI
-- ✅ **Валидация безопасности**: Детектирует галлюцинации и подозрительные результаты
-- ✅ **Статистика использования**: Отслеживает использование разных провайдеров
-
-### 📈 **Производительность:**
-- **3 песни проанализированы** успешно
-- **0 ошибок** выполнения
-- **$0.0000** стоимость (использован бесплатный Mock провайдер)
-
-## 🚀 **Рекомендации для продакшена:**
-
-1. **Запустите Ollama сервер** для локального анализа:
-   ```bash
-   ollama serve
-   ollama pull llama3.2:3b
-   ```
-
-2. **Настройте Google API ключ** для облачного анализа:
-   ```bash
-   # Добавьте в .env файл
-   GOOGLE_API_KEY=your_api_key_here
-   ```
-
-3. **Используйте PostgreSQL** для сохранения результатов анализа
-
-Система готова к полноценному использованию! 🎵🤖
-
-
 🤖 Многоуровневый AI анализатор текстов песен с Safety & Hallucination Detection
 
 НАЗНАЧЕНИЕ:
@@ -64,11 +17,11 @@ TO_DO
 
 ЗАВИСИМОСТИ:
 - Python 3.8+
-- asyncpg, psycopg2-binary (для PostgreSQL)
 - ollama (для локальных моделей)
 - google-generativeai (для Gemma API)
 - pydantic (для моделей данных)
 - requests (для HTTP запросов)
+- sqlite3 (для работы с БД)
 
 РЕЗУЛЬТАТ:
 - Полный анализ: жанр, настроение, энергия, структура
@@ -97,12 +50,9 @@ import re
 from typing import Dict, List, Optional, Union, Tuple
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
-import asyncpg
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import sqlite3
 from datetime import datetime
 from collections import Counter
-import asyncio
 
 # Загрузка переменных окружения
 load_dotenv()
@@ -118,122 +68,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ===== PostgreSQL Configuration =====
-class DatabaseConfig:
-    """PostgreSQL connection configuration"""
-    host: str = os.getenv('POSTGRES_HOST', 'localhost')
-    port: int = int(os.getenv('POSTGRES_PORT', '5432'))
-    database: str = os.getenv('POSTGRES_DATABASE', 'rap_lyrics')
-    username: str = os.getenv('POSTGRES_USERNAME', 'rap_user')
-    password: str = os.getenv('POSTGRES_PASSWORD', 'securepassword123')
-    max_connections: int = int(os.getenv('POSTGRES_MAX_CONNECTIONS', '20'))
-    min_connections: int = int(os.getenv('POSTGRES_MIN_CONNECTIONS', '5'))
-
-# ===== Data Models =====
-class SongMetadata(BaseModel):
-    """Song metadata model"""
-    genre: str = Field(default="rap")
-    mood: str = Field(default="neutral")
-    energy_level: str = Field(default="medium")
-    explicit_content: bool = Field(default=False)
-
-class LyricsAnalysis(BaseModel):
-    """Lyrics analysis model"""
-    structure: str = Field(default="verse")
-    rhyme_scheme: str = Field(default="unknown")
-    complexity_level: str = Field(default="intermediate")
-    main_themes: List[str] = Field(default_factory=list)
-    emotional_tone: str = Field(default="neutral")
-    storytelling_type: str = Field(default="conversational")
-    wordplay_quality: str = Field(default="basic")
-
-class QualityMetrics(BaseModel):
-    """Quality metrics model"""
-    authenticity_score: float = Field(default=0.5, ge=0.0, le=1.0)
-    lyrical_creativity: float = Field(default=0.5, ge=0.0, le=1.0)
-    commercial_appeal: float = Field(default=0.5, ge=0.0, le=1.0)
-    uniqueness: float = Field(default=0.5, ge=0.0, le=1.0)
-    overall_quality: str = Field(default="fair")
-    ai_likelihood: float = Field(default=0.5, ge=0.0, le=1.0)
-
-class EnhancedSongData(BaseModel):
-    """Результат AI анализа песни"""
-    artist: str
-    title: str
-    metadata: SongMetadata
-    lyrics_analysis: LyricsAnalysis
-    quality_metrics: QualityMetrics
-    model_used: str
-    analysis_date: str
-
-class ExplainableAnalysisResult(BaseModel):
-    """Результат анализа с объяснениями"""
-    analysis: EnhancedSongData
-    explanation: Dict[str, List[str]]
-    confidence: float
-    decision_factors: Dict[str, float]
-    influential_phrases: Dict[str, List[str]]
-
-# ===== PostgreSQL Database Manager =====
-class PostgreSQLManager:
-    """PostgreSQL connection manager with async support"""
-    
-    def __init__(self, config: DatabaseConfig = None):
-        self.config = config or DatabaseConfig()
-        self.pool = None
-        self.logger = logging.getLogger(f"{__name__}.PostgreSQLManager")
-        
-    async def initialize(self) -> bool:
-        """Initialize connection pool"""
-        try:
-            self.logger.info("Initializing PostgreSQL connection pool")
-            
-            dsn = f"postgresql://{self.config.username}:{self.config.password}@{self.config.host}:{self.config.port}/{self.config.database}"
-            
-            self.pool = await asyncpg.create_pool(
-                dsn,
-                min_size=self.config.min_connections,
-                max_size=self.config.max_connections,
-                command_timeout=60,
-                server_settings={
-                    'application_name': 'multi_model_analyzer',
-                    'timezone': 'UTC'
-                }
-            )
-            
-            # Test connection
-            async with self.pool.acquire() as conn:
-                await conn.execute('SELECT 1')
-            
-            self.logger.info("✅ PostgreSQL connection pool initialized successfully")
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"❌ Failed to initialize PostgreSQL: {e}")
-            return False
-
-    async def get_connection(self):
-        """Get database connection from pool"""
-        if not self.pool:
-            await self.initialize()
-        return self.pool.acquire()
-
-    async def close(self):
-        """Close connection pool"""
-        if self.pool:
-            await self.pool.close()
-            self.pool = None
-
-    def get_sync_connection(self):
-        """Get synchronous connection for non-async operations"""
-        return psycopg2.connect(
-            host=self.config.host,
-            port=self.config.port,
-            database=self.config.database,
-            user=self.config.username,
-            password=self.config.password,
-            cursor_factory=RealDictCursor
-        )
+# Импорт моделей данных
+from ..models.models import SongMetadata, LyricsAnalysis, QualityMetrics
 
 class SafetyValidator:
     """Валидатор для проверки достоверности AI анализа и детекции галлюцинаций"""
@@ -546,6 +382,25 @@ class SafetyValidator:
             
             return f"⚠️ Анализ ненадежен: {', '.join(issues)}"
 
+# Создаем модель для анализа (исправленная версия)
+class EnhancedSongData(BaseModel):
+    """Результат AI анализа песни"""
+    artist: str
+    title: str
+    metadata: SongMetadata
+    lyrics_analysis: LyricsAnalysis
+    quality_metrics: QualityMetrics
+    model_used: str
+    analysis_date: str
+
+class ExplainableAnalysisResult(BaseModel):
+    """Результат анализа с объяснениями"""
+    analysis: EnhancedSongData
+    explanation: Dict[str, List[str]]
+    confidence: float
+    decision_factors: Dict[str, float]
+    influential_phrases: Dict[str, List[str]]
+
 class InterpretableAnalyzer:
     """Анализатор с возможностью объяснения решений AI"""
     
@@ -570,7 +425,7 @@ class InterpretableAnalyzer:
         
         self.authenticity_keywords = {
             "real": ["правда", "реально", "честно", "без фальши", "по-настоящему"],
-            "fake": ["понт", "фейк", "пижон", "показуха", "притворство"],
+            "fake": ["понт", "фэйк", "пижон", "показуха", "притворство"],
             "street": ["улица", "район", "двор", "подъезд", "квартал", "гетто"],
             "commercial": ["money", "brand", "коммерция", "продажи", "mainstream"]
         }
@@ -598,7 +453,7 @@ class InterpretableAnalyzer:
             )
             
         except Exception as e:
-            logging.error(f"⌛ Ошибка интерпретируемого анализатора: {e}")
+            logging.error(f"❌ Ошибка интерпретируемого анализа: {e}")
             return None
     
     def explain_decision(self, lyrics: str, result: EnhancedSongData) -> Dict[str, List[str]]:
@@ -858,13 +713,13 @@ class OllamaProvider(ModelProvider):
                     return self._pull_model()
             return False
         except requests.exceptions.RequestException as e:
-            logger.warning(f"⌛ Ollama недоступен: {e}")
+            logger.warning(f"❌ Ollama недоступен: {e}")
             return False
     
     def _pull_model(self) -> bool:
         """Загрузка модели если её нет"""
         try:
-            logger.info(f"🔥 Загружаем модель {self.model_name}...")
+            logger.info(f"📥 Загружаем модель {self.model_name}...")
             response = requests.post(
                 f"{self.base_url}/api/pull",
                 json={"name": self.model_name},
@@ -875,10 +730,10 @@ class OllamaProvider(ModelProvider):
                 logger.info(f"✅ Модель {self.model_name} загружена")
                 return True
             else:
-                logger.error(f"⌛ Не удалось загрузить модель: {response.text}")
+                logger.error(f"❌ Не удалось загрузить модель: {response.text}")
                 return False
         except Exception as e:
-            logger.error(f"⌛ Ошибка загрузки модели: {e}")
+            logger.error(f"❌ Ошибка загрузки модели: {e}")
             return False
     
     def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:
@@ -910,11 +765,11 @@ class OllamaProvider(ModelProvider):
                 analysis_text = result.get('response', '')
                 return self._parse_analysis(analysis_text, artist, title)
             else:
-                logger.error(f"⌛ Ollama ошибка: {response.status_code} - {response.text}")
+                logger.error(f"❌ Ollama ошибка: {response.status_code} - {response.text}")
                 return None
                 
         except Exception as e:
-            logger.error(f"⌛ Ошибка анализа Ollama: {e}")
+            logger.error(f"❌ Ошибка анализа Ollama: {e}")
             return None
     
     def _create_analysis_prompt(self, artist: str, title: str, lyrics: str) -> str:
@@ -970,7 +825,7 @@ class OllamaProvider(ModelProvider):
             json_end = analysis_text.rfind('}') + 1
             
             if json_start == -1 or json_end <= json_start:
-                logger.error("⌛ JSON не найден в ответе")
+                logger.error("❌ JSON не найден в ответе")
                 return None
                 
             json_str = analysis_text[json_start:json_end]
@@ -1005,16 +860,16 @@ class OllamaProvider(ModelProvider):
                 metadata=metadata,
                 lyrics_analysis=lyrics_analysis,
                 quality_metrics=quality_metrics,
-                model_used="gemma-2-27b-it",
+                model_used=f"ollama:{self.model_name}",
                 analysis_date=datetime.now().isoformat()
             )
             
         except json.JSONDecodeError as e:
-            logger.error(f"⌛ Ошибка парсинга JSON Gemma: {e}")
+            logger.error(f"❌ Ошибка парсинга JSON: {e}")
             logger.debug(f"Ответ модели: {analysis_text[:500]}")
             return None
         except Exception as e:
-            logger.error(f"⌛ Ошибка создания анализа Gemma: {e}")
+            logger.error(f"❌ Ошибка создания анализа: {e}")
             return None
 
 class MockProvider(ModelProvider):
@@ -1104,7 +959,7 @@ class MockProvider(ModelProvider):
             # Основные темы
             themes = []
             theme_keywords = {
-                "street_life": ["улица", "район", "двор", "подъезд"],
+                "street_life": ["улица", "район", "двор", "подъезд", "гетто"],
                 "money": ["деньги", "cash", "money", "бабки", "лавэ"],
                 "relationships": ["любовь", "девочка", "отношения", "семья"],
                 "success": ["успех", "fame", "слава", "топ"],
@@ -1184,7 +1039,7 @@ class MockProvider(ModelProvider):
             )
             
         except Exception as e:
-            logger.error(f"⌛ Ошибка Mock анализа: {e}")
+            logger.error(f"❌ Ошибка Mock анализа: {e}")
             return None
 
 class GemmaProvider(ModelProvider):
@@ -1199,7 +1054,7 @@ class GemmaProvider(ModelProvider):
     def check_availability(self) -> bool:
         """Проверка API ключа Google"""
         if not self.api_key:
-            logger.warning("⌛ GOOGLE_API_KEY не найден в .env")
+            logger.warning("❌ GOOGLE_API_KEY не найден в .env")
             return False
 
         try:
@@ -1211,10 +1066,10 @@ class GemmaProvider(ModelProvider):
             logger.info("✅ Google Gemma API готов к использованию")
             return True
         except ImportError:
-            logger.warning("⌛ google-generativeai не установлен")
+            logger.warning("❌ google-generativeai не установлен")
             return False
         except Exception as e:
-            logger.error(f"⌛ Ошибка проверки Gemma API: {e}")
+            logger.error(f"❌ Ошибка проверки Gemma API: {e}")
             return False
 
     def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:
@@ -1241,11 +1096,11 @@ class GemmaProvider(ModelProvider):
             if response.text:
                 return self._parse_analysis(response.text, artist, title)
             else:
-                logger.error("⌛ Gemma: пустой ответ")
+                logger.error("❌ Gemma: пустой ответ")
                 return None
                 
         except Exception as e:
-            logger.error(f"⌛ Ошибка анализа Gemma: {e}")
+            logger.error(f"❌ Ошибка анализа Gemma: {e}")
             return None
     
     def _create_analysis_prompt(self, artist: str, title: str, lyrics: str) -> str:
@@ -1295,7 +1150,7 @@ Return ONLY JSON, no additional text!
             json_end = analysis_text.rfind('}') + 1
             
             if json_start == -1 or json_end <= json_start:
-                logger.error("⌛ JSON не найден в ответе Gemma")
+                logger.error("❌ JSON не найден в ответе Gemma")
                 return None
                 
             json_str = analysis_text[json_start:json_end]
@@ -1335,11 +1190,11 @@ Return ONLY JSON, no additional text!
             )
             
         except json.JSONDecodeError as e:
-            logger.error(f"⌛ Ошибка парсинга JSON Gemma: {e}")
+            logger.error(f"❌ Ошибка парсинга JSON Gemma: {e}")
             logger.debug(f"Ответ модели: {analysis_text[:500]}")
             return None
         except Exception as e:
-            logger.error(f"⌛ Ошибка создания анализа Gemma: {e}")
+            logger.error(f"❌ Ошибка создания анализа Gemma: {e}")
             return None
 
 class MultiModelAnalyzer:
@@ -1348,7 +1203,6 @@ class MultiModelAnalyzer:
     def __init__(self):
         self.providers = []
         self.current_provider = None
-        self.db_manager = PostgreSQLManager()
         self.stats = {
             "total_analyzed": 0,
             "ollama_used": 0,
@@ -1366,96 +1220,89 @@ class MultiModelAnalyzer:
         # Инициализация валидатора безопасности
         self.safety_validator = SafetyValidator()
         
-    async def initialize(self) -> bool:
-        """Инициализация базы данных"""
-        return await self.db_manager.initialize()
-        
-    async def close(self):
-        """Закрытие соединений"""
-        await self.db_manager.close()
-    
     def analyze_with_explanations(self, artist: str, title: str, lyrics: str) -> Optional[ExplainableAnalysisResult]:
         """Анализ с полными объяснениями решений AI"""
         return self.interpretable_analyzer.analyze_with_explanation(artist, title, lyrics)
     
-    async def explain_existing_analysis(self, track_id: int) -> Optional[Dict]:
+    def explain_existing_analysis(self, song_id: int, db_path: str = "rap_lyrics.db") -> Optional[Dict]:
         """Объясняет существующий анализ из базы данных"""
         try:
-            async with self.db_manager.get_connection() as conn:
-                # Получаем данные песни и анализа
-                query = """
-                    SELECT t.artist, t.title, t.lyrics, ar.*
-                    FROM tracks t
-                    JOIN analysis_results ar ON t.id = ar.track_id
-                    WHERE t.id = $1 AND ar.analyzer_type = 'multi_model_ai'
-                """
-                
-                row = await conn.fetchrow(query, track_id)
-                if not row:
-                    logger.warning(f"Песня с ID {track_id} не найдена или не проанализирована")
-                    return None
-                
-                # Парсим analysis_data
-                analysis_data = json.loads(row['analysis_data'])
-                
-                # Создаем объект EnhancedSongData из данных БД
-                metadata = SongMetadata(
-                    genre=analysis_data.get('metadata', {}).get('genre', 'rap'),
-                    mood=analysis_data.get('metadata', {}).get('mood', 'neutral'),
-                    energy_level=analysis_data.get('metadata', {}).get('energy_level', 'medium'),
-                    explicit_content=analysis_data.get('metadata', {}).get('explicit_content', False)
-                )
-                
-                lyrics_analysis = LyricsAnalysis(
-                    structure=analysis_data.get('lyrics_analysis', {}).get('structure', 'verse'),
-                    rhyme_scheme=analysis_data.get('lyrics_analysis', {}).get('rhyme_scheme', 'unknown'),
-                    complexity_level=analysis_data.get('lyrics_analysis', {}).get('complexity_level', 'intermediate'),
-                    main_themes=analysis_data.get('lyrics_analysis', {}).get('main_themes', []),
-                    emotional_tone=analysis_data.get('lyrics_analysis', {}).get('emotional_tone', 'neutral'),
-                    storytelling_type=analysis_data.get('lyrics_analysis', {}).get('storytelling_type', 'conversational'),
-                    wordplay_quality=analysis_data.get('lyrics_analysis', {}).get('wordplay_quality', 'basic')
-                )
-                
-                quality_metrics = QualityMetrics(
-                    authenticity_score=analysis_data.get('quality_metrics', {}).get('authenticity_score', 0.5),
-                    lyrical_creativity=analysis_data.get('quality_metrics', {}).get('lyrical_creativity', 0.5),
-                    commercial_appeal=analysis_data.get('quality_metrics', {}).get('commercial_appeal', 0.5),
-                    uniqueness=analysis_data.get('quality_metrics', {}).get('uniqueness', 0.5),
-                    overall_quality=analysis_data.get('quality_metrics', {}).get('overall_quality', 'fair'),
-                    ai_likelihood=analysis_data.get('quality_metrics', {}).get('ai_likelihood', 0.5)
-                )
-                
-                enhanced_data = EnhancedSongData(
-                    artist=row['artist'],
-                    title=row['title'],
-                    metadata=metadata,
-                    lyrics_analysis=lyrics_analysis,
-                    quality_metrics=quality_metrics,
-                    model_used=row['model_version'],
-                    analysis_date=row['created_at'].isoformat()
-                )
-                
-                # Генерируем объяснения
-                explanation = self.interpretable_analyzer.explain_decision(row['lyrics'], enhanced_data)
-                confidence = self.interpretable_analyzer.calculate_confidence(enhanced_data, row['lyrics'])
-                decision_factors = self.interpretable_analyzer.extract_key_factors(row['lyrics'], enhanced_data)
-                influential_phrases = self.interpretable_analyzer.find_influential_phrases(row['lyrics'], enhanced_data)
-                
-                return {
-                    "song_info": {
-                        "id": track_id,
-                        "artist": row['artist'],
-                        "title": row['title']
-                    },
-                    "analysis": enhanced_data.model_dump(),
-                    "explanation": explanation,
-                    "confidence": confidence,
-                    "decision_factors": decision_factors,
-                    "influential_phrases": influential_phrases
-                }
-                
+            conn = sqlite3.connect(db_path)
+            conn.row_factory = sqlite3.Row
+            
+            # Получаем данные песни и анализа
+            cursor = conn.execute("""
+                SELECT s.artist, s.title, s.lyrics, a.*
+                FROM songs s
+                JOIN ai_analysis a ON s.id = a.song_id
+                WHERE s.id = ?
+            """, (song_id,))
+            
+            row = cursor.fetchone()
+            if not row:
+                logging.warning(f"Песня с ID {song_id} не найдена или не проанализирована")
+                return None
+            
+            # Создаем объект EnhancedSongData из данных БД
+            metadata = SongMetadata(
+                genre=row['genre'],
+                mood=row['mood'],
+                energy_level=row['energy_level'],
+                explicit_content=bool(row['explicit_content'])
+            )
+            
+            lyrics_analysis = LyricsAnalysis(
+                structure=row['structure'],
+                rhyme_scheme=row['rhyme_scheme'],
+                complexity_level=row['complexity_level'],
+                main_themes=json.loads(row['main_themes']) if row['main_themes'] else [],
+                emotional_tone="neutral",  # Добавляем значения по умолчанию
+                storytelling_type="conversational",
+                wordplay_quality="basic"
+            )
+            
+            quality_metrics = QualityMetrics(
+                authenticity_score=row['authenticity_score'],
+                lyrical_creativity=row['lyrical_creativity'],
+                commercial_appeal=row['commercial_appeal'],
+                uniqueness=row['uniqueness'],
+                overall_quality=row['overall_quality'],
+                ai_likelihood=row['ai_likelihood']
+            )
+            
+            enhanced_data = EnhancedSongData(
+                artist=row['artist'],
+                title=row['title'],
+                metadata=metadata,
+                lyrics_analysis=lyrics_analysis,
+                quality_metrics=quality_metrics,
+                model_used=row['model_version'],
+                analysis_date=row['analysis_date']
+            )
+            
+            # Генерируем объяснения
+            explanation = self.interpretable_analyzer.explain_decision(row['lyrics'], enhanced_data)
+            confidence = self.interpretable_analyzer.calculate_confidence(enhanced_data, row['lyrics'])
+            decision_factors = self.interpretable_analyzer.extract_key_factors(row['lyrics'], enhanced_data)
+            influential_phrases = self.interpretable_analyzer.find_influential_phrases(row['lyrics'], enhanced_data)
+            
+            conn.close()
+            
+            return {
+                "song_info": {
+                    "id": song_id,
+                    "artist": row['artist'],
+                    "title": row['title']
+                },
+                "analysis": enhanced_data.model_dump(),
+                "explanation": explanation,
+                "confidence": confidence,
+                "decision_factors": decision_factors,
+                "influential_phrases": influential_phrases
+            }
+            
         except Exception as e:
-            logger.error(f"⌛ Ошибка объяснения анализа: {e}")
+            logging.error(f"❌ Ошибка объяснения анализа: {e}")
             return None
         
     def _init_providers(self):
@@ -1480,7 +1327,7 @@ class MultiModelAnalyzer:
         logger.info("✅ Mock провайдер добавлен как fallback")
         
         if not self.providers:
-            logger.error("⌛ Ни один AI провайдер недоступен!")
+            logger.error("❌ Ни один AI провайдер недоступен!")
             raise Exception("No AI providers available")
         
         self.current_provider = self.providers[0]
@@ -1511,10 +1358,10 @@ class MultiModelAnalyzer:
                     logger.warning(f"⚠️ {provider.name} не смог проанализировать")
                     
             except Exception as e:
-                logger.error(f"⌛ Ошибка {provider.name}: {e}")
+                logger.error(f"❌ Ошибка {provider.name}: {e}")
                 continue
         
-        logger.error(f"⌛ Все провайдеры не смогли проанализировать: {artist} - {title}")
+        logger.error(f"❌ Все провайдеры не смогли проанализировать: {artist} - {title}")
         return None
     
     def get_stats(self) -> Dict:
@@ -1525,101 +1372,99 @@ class MultiModelAnalyzer:
             "current_provider": self.current_provider.name if self.current_provider else None
         }
     
-    async def batch_analyze_from_db(self, limit: int = 100, offset: int = 0):
+    def batch_analyze_from_db(self, db_path: str = "rap_lyrics.db", limit: int = 100, offset: int = 0):
         """Массовый анализ песен из базы данных"""
         
         logger.info(f"🎵 Начинаем batch анализ: {limit} песен с offset {offset}")
         
         try:
-            async with self.db_manager.get_connection() as conn:
-                # Получаем песни для анализа
-                query = """
-                    SELECT t.id, t.artist, t.title, t.lyrics 
-                    FROM tracks t
-                    LEFT JOIN analysis_results ar ON t.id = ar.track_id 
-                        AND ar.analyzer_type = 'multi_model_ai'
-                    WHERE t.lyrics IS NOT NULL 
-                        AND LENGTH(TRIM(t.lyrics)) > 50
-                        AND ar.id IS NULL  -- Только неанализированные
-                    ORDER BY t.id
-                    LIMIT $1 OFFSET $2
-                """
-                
-                rows = await conn.fetch(query, limit, offset)
-                logger.info(f"📊 Найдено {len(rows)} песен для анализа")
-                
-                successful = 0
-                failed = 0
-                
-                for i, row in enumerate(rows, 1):
-                    try:
-                        logger.info(f"📈 Прогресс: {i}/{len(rows)} - {row['artist']} - {row['title']}")
-                        
-                        analysis = self.analyze_song(row['artist'], row['title'], row['lyrics'])
-                        
-                        if analysis:
-                            # Сохраняем в БД
-                            await self._save_analysis_to_db(conn, row['id'], analysis)
-                            successful += 1
-                            logger.info(f"✅ Сохранен анализ #{successful}")
-                        else:
-                            failed += 1
-                            logger.warning(f"⌛ Не удалось проанализировать")
-                        
-                        # Пауза между запросами
-                        if i < len(rows):  # Не делаем паузу после последней песни
-                            await asyncio.sleep(2)  # 2 секунды между анализами
-                            
-                    except Exception as e:
+            conn = sqlite3.connect(db_path)
+            conn.row_factory = sqlite3.Row
+            
+            # Получаем песни для анализа
+            cursor = conn.execute("""
+                SELECT s.id, s.artist, s.title, s.lyrics 
+                FROM songs s
+                LEFT JOIN ai_analysis a ON s.id = a.song_id
+                WHERE a.id IS NULL  -- Только неанализированные
+                LIMIT ? OFFSET ?
+            """, (limit, offset))
+            
+            songs = cursor.fetchall()
+            logger.info(f"📊 Найдено {len(songs)} песен для анализа")
+            
+            successful = 0
+            failed = 0
+            
+            for i, song in enumerate(songs, 1):
+                try:
+                    logger.info(f"📈 Прогресс: {i}/{len(songs)} - {song['artist']} - {song['title']}")
+                    
+                    analysis = self.analyze_song(song['artist'], song['title'], song['lyrics'])
+                    
+                    if analysis:
+                        # Сохраняем в БД
+                        self._save_analysis_to_db(conn, song['id'], analysis)
+                        successful += 1
+                        logger.info(f"✅ Сохранен анализ #{successful}")
+                    else:
                         failed += 1
-                        logger.error(f"⌛ Ошибка анализа песни {row['id']}: {e}")
-                        continue
-                
-                logger.info(f"""
-                🎉 Batch анализ завершен!
-                ✅ Успешно: {successful}
-                ⌛ Ошибок: {failed}
-                📊 Статистика: {self.get_stats()}
-                """)
-                
+                        logger.warning(f"❌ Не удалось проанализировать")
+                    
+                    # Пауза между запросами
+                    if i < len(songs):  # Не делаем паузу после последней песни
+                        time.sleep(2)  # 2 секунды между анализами
+                        
+                except Exception as e:
+                    failed += 1
+                    logger.error(f"❌ Ошибка анализа песни {song['id']}: {e}")
+                    continue
+            
+            conn.close()
+            
+            logger.info(f"""
+            🎉 Batch анализ завершен!
+            ✅ Успешно: {successful}
+            ❌ Ошибок: {failed}
+            📊 Статистика: {self.get_stats()}
+            """)
+            
         except Exception as e:
-            logger.error(f"⌛ Ошибка batch анализа: {e}")
+            logger.error(f"❌ Ошибка batch анализа: {e}")
     
-    async def _save_analysis_to_db(self, conn: asyncpg.Connection, track_id: int, analysis: EnhancedSongData):
+    def _save_analysis_to_db(self, conn: sqlite3.Connection, song_id: int, analysis: EnhancedSongData):
         """Сохранение анализа в базу данных"""
         try:
-            analysis_data = {
-                'metadata': analysis.metadata.model_dump(),
-                'lyrics_analysis': analysis.lyrics_analysis.model_dump(),
-                'quality_metrics': analysis.quality_metrics.model_dump(),
-                'analysis_info': {
-                    'analyzer_version': 'multi_model_v2',
-                    'analysis_timestamp': analysis.analysis_date,
-                    'model_used': analysis.model_used
-                }
-            }
-            
-            await conn.execute("""
-                INSERT INTO analysis_results (
-                    track_id, analyzer_type, sentiment, confidence,
-                    complexity_score, themes, analysis_data,
-                    processing_time_ms, model_version, created_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-            """, 
-                track_id,
-                'multi_model_ai',
+            conn.execute("""
+                INSERT INTO ai_analysis (
+                    song_id, genre, mood, energy_level, explicit_content,
+                    structure, rhyme_scheme, complexity_level, main_themes,
+                    authenticity_score, lyrical_creativity, commercial_appeal,
+                    uniqueness, overall_quality, ai_likelihood,
+                    analysis_date, model_version
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                song_id,
+                analysis.metadata.genre,
                 analysis.metadata.mood,
+                analysis.metadata.energy_level,
+                analysis.metadata.explicit_content,
+                analysis.lyrics_analysis.structure,
+                analysis.lyrics_analysis.rhyme_scheme,
+                analysis.lyrics_analysis.complexity_level,
+                json.dumps(analysis.lyrics_analysis.main_themes),
                 analysis.quality_metrics.authenticity_score,
                 analysis.quality_metrics.lyrical_creativity,
-                json.dumps(analysis.lyrics_analysis.main_themes),
-                json.dumps(analysis_data),
-                1000.0,  # placeholder processing time
-                analysis.model_used,
-                datetime.now()
-            )
-            
+                analysis.quality_metrics.commercial_appeal,
+                analysis.quality_metrics.uniqueness,
+                analysis.quality_metrics.overall_quality,
+                analysis.quality_metrics.ai_likelihood,
+                analysis.analysis_date,
+                analysis.model_used
+            ))
+            conn.commit()
         except Exception as e:
-            logger.error(f"⌛ Ошибка сохранения в БД: {e}")
+            logger.error(f"❌ Ошибка сохранения в БД: {e}")
             raise
 
     def analyze_song_with_safety(self, artist: str, title: str, lyrics: str) -> Optional[Dict]:
@@ -1631,7 +1476,7 @@ class MultiModelAnalyzer:
         analysis_result = self.analyze_song(artist, title, lyrics)
         
         if not analysis_result:
-            logger.error(f"⌛ Не удалось получить анализ для валидации")
+            logger.error(f"❌ Не удалось получить анализ для валидации")
             return None
         
         # 2. Конвертируем результат в словарь для валидации
@@ -1680,7 +1525,7 @@ class MultiModelAnalyzer:
             "summary": validation_result['validation_summary']
         }
 
-async def main():
+def main():
     """Тестирование многомодельного анализатора с интерпретируемостью"""
     
     print("🤖 Многомодельный AI анализатор с объяснениями решений")
@@ -1688,11 +1533,6 @@ async def main():
     
     try:
         analyzer = MultiModelAnalyzer()
-        
-        # Инициализация базы данных
-        if not await analyzer.initialize():
-            print("⌛ Не удалось инициализировать базу данных")
-            return
         
         print(f"📊 Доступные провайдеры: {[p.name for p in analyzer.providers]}")
         print(f"🎯 Активный провайдер: {analyzer.current_provider.name if analyzer.current_provider else 'None'}")
@@ -1728,7 +1568,7 @@ async def main():
             print(f"😊 Настроение: {analysis.metadata.mood}")
             print(f"⚡ Энергия: {analysis.metadata.energy_level}")
             print(f"🏆 Качество: {analysis.quality_metrics.overall_quality}")
-            print(f"📝 Уверенность: {explainable_result.confidence:.2f}")
+            print(f"🔍 Уверенность: {explainable_result.confidence:.2f}")
             
             # Объяснения
             print(f"\n💡 ОБЪЯСНЕНИЯ РЕШЕНИЙ:")
@@ -1739,7 +1579,7 @@ async def main():
                         print(f"    • {exp}")
             
             # Влиятельные фразы
-            print(f"\n🔍 ВЛИЯТЕЛЬНЫЕ ФРАЗЫ:")
+            print(f"\n📝 ВЛИЯТЕЛЬНЫЕ ФРАЗЫ:")
             for category, phrases in explainable_result.influential_phrases.items():
                 if phrases:
                     print(f"  {category.replace('_', ' ').title()}:")
@@ -1755,6 +1595,16 @@ async def main():
             )[:5]
             for factor, value in top_factors:
                 print(f"  • {factor.replace('_', ' ').title()}: {value:.3f}")
+        
+        # Демонстрация объяснения существующего анализа
+        print("\n🔍 Тестирование объяснения существующего анализа...")
+        explanation = analyzer.explain_existing_analysis(song_id=1)
+        
+        if explanation:
+            print(f"\n🎵 Объяснение для: {explanation['song_info']['artist']} - {explanation['song_info']['title']}")
+            print(f"🔍 Уверенность: {explanation['confidence']:.2f}")
+            print(f"💡 Основные объяснения: {len(explanation['explanation']['genre_indicators'])} жанровых, "
+                  f"{len(explanation['explanation']['mood_triggers'])} настроения")
         
         # Демонстрация SafetyValidator
         print("\n🛡️ Тестирование AI Safety & Hallucination Detection...")
@@ -1772,8 +1622,8 @@ async def main():
             print(f"\n🛡️ РЕЗУЛЬТАТ БЕЗОПАСНОГО АНАЛИЗА:")
             print("-" * 50)
             print(f"✅ Безопасность: {'НАДЕЖЕН' if safe_result['is_safe'] else 'НЕНАДЕЖЕН'}")
-            print(f"📝 Уверенность: {safe_result['confidence']:.3f}")
-            print(f"📄 Резюме: {safe_result['summary']}")
+            print(f"🔍 Уверенность: {safe_result['confidence']:.3f}")
+            print(f"📝 Резюме: {safe_result['summary']}")
             
             if safe_result['warnings']:
                 print(f"⚠️ Предупреждения:")
@@ -1789,15 +1639,15 @@ async def main():
             print(f"   • Соответствие тексту: {validation['text_alignment']:.3f}")
         
         # Тест с нормальным текстом
-        print(f"\n📄 Тест с качественным текстом...")
+        print(f"\n🔄 Тест с качественным текстом...")
         normal_safe_result = analyzer.analyze_song_with_safety(
             "Тестовый артист", "Качественный трек", test_lyrics
         )
         
         if normal_safe_result:
             print(f"✅ Нормальный текст: {'НАДЕЖЕН' if normal_safe_result['is_safe'] else 'НЕНАДЕЖЕН'}")
-            print(f"📝 Уверенность: {normal_safe_result['confidence']:.3f}")
-            print(f"📄 Резюме: {normal_safe_result['summary']}")
+            print(f"🔍 Уверенность: {normal_safe_result['confidence']:.3f}")
+            print(f"📝 Резюме: {normal_safe_result['summary']}")
         
         # Показываем статистику
         stats = analyzer.get_stats()
@@ -1816,13 +1666,8 @@ async def main():
         print(f"   • Factual Accuracy Checking")
         print(f"🎯 Продукционная система с валидацией надежности!")
         
-        # Закрываем соединения
-        await analyzer.close()
-        
     except Exception as e:
-        logger.error(f"⌛ Ошибка: {e}")
-        import traceback
-        traceback.print_exc()
+        logger.error(f"❌ Ошибка: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

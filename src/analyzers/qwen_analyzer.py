@@ -28,7 +28,7 @@ import os
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
-from interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, register_analyzer
+from src.interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, register_analyzer
 
 # Условный импорт для OpenAI-совместимого клиента
 try:
@@ -516,7 +516,7 @@ Return ONLY this JSON structure (fill with actual analysis):
 
 # Принудительная регистрация анализатора (если декоратор не сработал)
 try:
-    from interfaces.analyzer_interface import AnalyzerFactory
+    from src.interfaces.analyzer_interface import AnalyzerFactory
     AnalyzerFactory.register("qwen", QwenAnalyzer)
 except ImportError:
     pass
