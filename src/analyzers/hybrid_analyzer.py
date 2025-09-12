@@ -26,7 +26,17 @@ import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
-from interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, AnalyzerFactory, register_analyzer
+try:
+    from interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, AnalyzerFactory, register_analyzer
+except Exception:
+    # Если модуль запускается напрямую, добавляем src в sys.path для корректного импорта
+    import sys
+    from pathlib import Path
+    project_root = Path(__file__).resolve().parent.parent.parent
+    src_path = project_root / 'src'
+    if str(src_path) not in sys.path:
+        sys.path.append(str(src_path))
+    from interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, AnalyzerFactory, register_analyzer
 
 logger = logging.getLogger(__name__)
 

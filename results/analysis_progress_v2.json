@@ -1,0 +1,15 @@
+{
+  "session_id": "session_20250911_170054",
+  "last_processed_id": 49451,
+  "total_processed": 6300,
+  "total_errors": 0,
+  "session_start": "2025-09-11T17:00:54.328249",
+  "last_update": "2025-09-12T08:50:05.186031",
+  "processing_rate": 0.11062168762148934,
+  "estimated_completion": null,
+  "error_details": [],
+  "batch_statistics": {
+    "successful_batches": 126,
+    "failed_batches": 0
+  }
+}

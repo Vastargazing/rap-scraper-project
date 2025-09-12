@@ -1,10 +1,44 @@
-#!/usr/bin/env python3
 """
-Многоуровневый AI анализатор текстов песен с Safety & Hallucination Detection:
-1. Приоритет: Ollama (бесплатно, локально)
-2. Fallback: Google Gemma (cloud API)
-3. Резерв: Mock Provider (для тестирования)
-4. Safety Layer: Валидация и детекция галлюцинаций AI
+🤖 Многоуровневый AI анализатор текстов песен с Safety & Hallucination Detection
+
+НАЗНАЧЕНИЕ:
+- Глубокий AI-анализ текстов песен с помощью нескольких моделей
+- Классификация жанра, настроения, качества, тематики
+- Детекция галлюцинаций и валидация надежности AI
+- Интерпретируемость решений с объяснениями
+- Использование облачных и локальных API
+
+ИСПОЛЬЗОВАНИЕ:
+- Ollama (приоритет): локальные модели, бесплатно
+- Google Gemma (fallback): облачное API
+- Mock Provider (резерв): для тестирования
+- Safety Layer: автоматическая валидация результатов
+- Interpretability: объяснение решений AI
+
+ЗАВИСИМОСТИ:
+- Python 3.8+
+- ollama (для локальных моделей)
+- google-generativeai (для Gemma API)
+- pydantic (для моделей данных)
+- requests (для HTTP запросов)
+- sqlite3 (для работы с БД)
+
+РЕЗУЛЬТАТ:
+- Полный анализ: жанр, настроение, энергия, структура
+- Качественные метрики: аутентичность, креативность, коммерческий потенциал
+- Валидация надежности: детекция галлюцинаций, консистентность
+- Объяснения решений: почему AI принял то или иное решение
+- Сохранение в базу данных с метаданными
+
+ОСОБЕННОСТИ:
+- Multi-provider fallback система
+- Safety & Hallucination Detection
+- Interpretability & Explainability
+- Batch processing с progress tracking
+- Cost optimization (бесплатные модели в приоритете)
+
+АВТОР: AI Assistant
+ДАТА: Сентябрь 2025
 """
 
 import json
@@ -1022,10 +1056,13 @@ class GemmaProvider(ModelProvider):
         if not self.api_key:
             logger.warning("❌ GOOGLE_API_KEY не найден в .env")
             return False
-            
+
         try:
             import google.generativeai as genai
-            genai.configure(api_key=self.api_key)
+            from google.generativeai.client import configure
+            from google.generativeai.generative_models import GenerativeModel
+            
+            configure(api_key=self.api_key)
             logger.info("✅ Google Gemma API готов к использованию")
             return True
         except ImportError:
@@ -1034,7 +1071,7 @@ class GemmaProvider(ModelProvider):
         except Exception as e:
             logger.error(f"❌ Ошибка проверки Gemma API: {e}")
             return False
-    
+
     def analyze_song(self, artist: str, title: str, lyrics: str) -> Optional[EnhancedSongData]:
         """Анализ песни через Google Gemma"""
         if not self.available:
@@ -1042,16 +1079,18 @@ class GemmaProvider(ModelProvider):
             
         try:
             import google.generativeai as genai
+            from google.generativeai.client import configure
+            from google.generativeai.generative_models import GenerativeModel
             
-            model = genai.GenerativeModel('gemma-2-27b-it')
+            model = GenerativeModel('gemma-2-27b-it')
             prompt = self._create_analysis_prompt(artist, title, lyrics)
             
             response = model.generate_content(
                 prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=0.1,
-                    max_output_tokens=1500,
-                )
+                generation_config={
+                    "temperature": 0.1,
+                    "max_output_tokens": 1500,
+                }
             )
             
             if response.text:
@@ -1496,7 +1535,7 @@ def main():
         analyzer = MultiModelAnalyzer()
         
         print(f"📊 Доступные провайдеры: {[p.name for p in analyzer.providers]}")
-        print(f"🎯 Активный провайдер: {analyzer.current_provider.name}")
+        print(f"🎯 Активный провайдер: {analyzer.current_provider.name if analyzer.current_provider else 'None'}")
         
         # Демонстрация анализа с объяснениями
         print("\n🧪 Тестирование анализа с объяснениями...")

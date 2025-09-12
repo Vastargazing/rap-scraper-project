@@ -26,7 +26,17 @@ from datetime import datetime
 from typing import Dict, Any, List
 from collections import Counter
 
-from interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, register_analyzer
+try:
+    from interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, register_analyzer
+except Exception:
+    # Если модуль запускается напрямую, добавляем src в sys.path для корректного импорта
+    import sys
+    from pathlib import Path
+    project_root = Path(__file__).resolve().parent.parent.parent
+    src_path = project_root / 'src'
+    if str(src_path) not in sys.path:
+        sys.path.append(str(src_path))
+    from interfaces.analyzer_interface import BaseAnalyzer, AnalysisResult, register_analyzer
 
 
 @register_analyzer("algorithmic_basic")
@@ -362,3 +372,18 @@ class AlgorithmicAnalyzer(BaseAnalyzer):
             "vocabulary_analysis",
             "rhyme_analysis"
         ]
+
+
+if __name__ == "__main__":
+    # Минимальный демонстрационный запуск без зависимостей от проекта
+    demo_lyrics = (
+        "Love is in the air, I feel so good\n"
+        "I win, I smile, I dance tonight\n"
+        "Life is great, success and money shine\n"
+        "But sometimes I feel sad and cry\n"
+    )
+
+    analyzer = AlgorithmicAnalyzer(config={})
+    result = analyzer.analyze_song("Demo Artist", "Demo Song", demo_lyrics)
+    print("Demo Analysis Result:")
+    print(result)

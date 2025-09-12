@@ -4,6 +4,14 @@ requests>=2.31.0
 pydantic>=2.0.0
 python-dotenv>=1.0.0
 
+# Database
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.0
+
+# Ultra scraper dependencies  
+redis>=5.0.0
+prometheus-client>=0.19.0
+
 # Data processing
 pandas>=2.0.0
 numpy>=1.24.0
