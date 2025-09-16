@@ -855,16 +855,39 @@ class RapScraperMainApp:
             
             # Конфигурация
             print(f"\n⚙️  Configuration:")
-            print(f"  Database: {getattr(self.app.config.database, 'path', 'Not configured')}")
+            
+            # Проверяем тип базы данных
+            if hasattr(self.app.config.database, 'host'):
+                # PostgreSQL конфигурация
+                db_info = f"{self.app.config.database.host}:{self.app.config.database.port}/{self.app.config.database.name}"
+                print(f"  Database (PostgreSQL): {db_info}")
+            else:
+                # SQLite конфигурация
+                print(f"  Database (SQLite): {getattr(self.app.config.database, 'path', 'Not configured')}")
+            
             print(f"  Logging: {getattr(self.app.config.logging, 'level', 'Not configured')}")
             
             # Статистика БД (если доступна)
             try:
-                # Здесь можно добавить статистику из БД
                 print(f"\n📊 Database Stats:")
-                print(f"  Connection: ✅ Connected")
-            except Exception:
-                print(f"  Connection: ❌ Error")
+                if hasattr(self.app, 'database') and self.app.database:
+                    print(f"  Connection: ✅ Connected")
+                    
+                    # Получаем статистику из PostgreSQL
+                    if hasattr(self.app.database, 'get_track_count'):
+                        track_count = await self.app.database.get_track_count()
+                        print(f"  Total tracks: {track_count:,}")
+                    
+                    # Проверяем ML возможности
+                    if hasattr(self.app.database, '_vector_enabled'):
+                        if self.app.database._vector_enabled:
+                            print(f"  ML Features: ✅ pgvector enabled")
+                        else:
+                            print(f"  ML Features: ❌ pgvector not available")
+                else:
+                    print(f"  Connection: ❌ Not initialized")
+            except Exception as e:
+                print(f"  Connection: ❌ Error: {e}")
         
         except Exception as e:
             print(f"❌ Failed to get system info: {e}")

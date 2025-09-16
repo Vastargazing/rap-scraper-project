@@ -1046,25 +1046,27 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
             "detailed_logging": self.detailed_logging
         }
         
-        result = AnalysisResult(
-            artist=artist,
-            title=title,
-            analysis_type="advanced_algorithmic",
-            confidence=confidence,
-            metadata=metadata,
-            raw_output=analysis_results,
-            processing_time=processing_time,
-            timestamp=datetime.now().isoformat()
-        )
-        
+        # Build plain dictionary result (legacy-friendly)
+        result_dict = {
+            'analysis_type': 'advanced_algorithmic',
+            'analysis_data': analysis_results,
+            'confidence': confidence,
+            'processing_time': processing_time,
+            'metadata': metadata,
+            'raw_output': analysis_results,
+            'timestamp': datetime.now().isoformat(),
+            'artist': artist,
+            'title': title
+        }
+
         # Кэширование результата
         if self.cache_enabled and cache_key:
-            self.analysis_cache[cache_key] = result
-        
+            self.analysis_cache[cache_key] = result_dict
+
         if self.detailed_logging:
             logger.debug(f"Analysis completed for {artist} - {title} in {processing_time:.3f}s")
-        
-        return result
+
+        return result_dict
     
     def _generate_cache_key(self, artist: str, title: str, lyrics: str) -> str:
         """Генерация ключа для кэша"""

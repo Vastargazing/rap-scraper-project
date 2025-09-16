@@ -1,6 +1,6 @@
-# 🔥 Rap Scraper & Analyzer - PostgreSQL-Powered Hip-Hop Data Pipeline
+# 🔥 Rap Scraper & Analyzer - PostgreSQL + pgvector Hip-Hop Data Pipeline
 
-> **Production-ready lyrics collection and analysis platform: Scrapes artists from Genius.com, enriches with Spotify metadata, and analyzes with AI models. PostgreSQL-based architecture supporting concurrent processing of 57K+ tracks.**
+> **Production-ready lyrics collection and analysis platform: Scrapes artists from Genius.com, enriches with Spotify metadata, and analyzes with AI models. PostgreSQL + pgvector architecture supporting concurrent processing and vector similarity search of 57K+ tracks.**
 
 ## 🎯 Enterprise Features
 
@@ -17,8 +17,9 @@
 - **Performance Optimized**: 50-500ms response times
 
 ### 🚀 Production Infrastructure
-- **PostgreSQL Database**: Enterprise-grade concurrent processing with connection pooling
-- **Docker-First Deployment**: Complete containerized stack
+- **PostgreSQL + pgvector Database**: Enterprise-grade concurrent processing with vector similarity search
+- **Vector Operations**: Semantic similarity search, embedding storage, AI-powered track recommendations
+- **Docker-First Deployment**: Complete containerized stack with pgvector extension
 - **Enterprise Monitoring**: Prometheus + Grafana, health checks, metrics, observability
 - **Concurrent Processing**: Multiple analysis scripts running simultaneously
 - **Developer Experience**: Interactive docs, web interface, examples
@@ -42,18 +43,22 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 
-## 🚀 Quick Start (PostgreSQL Architecture)
+## 🚀 Quick Start (PostgreSQL + pgvector Architecture)
 
 ```bash
-# 1. DATABASE SETUP: Install PostgreSQL 15 and create database
-# Follow PostgreSQL setup guide in docs/claude.md
+# 1. DATABASE SETUP: Install PostgreSQL 15 with pgvector extension
+# Option A: Use Docker (Recommended)
+docker-compose -f docker-compose.pgvector.yml up -d
 
-# 2. ENVIRONMENT: Configure PostgreSQL connection
+# Option B: Manual PostgreSQL + pgvector installation
+# Follow PostgreSQL + pgvector setup guide in docs/claude.md
+
+# 2. ENVIRONMENT: Configure PostgreSQL + pgvector connection
 echo "POSTGRES_DB=rap_lyrics" > .env
 echo "POSTGRES_USER=rap_user" >> .env
 echo "POSTGRES_PASSWORD=your-password" >> .env
 echo "POSTGRES_HOST=localhost" >> .env
-echo "POSTGRES_PORT=5432" >> .env
+echo "POSTGRES_PORT=5433" >> .env  # pgvector container port
 
 # 3. SCRAPING: Collect new lyrics (concurrent-safe)
 python main.py  # Press Enter for quick start with remaining_artists.json
@@ -65,19 +70,24 @@ python scripts/mass_qwen_analysis.py  # Runs automatically on remaining tracks
 docker-compose up -d
 open http://localhost:8000
 
-# 6. STATUS: Check PostgreSQL database
+# 6. STATUS: Check PostgreSQL + pgvector database
 python scripts/tools/database_diagnostics.py --quick
+
+# 7. VECTOR OPERATIONS: Test pgvector functionality
+psql -h localhost -p 5433 -U rap_user -d rap_lyrics
+# In psql: SELECT vector('[1,2,3]') AS test_vector;
 ```
 
-## 🏗️ PostgreSQL Data Pipeline
+## 🏗️ PostgreSQL + pgvector Data Pipeline
 
 ```mermaid
 graph TB
-    A[🕷️ Genius.com Scraper] --> B[🐘 PostgreSQL Database]
+    A[🕷️ Genius.com Scraper] --> B[🐘 PostgreSQL + pgvector Database]
     C[🎵 Spotify API] --> B
     B --> D[🧠 AI Analysis Engine]
-    D --> E[📈 ML Features]
+    D --> E[📈 ML Features + Vector Embeddings]
     D --> F[🌐 FastAPI Service]
+    B --> G[🧬 Vector Similarity Search]
     
     A --> A1[Artist Search]
     A --> A2[Lyrics Extraction] 
@@ -95,22 +105,28 @@ graph TB
     B --> B1[Connection Pool: 20 max]
     B --> B2[Concurrent Processing]
     B --> B3[ACID Transactions]
+    B --> B4[pgvector Extension]
+    
+    G --> G1[Semantic Search]
+    G --> G2[Track Recommendations]
+    G --> G3[Similar Artists]
 ```
 
 ### Core Components
 
 | Component | Purpose | Database | Status |
 |-----------|---------|----------|--------|
-| 🕷️ **Genius Scraper** | Automated lyrics collection from artists | PostgreSQL | ✅ Production |
-| 🎵 **Spotify Enhancer** | Metadata and audio features enrichment | PostgreSQL | ✅ Production |
-| 🌐 **Web API** | FastAPI endpoints + web interface | PostgreSQL | ✅ Production |
-| 🧠 **5 AI Analyzers** | Multi-model analysis pipeline | PostgreSQL | ✅ Production |
-| 📊 **Batch Processing** | High-throughput concurrent analysis | PostgreSQL | ✅ Production |
-| 🔍 **Performance Monitor** | Connection pool & query monitoring | PostgreSQL | ✅ Production |
-| 🤖 **AI Context Manager** | Intelligent project context generation for AI assistants | Results Archive | ✅ Production |
+| 🕷️ **Genius Scraper** | Automated lyrics collection from artists | PostgreSQL + pgvector | ✅ Production |
+| 🎵 **Spotify Enhancer** | Metadata and audio features enrichment | PostgreSQL + pgvector | ✅ Production |
+| 🌐 **Web API** | FastAPI endpoints + web interface | PostgreSQL + pgvector | ✅ Production |
+| 🧠 **5 AI Analyzers** | Multi-model analysis pipeline | PostgreSQL + pgvector | ✅ Production |
+| 📊 **Batch Processing** | High-throughput concurrent analysis | PostgreSQL + pgvector | ✅ Production |
+| 🔍 **Performance Monitor** | Connection pool & query monitoring | PostgreSQL + pgvector | ✅ Production |
+| � **Vector Search** | Semantic similarity and recommendations | pgvector Extension | ✅ Production |
+| �🤖 **AI Context Manager** | Intelligent project context generation for AI assistants | Results Archive | ✅ Production |
 | 📊 **AI Project Analyzer** | Automated code analysis, metrics & insights | Results Archive | ✅ Production |
 | 🔐 **Dependency Security Manager** | Dependency audits, vulnerability scanning, safe updates, structured JSON reports | Results Archive | ✅ Production |
-| 🐘 **PostgreSQL DB** | 57,717 tracks with concurrent access | PostgreSQL 15 | ✅ Production |
+| 🐘 **PostgreSQL DB** | 57,717 tracks with concurrent access + vector operations | PostgreSQL 15 + pgvector | ✅ Production |
 
 ## 🚀 Enterprise Features
 
@@ -164,10 +180,77 @@ result = analyzer.analyze_with_langchain(lyrics, artist, title)
 | `/benchmark` | GET | Performance test |
 | `/status` | GET | System health |
 
-## 🐳 Docker Deployment
+## 🧬 pgvector Features & Semantic Search
+
+### Vector Operations Available
+```sql
+-- 🔍 Semantic similarity search
+SELECT title, artist, lyrics_embedding <=> vector('[0.1,0.2,0.3]') AS similarity
+FROM tracks 
+ORDER BY lyrics_embedding <=> vector('[0.1,0.2,0.3]') 
+LIMIT 10;
+
+-- 🎵 Find similar tracks by audio features
+SELECT t1.title as original, t2.title as similar, 
+       t1.audio_embedding <-> t2.audio_embedding AS distance
+FROM tracks t1, tracks t2 
+WHERE t1.id != t2.id 
+  AND t1.audio_embedding <-> t2.audio_embedding < 0.5
+ORDER BY distance LIMIT 20;
+
+-- � Cluster analysis by sentiment
+SELECT analyzer_type, 
+       AVG(analysis_embedding <-> vector('[0,0,1]')) as sentiment_distance
+FROM analysis_results 
+GROUP BY analyzer_type;
+
+-- 🎯 Recommendations based on user preferences
+SELECT title, artist, 
+       lyrics_embedding <=> $user_preference_vector AS match_score
+FROM tracks 
+WHERE lyrics_embedding <=> $user_preference_vector < 0.8
+ORDER BY match_score;
+```
+
+### 🚀 Vector Performance Benefits
+- **Lightning Fast Similarity**: pgvector indexes enable sub-millisecond similarity searches
+- **Scalable ML Integration**: Native vector storage eliminates external vector databases
+- **Real-time Recommendations**: Instant track recommendations based on embeddings
+- **Semantic Analysis**: Understanding lyrical themes beyond keyword matching
+- **Multi-modal Search**: Combine lyrics, audio features, and analysis results
+
+### 🎯 Use Cases Enabled
+1. **🔍 Semantic Lyrics Search**: Find tracks by meaning, not just keywords
+2. **🎵 Audio Similarity**: Discover tracks with similar musical characteristics  
+3. **🤖 AI-Powered Recommendations**: Personalized track suggestions
+4. **📊 Trend Analysis**: Identify emerging themes in rap music
+5. **🎭 Mood-Based Playlists**: Group tracks by emotional content
+6. **🔬 Research Applications**: Academic analysis of hip-hop evolution
+
+## �🐳 Docker Deployment (pgvector Ready)
 
 ```yaml
-# docker-compose.yml
+# docker-compose.pgvector.yml - Full PostgreSQL + pgvector stack
+services:
+  postgresql-vector:
+    image: ankane/pgvector:latest
+    container_name: rap-analyzer-postgres-vector
+    environment:
+      POSTGRES_DB: rap_lyrics
+      POSTGRES_USER: rap_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_vector_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d  # pgvector auto-initialization
+    ports:
+      - "5433:5432"
+    command: >
+      postgres
+      -c max_connections=100
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+
+# docker-compose.yml - API service with pgvector backend  
 services:
   rap-analyzer:
     build: .
@@ -177,12 +260,20 @@ services:
       - ./data:/app/data
     environment:
       - ENV=production
+      - POSTGRES_HOST=postgresql-vector
+      - POSTGRES_PORT=5432
+    depends_on:
+      - postgresql-vector
 ```
 
 ```bash
-# Production deployment
-docker-compose up -d
-docker logs rap-analyzer --follow
+# Production deployment with pgvector
+docker-compose -f docker-compose.pgvector.yml up -d  # Database with vector support
+docker-compose up -d  # API service
+
+# Monitor pgvector operations
+docker logs rap-analyzer-postgres-vector --follow
+docker exec rap-analyzer-postgres-vector psql -U rap_user -d rap_lyrics -c "SELECT vector('[1,2,3]');"
 ```
 
 ## 📊 Production Metrics
@@ -311,11 +402,12 @@ CONNECTION_TIMEOUT=30
 ANALYSIS_BATCH_SIZE=100
 ```
 
-## 📊 PostgreSQL Schema & Migration
+## 📊 PostgreSQL + pgvector Schema & Migration
 
 ```sql
 -- PostgreSQL database: rap_lyrics
 -- User: rap_user with full access to rap_lyrics database
+-- Extension: pgvector for vector operations
 
 -- Tracks table (57,717 records)
 CREATE TABLE tracks (
@@ -326,7 +418,10 @@ CREATE TABLE tracks (
     url VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     spotify_data JSONB,
-    audio_features JSONB
+    audio_features JSONB,
+    -- pgvector columns for semantic search
+    lyrics_embedding vector(384),  -- Text embeddings for similarity search
+    audio_embedding vector(128)    -- Audio feature embeddings
 );
 
 -- Analysis results table (54,170 records) 
@@ -338,8 +433,18 @@ CREATE TABLE analysis_results (
     mood_category VARCHAR(100),
     quality_rating REAL,
     analysis_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    raw_data JSONB
+    raw_data JSONB,
+    -- pgvector embedding for analysis similarity
+    analysis_embedding vector(256)  -- Analysis result embeddings
 );
+
+-- pgvector Extension Installation
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- Vector similarity indexes for performance
+CREATE INDEX idx_tracks_lyrics_embedding ON tracks USING ivfflat (lyrics_embedding vector_cosine_ops);
+CREATE INDEX idx_tracks_audio_embedding ON tracks USING ivfflat (audio_embedding vector_cosine_ops);
+CREATE INDEX idx_analysis_embedding ON analysis_results USING ivfflat (analysis_embedding vector_cosine_ops);
 
 -- Migration completed successfully:
 -- ✅ 57,717 tracks migrated with 100% data integrity
@@ -347,18 +452,23 @@ CREATE TABLE analysis_results (
 -- ✅ All metadata and Spotify enrichment maintained
 -- ✅ Foreign key constraints established
 -- ✅ Connection pooling configured (20 max connections)
+-- ✅ pgvector extension enabled for semantic search
+-- ✅ Vector similarity indexes created for performance
 ```
 
-### PostgreSQL Benefits Achieved
+### PostgreSQL + pgvector Benefits Achieved
 
-| Feature | SQLite (Before) | PostgreSQL 15 (After) | Improvement |
-|---------|-----------------|----------------------|-------------|
+| Feature | SQLite (Before) | PostgreSQL + pgvector (After) | Improvement |
+|---------|-----------------|-------------------------------|-------------|
 | **Concurrent Access** | ❌ Database locked | ✅ Multiple scripts simultaneously | **Unlimited concurrent processing** |
 | **Connection Management** | Single connection | 20-connection pool | **20x connection capacity** |
 | **Transaction Safety** | File-level locking | ACID compliance | **Enterprise-grade reliability** |
 | **Query Performance** | Limited indexing | Advanced PostgreSQL indexing | **Faster aggregation queries** |
 | **Data Integrity** | Basic validation | Foreign key constraints | **Referential integrity guaranteed** |
 | **Backup Strategy** | File copy only | pg_dump + WAL archiving | **Production backup procedures** |
+| **Semantic Search** | ❌ No vector support | ✅ pgvector similarity search | **AI-powered recommendations** |
+| **Vector Operations** | ❌ Manual calculations | ✅ Optimized vector indexes | **Fast similarity queries** |
+| **ML Integration** | ❌ External processing | ✅ Database-native embeddings | **Seamless AI pipeline** |
 
 ## 🚦 Usage Examples
 
@@ -499,15 +609,15 @@ flake8 .
 mypy .
 ```
 
-## 📦 Project Structure (PostgreSQL Architecture)
+## 📦 Project Structure (PostgreSQL + pgvector Architecture)
 
 ```
 rap-scraper-project/
 ├── main.py                      # 🎯 Single entry point
 ├── api.py                       # 🌐 FastAPI web interface
 ├── docker-compose.yml           # 🐳 Production deployment
-├── docker-compose.postgres.yml  # 🐘 PostgreSQL containerization
-├── .env                         # 🔐 PostgreSQL connection config
+├── docker-compose.pgvector.yml      # 🧬 PostgreSQL + pgvector containerization
+├── .env                             # 🔐 PostgreSQL + pgvector connection config
 ├── src/                         # 📦 Core components
 │   ├── cli/                    # 🖥️  Command interfaces
 │   ├── models/                 # 📋 Data models
@@ -519,7 +629,9 @@ rap-scraper-project/
 ├── data/                       # 📊 Database & datasets
 │   ├── rap_lyrics.db          # 📦 SQLite archive (backup)
 │   └── backups/               # � Migration backups
-├── scripts/                    # 🔧 PostgreSQL-compatible tools
+├── migrations/                     # �️ Database schema & vector setup
+│   ├── 001_initial_schema.sql     # 📋 Base PostgreSQL schema
+│   └── 99-init-pgvector.sql       # 🧬 pgvector extension initialization
 │   ├── mass_qwen_analysis.py  # 🤖 Concurrent AI analysis
 │   ├── migrate_to_postgresql.py # 🐘 Migration utility
 │   ├── tools/                   # 🔧 Database diagnostics & utilities
@@ -548,30 +660,35 @@ rap-scraper-project/
 - [docs/claude.md](docs/claude.md) - AI assistant context
 - [SPOTIFY_OPTIMIZATION_GUIDE.md](SPOTIFY_OPTIMIZATION_GUIDE.md) - Performance tuning
 
-## 🧠 AI Technologies Stack (PostgreSQL-Integrated)
+## 🧠 AI Technologies Stack (PostgreSQL + pgvector Integrated)
 
-| Technology | Usage | PostgreSQL Integration | Status |
-|------------|-------|----------------------|--------|
-| **Novita AI + Qwen3-4B-FP8** | Production cloud LLM for deep analysis | ✅ Concurrent analysis with connection pooling | ✅ Active |
-| **Emotion AI + Hugging Face** | 6-emotion detection using transformers | ✅ Batch processing with PostgreSQL backend | ✅ Production |
-| **FastAPI + Pydantic** | API framework with data validation | ✅ PostgreSQL async operations | ✅ Production |
-| **PostgreSQL 15** | Enterprise database with concurrent access | ✅ 20-connection pool, ACID transactions | ✅ Production |
-| **Docker + docker-compose** | Containerization and deployment | ✅ PostgreSQL containerization available | ✅ Production |
-| **asyncpg + psycopg2** | High-performance PostgreSQL drivers | ✅ Async/sync dual support | ✅ Production |
+| Technology | Usage | PostgreSQL + pgvector Integration | Status |
+|------------|-------|-----------------------------------|--------|
+| **Novita AI + Qwen3-4B-FP8** | Production cloud LLM for deep analysis | ✅ Concurrent analysis with connection pooling + vector storage | ✅ Active |
+| **Emotion AI + Hugging Face** | 6-emotion detection using transformers | ✅ Batch processing with PostgreSQL backend + embeddings | ✅ Production |
+| **FastAPI + Pydantic** | API framework with data validation | ✅ PostgreSQL async operations + vector search endpoints | ✅ Production |
+| **PostgreSQL 15 + pgvector** | Enterprise database with vector operations | ✅ 20-connection pool, ACID transactions, semantic search | ✅ Production |
+| **Docker + docker-compose** | Containerization and deployment | ✅ PostgreSQL + pgvector containerization available | ✅ Production |
+| **asyncpg + psycopg2** | High-performance PostgreSQL drivers | ✅ Async/sync dual support + vector operations | ✅ Production |
 
-### PostgreSQL Migration Benefits
+### PostgreSQL + pgvector Migration Benefits
 ```bash
 # Before (SQLite): Database locking prevented concurrent processing
 python main.py  # ❌ Blocked other scripts
 python scripts/mass_analysis.py  # ❌ "Database is locked" error
 
-# After (PostgreSQL): True concurrent processing
+# After (PostgreSQL + pgvector): True concurrent processing + semantic search
 python main.py &                     # ✅ Scraping in background
 python scripts/mass_qwen_analysis.py & # ✅ AI analysis simultaneously  
 python scripts/spotify_enhancement.py & # ✅ Metadata enrichment concurrently
 python scripts/tools/database_diagnostics.py --quick        # ✅ Real-time monitoring
 
-# Result: 37,866 tracks ready for concurrent Qwen analysis
+# NEW: Vector similarity operations
+psql -h localhost -p 5433 -U rap_user -d rap_lyrics
+-- Find similar tracks: SELECT title FROM tracks ORDER BY lyrics_embedding <-> '[0.1,0.2,0.3]' LIMIT 5;
+-- Semantic search: SELECT * FROM tracks WHERE lyrics_embedding <=> vector('[...]') < 0.8;
+
+# Result: 37,866 tracks ready for concurrent Qwen analysis + semantic search capabilities
 ```
 
 ## 📈 Roadmap (PostgreSQL-Enabled)

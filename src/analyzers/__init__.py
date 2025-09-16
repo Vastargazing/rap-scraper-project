@@ -8,7 +8,7 @@ Analyzers module for the rap scraper project.
 """
 
 from .algorithmic_analyzer import AdvancedAlgorithmicAnalyzer
-from .qwen_analyzer import QwenAnalyzer
+from .mass_qwen_analysis import UnifiedQwenMassAnalyzer
 from .ollama_analyzer import OllamaAnalyzer
 # from .hybrid_analyzer import HybridAnalyzer  # Временно отключен
 from .emotion_analyzer import EmotionAnalyzer
@@ -18,7 +18,7 @@ from .emotion_analyzer import EmotionAnalyzer
 
 __all__ = [
     "AdvancedAlgorithmicAnalyzer",
-    "QwenAnalyzer", 
+    "UnifiedQwenMassAnalyzer", 
     "OllamaAnalyzer",
     # "HybridAnalyzer",  # Временно отключен
     "EmotionAnalyzer"

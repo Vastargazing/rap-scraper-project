@@ -13,10 +13,10 @@ database:
   # PostgreSQL configuration (replaces SQLite)
   type: "postgresql"
   host: "localhost"
-  port: 5432
+  port: 5433
   name: "rap_lyrics"
   username: "rap_user"
-  password: "securepassword123"
+  password: "secure_password_2024"
   pool_size: 20
   min_pool_size: 5
   timeout: 30
@@ -87,6 +87,8 @@ analyzers:
       batch_size: 16
       cache_enabled: true
       fallback_enabled: true
+      rap_analysis_enabled: true
+      postgres_enabled: true
 
 # CLI settings
 cli:

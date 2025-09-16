@@ -1,643 +1,448 @@
-# AI Assistant Onboarding Checklist (PostgreSQL Migration Complete)
+# Professional PostgreSQL Lyrics Analyzer - AI Agent Guide
 
-> **Universal guide для любого AI агента**, начинающего работу с PostgreSQL-powered rap scraper проектом
+> **Production-ready lyrics analysis system** with PostgreSQL backend, concurrent processing, and comprehensive AI integration
 
-## 🎯 Quick Start (выбери свой сценарий)
+## 🎯 QUICK START FOR AI AGENTS
 
-### ⚡ Express Mode (30 секунд)
+### Critical Commands (Run These First)
 ```bash
-# Только базовый контекст после PostgreSQL миграции
-read_file("docs/claude.md")  # Полностью обновлен для PostgreSQL архитектуры!
-run_terminal("python scripts/tools/database_diagnostics.py --quick")  # MAIN diagnostic tool
-```
-**Когда использовать**: Простые вопросы, quick fixes, понимание PostgreSQL архитектуры
+# PRIMARY DIAGNOSTIC (always run first)
+python scripts/tools/database_diagnostics.py --quick
 
-### 🚀 Standard Mode (2 минуты)  
-```bash
-# Полный контекст PostgreSQL ecosystem
-read_file("docs/claude.md")                    # PostgreSQL-focused architecture  
-read_file("src/utils/config.py", limit=30)     # get_db_config function (NEW!)
-read_file(".env")                              # PostgreSQL configuration
-run_terminal("python scripts/tools/database_diagnostics.py")  # MAIN diagnostic tool
-run_terminal("python scripts/mass_qwen_analysis.py --test")  # Analysis test
-list_dir("scripts/")                          # PostgreSQL-compatible scripts
-```
-**Когда использовать**: Разработка, debugging, работа с PostgreSQL системой
+# AI ANALYSIS TEST
+python scripts/mass_qwen_analysis.py --test
 
-### 🔬 Deep Dive Mode (5 минут)
-```bash
-# Comprehensive understanding PostgreSQL ecosystem
-read_file("docs/claude.md")                           # Полный PostgreSQL контекст
-read_file("src/utils/config.py")                      # get_db_config function (UPDATED!)
-read_file("scripts/tools/database_diagnostics.py", limit=50)  # MAIN diagnostic tool
-read_file("scripts/mass_qwen_analysis.py", limit=50)  # Main analysis script
-run_terminal("python scripts/tools/database_diagnostics.py")  # Full diagnostics
-run_terminal("python scripts/tools/database_diagnostics.py --analysis")  # AI analysis status
-semantic_search("postgresql OR concurrent OR diagnostics") # PostgreSQL functionality
-```
-**Когда использовать**: Архитектурные изменения, complex debugging, concurrent processing
+# INTERACTIVE DATABASE BROWSER
+python scripts/db_browser.py
 
----
-
-## 📖 Context Layers (читать по потребности)
-
-### Layer 1: PostgreSQL Architecture Foundation (MANDATORY - UPDATED!)
-```yaml
-File: docs/claude.md
-Purpose: Central PostgreSQL context, concurrent processing, migration achievements
-Read When: Always (first thing to read - completely rewritten for PostgreSQL!)
-Key Info: 57,718 tracks, PostgreSQL 15, concurrent script execution, migration complete
-```
-
-### Layer 2: Database Configuration (HIGH PRIORITY - UPDATED!)
-```yaml  
-File: src/utils/config.py
-Purpose: get_db_config() function, PostgreSQL connection management, environment variables
-Read When: Connection issues, credentials problems, database setup
-Key Info: POSTGRES_* and DB_* environment variables, fallback authentication, connection parameters
-```
-
-### Layer 3: PostgreSQL Configuration (HIGH PRIORITY - NEW!)
-```yaml
-File: .env
-Purpose: PostgreSQL connection credentials, API keys, system settings
-Read When: Connection issues, credentials problems, configuration changes
-Key Info: PostgreSQL credentials, Novita/Qwen API, Genius/Spotify keys, pool settings
-```
-
-### Layer 4: Analysis Scripts (HIGH PRIORITY - UPDATED!)
-```yaml
-Files: scripts/mass_qwen_analysis.py, scripts/db_browser.py
-Purpose: PostgreSQL-compatible analysis and database tools
-Read When: Running analysis, database exploration, concurrent processing
-Key Info: No confirmation prompts, PostgreSQL queries, concurrent-safe operations
-```
-
-### Layer 5: Database Diagnostics (HIGH PRIORITY - UPDATED!)
-```yaml
-File: scripts/tools/database_diagnostics.py
-Purpose: MAIN PostgreSQL diagnostic tool - health, statistics, schema, analysis status
-Read When: Database issues, analysis problems, unanalyzed tracks, schema verification
-Key Info: --quick, --analysis, --unanalyzed, --schema flags, comprehensive PostgreSQL diagnostics
-```
-
-### Layer 6: AI Project Tools (NEW!)
-```yaml
-Files: scripts/tools/ai_context_manager.py, scripts/tools/ai_project_analyzer.py
-Purpose: Интеллектуальный анализ архитектуры, управление контекстом для AI
-Read When: Аудит архитектуры, автоматизация AI-навигации, поиск дубликатов и legacy
-Key Info: AST-парсинг, приоритезация файлов, workspace генерация, метрики для микросервисов
-```
-
-### Layer 6.1: Security & Dependency Tools (NEW!)
-```yaml
-Files: scripts/tools/dependency_manager.py
-Purpose: Автоматические аудиты зависимостей, обнаружение уязвимостей и безопасные обновления
-Read When: Перед релизом, при настройке окружения, при обнаружении подозрительных зависимостей
-Key Info: --security-report, --audit, --update-safe; генерирует UTF-8 JSON в results/security_audit.json
-```
-
-### Layer 7: Legacy Compatibility (AS NEEDED - ARCHIVED)
-```yaml
-Files: scripts/archive/, data/data_backup_*.db
-Purpose: SQLite legacy system, backup data
-Read When: Emergency fallback, reference for old functionality
-Key Info: SQLite backup scripts, historical data, migration rollback
+# CONCURRENT ACCESS TEST
+python scripts/tools/database_diagnostics.py --connections
 ```
 
 ---
 
-## 🤖 AI Agent Personas & Workflows
+## 📊 DATABASE SCHEMA & CURRENT STATUS
 
-### 👨‍💻 Database Developer Agent (Updated for PostgreSQL)
-```python
-# Primary tasks: PostgreSQL development, concurrent processing, database optimization
-def database_developer_onboarding():
-    read_file("docs/claude.md")                         # PostgreSQL architecture
-    read_file("src/database/postgres_adapter.py")       # Database layer
-    read_file(".env")                                   # Connection configuration
-    run_terminal("python check_stats.py")              # Database health
-    run_terminal("psql -h localhost -U rap_user -d rap_lyrics -c 'SELECT version();'")  # Direct test
-    semantic_search("postgresql OR connection OR pool")  # Database patterns
-    run_terminal("python scripts/mass_qwen_analysis.py --test")  # PostgreSQL compatibility
+### Production Metrics (Updated 2025-09-15)
+- **Tracks**: 57,718 total (100% with lyrics)
+- **Artists**: 345+ scraped from Genius.com
+- **Database**: PostgreSQL 15 with 20-connection pool
+- **Analyses**: 256,021 total across multiple analyzers
+- **AI Coverage**: 76.4% Qwen, 59.4% Gemma, 100% basic analysis
+- **Database Size**: 392 MB
+- **Architecture**: Concurrent processing ready
+
+### Database Tables
+
+#### `tracks` Table (57,718 records)
+```sql
+CREATE TABLE tracks (
+    id                SERIAL PRIMARY KEY,
+    title             VARCHAR(500),
+    artist            VARCHAR(200),
+    lyrics            TEXT,                    -- Primary analysis field
+    url               VARCHAR(500),
+    created_at        TIMESTAMP DEFAULT NOW(),
+    spotify_data      JSONB,                  -- Spotify metadata
+    audio_features    JSONB                   -- Audio characteristics
+);
 ```
 
-### 🔍 Debugging Agent (Enhanced for PostgreSQL)
-```python
-# Primary tasks: PostgreSQL debugging, connection issues, concurrent problems
-def postgresql_debugging_onboarding():
-    read_file("docs/claude.md")                         # PostgreSQL context
-    run_terminal("python check_stats.py")              # Database statistics
-    read_file("src/database/postgres_adapter.py", limit=50)  # Connection layer
-    grep_search("PostgreSQLManager|asyncpg", isRegexp=True)  # PostgreSQL usage
-    get_terminal_output("last_run")                     # Recent failures
-    semantic_search("error OR connection OR timeout")   # PostgreSQL errors
-    run_terminal("python scripts/db_browser.py")       # Interactive testing
+#### `analysis_results` Table (256,021 analyses)
+```sql
+CREATE TABLE analysis_results (
+    id                   SERIAL PRIMARY KEY,
+    track_id             INTEGER REFERENCES tracks(id),
+    analyzer_type        VARCHAR(50),
+    sentiment            VARCHAR,
+    confidence           NUMERIC(5,4),        -- 0.0-1.0 confidence
+    themes               TEXT,                -- JSON array of themes
+    analysis_data        JSONB,               -- Full analysis results
+    complexity_score     NUMERIC(5,4),        -- 0.0-1.0 complexity
+    processing_time_ms   INTEGER,
+    model_version        VARCHAR,
+    created_at           TIMESTAMP DEFAULT NOW()
+);
 ```
 
-### 📊 Analysis Agent (Modernized for PostgreSQL + Qwen)
-```python  
-# Primary tasks: Mass analysis, Qwen integration, concurrent processing
-def analysis_onboarding():
-    read_file("docs/claude.md")                                # PostgreSQL + analysis context
-    run_terminal("python check_stats.py")                     # Current statistics
-    read_file("scripts/mass_qwen_analysis.py", limit=50)      # Main analysis script
-    run_terminal("python scripts/mass_qwen_analysis.py --test")  # Quick validation
-    semantic_search("qwen OR analysis OR concurrent")         # Analysis patterns
-    run_terminal("python check_overlap.py")                   # Overlap analysis
+### Analyzer Coverage Statistics
 ```
+┌─────────────────────────┬───────────┬───────────┬─────────┐
+│ Analyzer Type           │ Analyses  │ Tracks    │ Share   │
+├─────────────────────────┼───────────┼───────────┼─────────┤
+│ simplified_features     │ 115,434   │ 57,717    │ 45.1%   │
+│ simplified_features_v2  │ 57,717    │ 57,717    │ 22.5%   │
+│ qwen-3-4b-fp8          │ 48,308    │ 44,091    │ 18.9%   │
+│ gemma-3-27b-it         │ 34,320    │ 34,320    │ 13.4%   │
+│ emotion_analyzer_v2     │ 207       │ 207       │ 0.1%    │
+└─────────────────────────┴───────────┴───────────┴─────────┘
 
-### 🚀 Migration Agent (New for PostgreSQL)
-```python
-# Primary tasks: Database migration, data integrity, performance optimization
-def migration_onboarding():
-    read_file("docs/claude.md")                        # Migration achievements
-    read_file("scripts/migrate_to_postgresql.py", limit=50)  # Migration pipeline
-    run_terminal("python check_stats.py")             # Migration verification
-    run_terminal("python check_overlap.py")           # Data consistency
-    semantic_search("migration OR integrity")         # Migration patterns
-    list_dir("scripts/archive/")                      # Legacy system reference
-```
-
-### 📝 Documentation Agent (Updated for PostgreSQL)
-```python
-# Primary tasks: PostgreSQL documentation, migration guides, concurrent processing
-def docs_onboarding():
-    read_file("docs/claude.md")                        # Current PostgreSQL state
-    read_file("README.md", limit=100)                  # Project overview (needs update)
-    read_file("docs/PROGRESS.md", limit=50)            # Progress tracking (needs update)
-    list_dir("docs/")                                 # All documentation
-    get_changed_files()                               # Recent PostgreSQL changes
-    grep_search("TODO.*postgresql", isRegexp=True)    # PostgreSQL documentation gaps
+Remaining for Qwen analysis: 13,627 tracks (23.6%)
 ```
 
 ---
 
-## 🤖 AI NAVIGATION MAP (FOR VS CODE)
-**Core Principle:** Always prioritize `PostgreSQL` and `Microservices` architecture. Legacy (SQLite) is for reference only.
+## 🏗️ SYSTEM ARCHITECTURE
 
-**Critical Files for AI Analysis:**
-- `src/database/postgres_adapter.py` - **#1 Priority**. Check for async patterns, connection handling.
-- `main.py` - Central orchestration. Check for component imports and CLI logic.
-- `scripts/mass_qwen_analysis.py` - Main analysis script. Check for PostgreSQL queries and batch logic.
-- `config.yaml` & `.env` - Configuration sources. Check for hardcoded values.
-- `tests/test_integration_comprehensive.py` - Gold standard for expected behavior.
-- `scripts/tools/ai_context_manager.py` — AI Context Manager: динамическое управление контекстом, приоритезация файлов, workspace генерация
-- `scripts/tools/ai_project_analyzer.py` — AI Project Analyzer: семантический анализ архитектуры, AST-парсинг, метрики для микросервисов
+### Core Components
 
-**Deprecated/Legacy Areas (Low Priority for New Features):**
-- `scripts/archive/`
-- `data/data_backup_*.db`
-- Any script with `_sqlite.py` in name.
+| Component | File | Purpose | Status |
+|-----------|------|---------|--------|
+| **Database Layer** | `src/database/postgres_adapter.py` | Connection pooling & management | ✅ Production |
+| **Main Analysis** | `scripts/mass_qwen_analysis.py` | AI-powered lyric analysis | ✅ Production |
+| **Diagnostics** | `scripts/tools/database_diagnostics.py` | Health monitoring | ✅ Production |
+| **Interactive Browser** | `scripts/db_browser.py` | Database exploration | ✅ Production |
+| **Scraping Engine** | `main.py` | Genius.com data collection | ✅ Production |
 
-**AI Analysis Commands (Use these in VS Code Terminal or via AI):**
-- `grep -r "sqlite3" src/ scripts/` - Find any lingering SQLite usage.
-- `grep -r "PostgreSQLManager" --include="*.py" .` - Find all correct PostgreSQL usages.
-- `find . -name "*.py" -type f -exec grep -l "hardcoded_password\|SECRET_KEY" {} \;` - Find security issues.
-- `git ls-files | grep -E '\.py$' | xargs wc -l | sort -nr` - Find largest (potentially complex) files.
+### PostgreSQL Infrastructure
+- **Connection Pool**: 20 max concurrent connections
+- **Drivers**: `asyncpg` (async) + `psycopg2` (sync)
+- **Migration**: Complete SQLite → PostgreSQL (100% data integrity)
+- **Concurrent Safe**: Multiple scripts can run simultaneously
+- **ACID Compliant**: Full transaction isolation
+
+### AI Analysis Pipeline
+- **Qwen AI**: Cloud-based advanced analysis (Novita API)
+- **Algorithmic**: Fast baseline analysis (pure Python)
+- **Emotion AI**: 6-emotion detection (Hugging Face)
+- **Hybrid**: Multi-model approach combining all analyzers
+- **Ollama**: Local LLM integration
 
 ---
 
-## 🎯 Task-Specific Quick Commands (PostgreSQL-Updated)
+## 🤖 AI AGENT INVESTIGATION PROTOCOL
 
-### PostgreSQL Development
-```bash
-# 1. Database layer understanding
-read_file("src/database/postgres_adapter.py")          # Connection management
-read_file(".env")                                      # Configuration
-run_terminal("python check_stats.py")                 # Database health
-
-# 2. Connection testing
-run_terminal("psql -h localhost -U rap_user -d rap_lyrics -c '\dt'")  # Table structure
-run_terminal("python scripts/db_browser.py")          # Interactive exploration
-run_terminal("python -c 'from src.database.postgres_adapter import PostgreSQLManager; print(\"✅ Import OK\")'")
-
-# 3. Performance analysis
-run_terminal("python check_overlap.py")               # Analysis efficiency
-semantic_search("connection pool OR async")           # Performance patterns
-
-### Dependency Security
-```bash
-# Dependency security audit (requires `safety` for full vulnerability scanning)
-python scripts/tools/dependency_manager.py --security-report
-pip install safety  # if missing, then run full audit:
-python scripts/tools/dependency_manager.py --audit
-```
+### Step 1: Database Health Check
+```python
+def investigate_issue(problem_description):
+    # ALWAYS START HERE
+    run_command("python scripts/tools/database_diagnostics.py --quick")
+    
+    # Expected output:
+    # ✅ Подключение к PostgreSQL успешно!
+    # 🎵 Треков: 57,718 (с текстами: 57,718)
+    # 🤖 Анализ: 57,718/57,718 (100.0%)
+    # 💾 Размер БД: 392 MB
 ```
 
-### Analysis Development (PostgreSQL-Compatible)
-```bash
-# 1. Current analysis status
-run_terminal("python check_stats.py")                 # Statistics overview
-run_terminal("python scripts/mass_qwen_analysis.py --test")  # Quick test
-grep_search("PostgreSQLManager", includePattern="scripts/**")  # PostgreSQL usage
-
-# 2. Concurrent analysis testing
-# Terminal 1: python scripts/mass_qwen_analysis.py --batch 10
-# Terminal 2: python scripts/db_browser.py
-# Verify both run simultaneously without conflicts
-
-# 3. Analysis optimization
-semantic_search("qwen OR analysis OR batch")          # Analysis patterns
-run_terminal("python check_overlap.py")               # Overlap efficiency
-list_code_usages("analyze_song")                      # Analysis methods
+### Step 2: Specific Diagnostics
+```python
+if "analysis" in problem_description.lower():
+    run_command("python scripts/mass_qwen_analysis.py --test")
+    run_command("python scripts/tools/database_diagnostics.py --analysis")
+    
+elif "connection" in problem_description.lower():
+    run_command("python scripts/tools/database_diagnostics.py --connections")
+    run_command("python scripts/db_browser.py")
+    
+elif "concurrent" in problem_description.lower():
+    # Test multiple script execution
+    run_command("python scripts/mass_qwen_analysis.py --batch 10 &")
+    run_command("python scripts/db_browser.py")
 ```
 
-### Migration & Data Work
-```bash
-# 1. Migration verification
-read_file("scripts/migrate_to_postgresql.py", limit=50)  # Migration reference
-run_terminal("python check_stats.py")                   # Data verification
-run_terminal("python check_overlap.py")                 # Consistency check
-
-# 2. Data integrity analysis
-run_terminal("psql -h localhost -U rap_user -d rap_lyrics -c 'SELECT COUNT(*) FROM tracks WHERE lyrics IS NOT NULL;'")
-semantic_search("migration OR integrity OR verification")  # Data patterns
-
-# 3. Performance monitoring
-run_terminal("python scripts/db_browser.py")            # Interactive analysis
-grep_search("async.*conn", isRegexp=True)               # Async patterns
+### Step 3: Configuration Validation
+```python
+def check_configuration():
+    # PostgreSQL credentials
+    check_file(".env")  # Database connection params
+    check_file("config.yaml")  # System configuration
+    
+    # API keys validation
+    check_env_var("NOVITA_API_KEY")    # Qwen AI analysis
+    check_env_var("GENIUS_ACCESS_TOKEN")  # Lyrics scraping
+    check_env_var("SPOTIFY_CLIENT_ID")    # Metadata enhancement
 ```
 
-### Concurrent Processing Development
+### Step 4: Code Compatibility Check
+```python
+def verify_postgresql_compatibility(script_path):
+    indicators = {
+        "good": [
+            "from src.database.postgres_adapter import PostgreSQLManager",
+            "import asyncpg",
+            "import psycopg2",
+            "async with db_manager.get_connection()"
+        ],
+        "bad": [
+            "import sqlite3",
+            "sqlite3.connect",
+            "cursor.execute"
+        ]
+    }
+    return scan_file_for_patterns(script_path, indicators)
+```
+
+---
+
+## 🔧 ESSENTIAL COMMANDS FOR AI AGENTS
+
+### Level 1: Health & Diagnostics
 ```bash
-# 1. Concurrent capability verification
-# Test multiple scripts simultaneously:
-# python scripts/mass_qwen_analysis.py --test &
-# python scripts/db_browser.py
-# Both should work without database locks
+# MAIN diagnostic tool (PostgreSQL)
+python scripts/tools/database_diagnostics.py --quick
+python scripts/tools/database_diagnostics.py         # Full stats
+python scripts/tools/database_diagnostics.py --analysis  # AI analysis only
+python scripts/tools/database_diagnostics.py --unanalyzed  # Find remaining
 
-# 2. Connection pool analysis
-semantic_search("connection pool OR concurrent")        # Pool patterns
-read_file("src/database/postgres_adapter.py", limit=100)  # Pool configuration
+# Connection testing
+python scripts/db_browser.py                    # Interactive browser
+psql -h localhost -U rap_user -d rap_lyrics -p 5433  # Direct connection
+```
 
-# 3. Performance under load
-run_terminal("python -c \"
-import asyncio
+### Level 2: Analysis & Testing
+```bash
+# AI analysis pipeline
+python scripts/mass_qwen_analysis.py --test     # Test mode (10 tracks)
+python scripts/mass_qwen_analysis.py            # Full analysis
+python scripts/mass_qwen_analysis.py --batch 25 --max 100  # Custom params
+
+# Concurrent processing test
+python scripts/mass_qwen_analysis.py --batch 25 &    # Background
+python scripts/db_browser.py                         # Foreground
+```
+
+### Level 3: Data Operations
+```bash
+# Scraping new data
+python main.py                                  # Main scraper interface
+python scripts/rap_scraper_cli.py scraping --debug  # Debug scraping
+
+# Database operations
+python scripts/migrate_to_postgresql.py        # Migration (if needed)
+python scripts/check_overlap.py               # Analysis coverage check
+```
+
+### Level 4: Configuration & Validation
+```bash
+# Environment check
+cat .env | grep POSTGRES                       # Database credentials  
+cat .env | grep -E "(NOVITA|GENIUS|SPOTIFY)"   # API keys
+python -c "from src.utils.config import get_db_config; print(get_db_config())"
+
+# Performance validation
+python -c "
 from src.database.postgres_adapter import PostgreSQLManager
+import asyncio
+async def test():
+    db = PostgreSQLManager()
+    await db.initialize()
+    print('✅ PostgreSQL connection OK')
+    await db.close()
+asyncio.run(test())
+"
+```
+
+---
+
+## 📊 KEY SQL QUERIES FOR AI AGENTS
+
+### Find Unanalyzed Tracks
+```sql
+-- Tracks without Qwen analysis
+SELECT COUNT(*) FROM tracks t
+LEFT JOIN analysis_results ar ON t.id = ar.track_id 
+  AND ar.analyzer_type = 'qwen-3-4b-fp8'
+WHERE ar.id IS NULL AND t.lyrics IS NOT NULL;
+
+-- Get specific unanalyzed tracks
+SELECT t.id, t.artist, t.title 
+FROM tracks t 
+LEFT JOIN analysis_results ar ON t.id = ar.track_id 
+  AND ar.analyzer_type = 'qwen-3-4b-fp8'
+WHERE ar.id IS NULL AND t.lyrics IS NOT NULL
+ORDER BY t.id LIMIT 100;
+```
+
+### Analysis Statistics
+```sql
+-- Analyzer performance metrics
+SELECT 
+    analyzer_type,
+    COUNT(*) as total_analyses,
+    COUNT(DISTINCT track_id) as unique_tracks,
+    AVG(confidence) as avg_confidence,
+    AVG(processing_time_ms) as avg_time_ms,
+    ROUND(100.0 * COUNT(DISTINCT track_id) / 57718.0, 2) as coverage_percent
+FROM analysis_results 
+GROUP BY analyzer_type 
+ORDER BY total_analyses DESC;
+
+-- Recent analysis activity
+SELECT t.artist, t.title, ar.analyzer_type, ar.created_at, ar.confidence
+FROM analysis_results ar
+JOIN tracks t ON ar.track_id = t.id
+ORDER BY ar.created_at DESC LIMIT 20;
+```
+
+### Artist Statistics
+```sql
+-- Top artists by track count
+SELECT artist, COUNT(*) as tracks_count,
+       COUNT(CASE WHEN ar.analyzer_type = 'qwen-3-4b-fp8' THEN 1 END) as qwen_analyzed
+FROM tracks t
+LEFT JOIN analysis_results ar ON t.id = ar.track_id
+WHERE t.lyrics IS NOT NULL
+GROUP BY artist 
+ORDER BY tracks_count DESC LIMIT 20;
+```
+
+---
+
+## 🚨 TROUBLESHOOTING GUIDE FOR AI AGENTS
+
+### Problem: Database Connection Issues
+```bash
+# Diagnosis steps
+cat .env | grep POSTGRES                        # Check credentials
+docker ps | grep postgres                      # Check if container running
+python scripts/tools/database_diagnostics.py --quick  # Test connection
+
+# Common solutions
+docker-compose -f docker-compose.pgvector.yml up -d  # Start PostgreSQL
+# Check port conflicts (default: 5433)
+# Verify firewall settings
+```
+
+### Problem: AI Analysis Failures
+```bash
+# Diagnosis
+python scripts/mass_qwen_analysis.py --test --batch 1  # Single track test
+cat .env | grep NOVITA_API_KEY                  # Check API key
+curl -s "https://api.novita.ai/v3/health"       # API status
+
+# Common solutions
+# 1. Verify API key validity
+# 2. Check rate limits (Qwen: ~2-5 tracks/min)
+# 3. Network connectivity issues
+# 4. API service outages
+```
+
+### Problem: Concurrent Access Issues
+```bash
+# Diagnosis
+python scripts/tools/database_diagnostics.py --connections  # Pool status
+python -c "
+from src.database.postgres_adapter import PostgreSQLManager
+import asyncio
 async def test_pool():
     db = PostgreSQLManager()
     await db.initialize()
-    print(f'Pool size: {db.pool.get_size()}')
+    print(f'Pool: {db.pool.get_size()} connections')
     await db.close()
 asyncio.run(test_pool())
-\"")
+"
+
+# Solutions
+# 1. Increase pool_size in config
+# 2. Close unused connections
+# 3. Check for connection leaks
+# 4. Review async/await patterns
+```
+
+### Problem: Performance Issues
+```bash
+# Diagnosis
+python scripts/tools/database_diagnostics.py   # Full statistics
+htop                                           # System resources
+docker stats rap-analyzer-postgres-vector      # Container resources
+
+# Optimization
+# 1. Adjust batch_size in analysis scripts
+# 2. Monitor connection pool usage
+# 3. Index optimization for frequent queries
+# 4. Memory allocation for large datasets
 ```
 
 ---
 
-## 💡 Intelligence Boosters
+## 🎯 AI AGENT RESPONSE TEMPLATE
 
-### Context Shortcuts (copy-paste готовые фразы)
-
-#### Project Summary (PostgreSQL-focused):
-```
-"Enterprise-ready PostgreSQL ML pipeline для rap lyrics analysis. 57,718 треков migrated от SQLite, 
-PostgreSQL 15 с connection pooling (20 connections), concurrent script execution capability, 
-Qwen API integration для mass analysis. Python+asyncpg+PostgreSQL stack. 
-Цель: scalable concurrent text analysis с database integrity.
-Недавно: complete SQLite → PostgreSQL migration с 100% data preservation."
-```
-
-#### Current Status (post-migration):
-```
-"Проект успешно завершил PostgreSQL migration (сент 2025): SQLite → PostgreSQL 15, 
-57,717 треков + 54,170 анализов migrated, concurrent script execution enabled, 
-Qwen analysis pipeline (19,852 completed, 37,866 remaining).
-Status: PostgreSQL healthy, 93.9% analysis coverage, concurrent processing verified.
-Performance: 34.4% Qwen coverage, connection pool efficient, multi-script capability working."
-```
-
-#### Technical Stack (PostgreSQL-enhanced):
-```
-"Python 3.13+ + PostgreSQL 15, concurrent processing architecture: 
-src/database/postgres_adapter.py (connection pooling), asyncpg/psycopg2 drivers,
-scripts/mass_qwen_analysis.py (no confirmation prompts), 
-Qwen API integration via Novita, Genius/Spotify data enrichment,
-.env configuration management, concurrent script execution capability,
-migration tools, statistics/diagnostics системы."
-```
-
-### Common Pitfalls (чего избегать)
-
-#### ❌ Don't Do This:
-```python
-# Использовать устаревшие SQLite patterns
-import sqlite3                                      # Устарело! Используй PostgreSQL
-db_connection.execute(query)                        # Используй async PostgreSQL!
-
-# Игнорировать connection pooling
-# Прямые psycopg2 connections вместо adapter
-import psycopg2; conn = psycopg2.connect(...)      # Используй PostgreSQLManager!
-
-# Забывать про concurrent processing capabilities
-# Запуск одного скрипта когда можно несколько параллельно
-
-# Использовать старые SQLite scripts
-python scripts/archive/mass_qwen_analysis_sqlite.py  # Используй PostgreSQL версии!
-
-# Игнорировать .env configuration
-hardcoded_postgres_credentials                      # Используй .env!
-```
-
-#### ✅ Do This Instead:
-```python  
-# Modern PostgreSQL approach
-from src.database.postgres_adapter import PostgreSQLManager
-async with db_manager.get_connection() as conn:    # Proper connection pooling
-
-# Concurrent processing utilization
-# Terminal 1: python scripts/mass_qwen_analysis.py
-# Terminal 2: python scripts/db_browser.py
-# Оба работают одновременно без конфликтов
-
-# Proper configuration management
-from dotenv import load_dotenv; load_dotenv()
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-
-# PostgreSQL-compatible scripts
-python scripts/mass_qwen_analysis.py --test        # Updated for PostgreSQL
-python check_stats.py                              # PostgreSQL statistics
-python scripts/db_browser.py                       # PostgreSQL browser
-
-# Migration awareness
-python scripts/migrate_to_postgresql.py            # Migration tools
-python check_overlap.py                            # Data verification
-
-# Statistics and monitoring
-python check_stats.py                              # Database health
-python check_overlap.py                            # Analysis efficiency
-```
-
----
-
-## 🔧 Environment Setup Validation (PostgreSQL-Updated)
-
-### Prerequisites Check (PostgreSQL-Enhanced)
-```bash
-# System requirements
-python --version  # Should be 3.8+ (3.13+ recommended)
-psql --version    # PostgreSQL 15+ required
-pip list | grep asyncpg  # Async PostgreSQL driver
-pip list | grep psycopg2  # Sync PostgreSQL driver
-
-# PostgreSQL service validation
-sudo systemctl status postgresql  # Linux service status
-# Windows: Check services.msc for PostgreSQL service
-psql -h localhost -U rap_user -d rap_lyrics -c "SELECT version();"  # Direct connection test
-```
-
-### Database Configuration Validation
-```bash
-# Check PostgreSQL configuration
-cat .env | grep POSTGRES                           # PostgreSQL credentials
-psql -h localhost -U rap_user -d rap_lyrics -c "\dt"  # Table structure
-python -c "from src.database.postgres_adapter import PostgreSQLManager; print('✅ Adapter OK')"
-
-# Database health check
-python check_stats.py                              # Statistics validation
-python scripts/db_browser.py                       # Interactive exploration
-```
-
-### System Health Check (PostgreSQL Interface)
-```bash
-# Primary health validation using PostgreSQL
-python check_stats.py                              # Complete database statistics
-python scripts/mass_qwen_analysis.py --test        # Analysis pipeline test
-python check_overlap.py                            # Data consistency check
-
-# Expected outputs:
-# - 📈 Всего треков с текстами: 57,718
-# - 🤖 Проанализировано Qwen: 19,852
-# - ⚡ Остается для Qwen: 37,866
-# - 🎯 Покрытие Qwen: 34.4%
-```
-
-### Concurrent Processing Check
-```bash
-# Test concurrent capability (main migration goal)
-# Terminal 1:
-python scripts/mass_qwen_analysis.py --test &
-
-# Terminal 2 (simultaneously):
-python scripts/db_browser.py
-
-# Expected: Both scripts run without database locks or conflicts
-# PostgreSQL should handle multiple connections via connection pool
-```
-
-### Legacy System Check (Archived)
-```bash
-# SQLite backup validation (emergency fallback)
-ls scripts/archive/                                # Archived SQLite scripts
-ls data/data_backup_*.db                          # SQLite backup files
-python scripts/archive/mass_qwen_analysis_sqlite.py --dry-run  # Legacy test
-
-# Migration verification
-python scripts/migrate_to_postgresql.py --verify   # Migration validation
-```
-
----
-
-## 🚨 Emergency Protocols
-
-### If Agent Seems Lost
 ```markdown
-**RESET PROTOCOL (PostgreSQL-UPDATED)**: 
-1. read_file("docs/claude.md") - восстанови PostgreSQL контекст
-2. run_terminal("python check_stats.py") - проверь database health
-3. read_file("src/database/postgres_adapter.py", limit=50) - изучи database layer
-4. Объясни твою конкретную задачу в 1-2 предложениях  
-5. Выбери подходящий persona workflow выше
-6. Используй PostgreSQL для всех database операций
-```
+## 🔍 INVESTIGATION SUMMARY
+**Database Status**: [PostgreSQL connection, pool health, query performance]
+**Analysis Pipeline**: [Qwen API status, processing rate, error rate]
+**Concurrent Access**: [Multiple script compatibility, connection usage]
+**Data Integrity**: [Statistics verification, foreign key constraints]
 
-### If PostgreSQL Issues
-```markdown
-**POSTGRESQL RECOVERY**:
-1. run_terminal("python check_stats.py")           # Database diagnostics
-2. run_terminal("psql -h localhost -U rap_user -d rap_lyrics -c 'SELECT 1;'")  # Direct test
-3. cat .env | grep POSTGRES                        # Check credentials
-4. sudo systemctl restart postgresql               # Service restart (Linux)
-5. python scripts/db_browser.py                    # Interactive testing
-```
+## 📋 FINDINGS
+**Root Cause**: [Specific issue with code references]
+**Impact Assessment**: [Affected components, data integrity, performance]
+**Configuration Issues**: [.env problems, API keys, database settings]
 
-### If Migration Issues
-```markdown
-**MIGRATION RECOVERY**:
-1. run_terminal("python check_stats.py")                    # Verify current state
-2. run_terminal("python check_overlap.py")                  # Data consistency
-3. ls data/data_backup_*.db                                # Check SQLite backup
-4. python scripts/migrate_to_postgresql.py --verify        # Migration validation
-5. Emergency: use scripts/archive/ for SQLite fallback
-```
+## 🚀 SOLUTION PLAN
+1. **Immediate Actions**: [Commands to run right now]
+   ```bash
+   python scripts/tools/database_diagnostics.py --quick
+   python scripts/mass_qwen_analysis.py --test
+   ```
 
-### If Concurrent Processing Problems
-```markdown
-**CONCURRENT TROUBLESHOOTING**:
-- Connection pool exhaustion: check PostgreSQL max_connections
-- Script conflicts: verify scripts use PostgreSQLManager properly
-- Performance issues: monitor connection pool usage
-- Database locks: check for long-running transactions
-- Recovery: restart PostgreSQL service, reduce concurrent scripts
-```
+2. **Code/Configuration Changes**: [Specific file modifications]
+3. **Testing Strategy**: [Validation commands and expected results]
+4. **Monitoring**: [How to track the solution effectiveness]
 
-### If Analysis Pipeline Issues
-```markdown
-**ANALYSIS DEBUG (POSTGRESQL)**:
-1. Check Qwen API: run_terminal("python scripts/mass_qwen_analysis.py --test")
-2. Database connectivity: run_terminal("python check_stats.py")
-3. API credentials: cat .env | grep NOVITA_API_KEY
-4. Script compatibility: grep -r "PostgreSQLManager" scripts/
-5. Analysis efficiency: run_terminal("python check_overlap.py")
-```
-
----
-
-## 📊 Success Metrics & Validation (PostgreSQL-Enhanced)
-
-### PostgreSQL Knowledge Checklist (New)
-- [ ] **PostgreSQL Setup Clear**: Понимаю connection configuration и credentials
-- [ ] **Database Layer Mapped**: PostgreSQLManager, connection pooling, async operations  
-- [ ] **Migration Understanding**: Знаю SQLite → PostgreSQL migration process
-- [ ] **Concurrent Processing**: Понимаю multi-script execution capabilities
-- [ ] **Statistics Tools**: Могу использовать check_stats.py, check_overlap.py
-- [ ] **Analysis Integration**: Знаю Qwen + PostgreSQL integration
-- [ ] **Performance Monitoring**: Понимаю connection pool efficiency
-
-### Technical Readiness Checklist (PostgreSQL-Enhanced)
-- [ ] **PostgreSQL Access**: psql connection works with rap_user credentials
-- [ ] **Database Health**: `python check_stats.py` shows 57,718 tracks
-- [ ] **Analysis Pipeline**: `python scripts/mass_qwen_analysis.py --test` works
-- [ ] **Concurrent Capability**: Can run multiple scripts simultaneously
-- [ ] **Connection Pool**: PostgreSQLManager initializes without errors
-- [ ] **API Integration**: Qwen analysis completes successfully
-- [ ] **Data Consistency**: check_overlap.py shows proper statistics
-
-### Migration Success Checklist (New)
-- [ ] **Data Integrity**: 57,717 tracks + 54,170 analyses migrated полностью
-- [ ] **Schema Compatibility**: PostgreSQL tables match SQLite structure
-- [ ] **Performance Improvement**: Concurrent access works без конфликтов
-- [ ] **Script Compatibility**: All major scripts work with PostgreSQL
-- [ ] **Backup Availability**: SQLite backups preserved in archive
-- [ ] **Configuration Updated**: .env contains PostgreSQL credentials
-- [ ] **Legacy Preservation**: SQLite scripts archived for reference
-
-### Production Readiness Checklist (PostgreSQL-Enhanced)
-- [ ] **Database Performance**: Connection pool efficient, queries fast
-- [ ] **Concurrent Stability**: Multiple scripts run без database locks
-- [ ] **Analysis Throughput**: Qwen processing ~2 tracks/min sustained
-- [ ] **Error Handling**: Graceful degradation under connection limits
-- [ ] **Monitoring Tools**: Statistics and diagnostics working properly
-- [ ] **Recovery Procedures**: Emergency fallback to SQLite available
-- [ ] **Documentation Complete**: PostgreSQL setup and usage documented
-
-### Communication Readiness Checklist (PostgreSQL-Enhanced)
-- [ ] **Migration Communication**: Умею объяснить SQLite → PostgreSQL benefits
-- [ ] **Concurrent Processing**: Понимаю multi-script advantages
-- [ ] **Performance Context**: Знаю connection pooling и scalability benefits
-- [ ] **Problem Scoping**: Могу isolate PostgreSQL vs application issues
-- [ ] **Solution Planning**: Планирую considering database constraints
-- [ ] **Migration Expertise**: Могу помочь с similar database migrations
-
----
-
-## 🔄 Maintenance & Updates
-
-### When to Update This Checklist
-- [ ] PostgreSQL schema changes (new tables, indexes, constraints)
-- [ ] New concurrent processing features (batch improvements, parallel analysis)
-- [ ] Analysis pipeline updates (new APIs, analyzer improvements)  
-- [ ] Performance optimizations (connection pool tuning, query optimization)
-
-### Update Procedure
+## ✅ VALIDATION COMMANDS
 ```bash
-# 1. Document PostgreSQL changes
-echo "PostgreSQL Updated: $(date)" >> AI_ONBOARDING_CHECKLIST.md
+# Verify solution
+python scripts/tools/database_diagnostics.py --quick
+python scripts/mass_qwen_analysis.py --test
+python scripts/db_browser.py  # Interactive validation
+```
 
-# 2. Test with fresh PostgreSQL validation
-python check_stats.py  # Database health
-python check_overlap.py  # Data consistency
-python scripts/mass_qwen_analysis.py --test  # Analysis pipeline
-
-# 3. Validate all PostgreSQL commands work
-# Every database command should execute successfully
-
-# 4. Cross-reference with claude.md
-# Ensure PostgreSQL consistency between documents
+## 📊 SUCCESS METRICS
+- PostgreSQL connection: < 100ms
+- Query response: < 500ms  
+- Analysis success rate: > 90%
+- Concurrent scripts: No database locks
 ```
 
 ---
 
-## 📚 Quick Reference Card (PostgreSQL-Updated)
+## 💡 OPTIMIZATION NOTES FOR AI AGENTS
 
-```yaml
-Project: Enterprise PostgreSQL ML rap lyrics analysis with concurrent processing
-Stack: Python 3.13+ + PostgreSQL 15 + asyncpg/psycopg2 + Qwen API + concurrent scripts
-Architecture: PostgreSQL database + connection pooling + async operations + multi-script support
-Data: 57,718 tracks, 54,170 analyses, 19,852 Qwen completed, 37,866 remaining
-Status: SQLite → PostgreSQL migration complete, concurrent processing verified
+### Don't Request These (Already Documented):
+- Database schema (provided above)
+- Table statistics (current metrics included)
+- Analyzer types (coverage table provided)
+- SQL examples (comprehensive set included)
 
-Key PostgreSQL Files:
-  - src/database/postgres_adapter.py: Database layer (~200 lines)
-  - .env: PostgreSQL credentials and configuration
-  - scripts/mass_qwen_analysis.py: Main analysis script (PostgreSQL-compatible)
-  - check_stats.py: Database statistics and health monitoring
-  - check_overlap.py: Analysis overlap and efficiency verification
-  - scripts/migrate_to_postgresql.py: Migration tools and verification
+### Always Use These First:
+- `python scripts/tools/database_diagnostics.py --quick` - Primary diagnostic
+- Ready SQL queries from this guide
+- Troubleshooting scenarios for common issues
+- Configuration validation steps
 
-PostgreSQL Configuration:
-  - Database: rap_lyrics
-  - User: rap_user  
-  - Host: localhost:5432
-  - Pool: 20 max connections
-  - Drivers: asyncpg (async) + psycopg2 (sync)
+### Key Files Priority:
+1. `src/database/postgres_adapter.py` - Database layer (~200 lines)
+2. `scripts/mass_qwen_analysis.py` - Main analysis (~300 lines)  
+3. `scripts/tools/database_diagnostics.py` - Diagnostics (~150 lines)
+4. `.env` - PostgreSQL credentials
+5. `config.yaml` - System configuration
 
-Migration Achievements:
-  - ✅ 57,717 tracks migrated (100% preservation)
-  - ✅ 54,170 analysis results migrated (100% preservation)
-  - ✅ Concurrent script execution enabled
-  - ✅ Connection pooling implemented (20 connections)
-  - ✅ All major scripts PostgreSQL-compatible
-  - ✅ SQLite backup preserved in scripts/archive/
+### Success Indicators:
+- ✅ PostgreSQL connectivity < 100ms
+- ✅ Connection pool: 15+ available connections
+- ✅ Analysis success rate > 90%
+- ✅ No database lock errors in concurrent mode
+- ✅ Memory usage stable during batch processing
 
-PostgreSQL Commands:
-  - Database health: python check_stats.py
-  - Analysis test: python scripts/mass_qwen_analysis.py --test
-  - Overlap check: python check_overlap.py
-  - Database browser: python scripts/db_browser.py
-  - Direct access: psql -h localhost -U rap_user -d rap_lyrics
-  
-Concurrent Processing Test:
-  - Terminal 1: python scripts/mass_qwen_analysis.py --batch 50
-  - Terminal 2: python scripts/db_browser.py
-  - Both should run simultaneously without conflicts
+---
 
-Analysis Status:
-  - Total tracks: 57,718
-  - Qwen analyzed: 19,852 (34.4%)
-  - Gemma analyzed: 34,320 (59.5%)
-  - Overall coverage: 93.9%
-  - Remaining for Qwen: 37,866
+## 📦 PROJECT STRUCTURE REFERENCE
 
-API Integration:
-  - Qwen: Novita API (NOVITA_API_KEY in .env)
-  - Genius: Lyrics scraping (GENIUS_ACCESS_TOKEN in .env)
-  - Spotify: Audio features (SPOTIFY_CLIENT_ID/SECRET in .env)
-
-Emergency Fallback:
-  - SQLite scripts: scripts/archive/
-  - Data backup: data/data_backup_*.db
-  - Legacy diagnostics: scripts/tools/database_diagnostics.py
-
-Entry Modes:
-  - Express: read_file("docs/claude.md") + python check_stats.py
-  - Standard: + PostgreSQL adapter + configuration + analysis test
-  - Deep: + migration context + concurrent testing + performance validation
-
-Emergency: Reset with docs/claude.md + PostgreSQL health check + database statistics
+```
+rap-scraper-project/
+├── src/database/postgres_adapter.py    # 🔧 PostgreSQL connection management
+├── scripts/mass_qwen_analysis.py       # 🤖 Main AI analysis script
+├── scripts/tools/database_diagnostics.py # 📊 Primary diagnostic tool
+├── scripts/db_browser.py              # 🔍 Interactive database browser
+├── main.py                            # 🕷️ Genius.com scraper entry point
+├── config.yaml                        # ⚙️ System configuration
+├── .env                              # 🔐 PostgreSQL + API credentials
+├── docker-compose.pgvector.yml       # 🐳 PostgreSQL with pgvector
+└── scripts/archive/                   # 📦 SQLite legacy scripts
 ```
 
 ---
 
-*Created: 2025-08-26 | Version: 6.0 - Updated for PostgreSQL Migration | Updated: 2025-09-08 | Next Review: After analysis pipeline optimization*
+**REMEMBER**: This system uses PostgreSQL with connection pooling for enterprise-grade concurrent processing. Always start with `database_diagnostics.py --quick` and use the provided SQL queries instead of ad-hoc database requests.

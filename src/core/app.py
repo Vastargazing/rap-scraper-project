@@ -145,7 +145,9 @@ class Application:
     def _setup_analyzers(self) -> None:
         """Setup analyzer factory and register available analyzers"""
         try:
-            # Анализаторы уже импортированы в начале файла
+            # Инициализируем и регистрируем анализаторы
+            init_analyzers()
+            
             available_analyzers = AnalyzerFactory.list_available()
             self.logger.info(f"Analyzers available: {available_analyzers}")
             
@@ -241,16 +243,14 @@ def init_analyzers():
     """Инициализируем анализаторы"""
     try:
         # Регистрируем анализаторы напрямую (обход проблем с issubclass)
-        from analyzers.algorithmic_analyzer import AlgorithmicAnalyzer
-        from analyzers.qwen_analyzer import QwenAnalyzer
+        from analyzers.algorithmic_analyzer import AdvancedAlgorithmicAnalyzer
+        from archive.qwen_analyzer import QwenAnalyzer
         from analyzers.ollama_analyzer import OllamaAnalyzer
-        from analyzers.hybrid_analyzer import HybridAnalyzer
         from analyzers.emotion_analyzer import EmotionAnalyzer
         
-        AnalyzerFactory._analyzers["algorithmic_basic"] = AlgorithmicAnalyzer
+        AnalyzerFactory._analyzers["algorithmic_basic"] = AdvancedAlgorithmicAnalyzer
         AnalyzerFactory._analyzers["qwen"] = QwenAnalyzer
         AnalyzerFactory._analyzers["ollama"] = OllamaAnalyzer
-        AnalyzerFactory._analyzers["hybrid"] = HybridAnalyzer
         AnalyzerFactory._analyzers["emotion_analyzer"] = EmotionAnalyzer
         
         registered = list(AnalyzerFactory._analyzers.keys())

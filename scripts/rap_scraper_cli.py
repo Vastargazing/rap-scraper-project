@@ -135,7 +135,7 @@ def run_analysis(args):
     if args.analyzer == "gemma":
         print("🔥 Используем Gemma 27B для анализа")
         try:
-            from src.analyzers.gemma_27b_fixed import main
+            from archive.gemma_27b_fixed import main
             main()
         except Exception as e:
             print(f"❌ Ошибка Gemma анализа: {e}")
