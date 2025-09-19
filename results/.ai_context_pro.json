@@ -1,0 +1,2398 @@
+{
+  "api.py": {
+    "path": "api.py",
+    "priority": 3.1536,
+    "category": "other",
+    "description": "",
+    "last_modified": "",
+    "size_lines": 256,
+    "dependencies": [
+      "typing",
+      "sys",
+      "os",
+      "asyncio",
+      "uvicorn",
+      "pydantic",
+      "src",
+      "fastapi"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 11,
+    "coupling_score": 12.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "main.py": {
+    "path": "main.py",
+    "priority": 4.912,
+    "category": "cli",
+    "description": "🎯 Единая точка входа для всей системы анализа и сбора данных\n\nНАЗНАЧЕНИЕ:\n- Запуск всех функций прое",
+    "last_modified": "",
+    "size_lines": 1072,
+    "dependencies": [
+      "shutil",
+      "typing",
+      "json",
+      "sys",
+      "datetime",
+      "pathlib",
+      "asyncio",
+      "argparse",
+      "subprocess",
+      "dotenv",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 2,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 129.5,
+    "coupling_score": 15.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "archive\\gemma_27b_fixed.py": {
+    "path": "archive\\gemma_27b_fixed.py",
+    "priority": 1.4426,
+    "category": "legacy",
+    "description": "Исправленный анализатор песен через Google Gemma 3 27B\nИспользует Generative AI API вместо Cloud AI ",
+    "last_modified": "",
+    "size_lines": 536,
+    "dependencies": [
+      "typing",
+      "sqlite3",
+      "json",
+      "os",
+      "datetime",
+      "logging",
+      "dotenv",
+      "dataclasses",
+      "requests",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 44.5,
+    "coupling_score": 10.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "archive\\performance_monitor.py": {
+    "path": "archive\\performance_monitor.py",
+    "priority": 1.3932,
+    "category": "legacy",
+    "description": "📊 CLI-утилита для мониторинга производительности анализаторов\n\nНАЗНАЧЕНИЕ:\n- Измерение скорости, точ",
+    "last_modified": "",
+    "size_lines": 412,
+    "dependencies": [
+      "typing",
+      "json",
+      "sys",
+      "statistics",
+      "pathlib",
+      "logging",
+      "asyncio",
+      "core",
+      "psutil",
+      "dataclasses",
+      "interfaces",
+      "time"
+    ],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 26.0,
+    "coupling_score": 11.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "archive\\qwen_analyzer.py": {
+    "path": "archive\\qwen_analyzer.py",
+    "priority": 3.8834,
+    "category": "analyzer",
+    "description": "🤖 Qwen AI анализатор текстов песен (Novita AI)\n\nНАЗНАЧЕНИЕ:\n- Глубокий AI-анализ текстов песен с пом",
+    "last_modified": "",
+    "size_lines": 554,
+    "dependencies": [
+      "typing",
+      "json",
+      "re",
+      "os",
+      "datetime",
+      "logging",
+      "openai",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 44.0,
+    "coupling_score": 8.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "archive\\spotify_enhancer_sqlite_backup.py": {
+    "path": "archive\\spotify_enhancer_sqlite_backup.py",
+    "priority": 1.4487,
+    "category": "legacy",
+    "description": "Spotify Enhancer — интеграция с Spotify API для обогащения треков и артистов.\n\nНазначение:\nПолучение",
+    "last_modified": "",
+    "size_lines": 577,
+    "dependencies": [
+      "typing",
+      "json",
+      "sys",
+      "database",
+      "os",
+      "datetime",
+      "pathlib",
+      "re",
+      "logging",
+      "base64",
+      "difflib",
+      "requests",
+      "models",
+      "utils",
+      "time"
+    ],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 45.5,
+    "coupling_score": 13.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\continue_spotify_enhancement.py": {
+    "path": "scripts\\continue_spotify_enhancement.py",
+    "priority": 2.443,
+    "category": "scripts",
+    "description": "#!/usr/bin/env python3\n🔄 Продолжение Spotify enhancement для оставшихся артистов и треков\n\nНАЗНАЧЕНИ",
+    "last_modified": "",
+    "size_lines": 120,
+    "dependencies": [
+      "sqlite3",
+      "sys",
+      "os",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 8.5,
+    "coupling_score": 4.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\db_browser.py": {
+    "path": "scripts\\db_browser.py",
+    "priority": 2.5309,
+    "category": "scripts",
+    "description": "#!/usr/bin/env python3\n🔍 Database Browser — просмотр данных PostgreSQL\n\nНАЗНАЧЕНИЕ:\n- Быстрый просмо",
+    "last_modified": "",
+    "size_lines": 279,
+    "dependencies": [
+      "typing",
+      "json",
+      "sys",
+      "os",
+      "asyncio",
+      "argparse",
+      "src"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 23.5,
+    "coupling_score": 5.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\monitor_postgres.py": {
+    "path": "scripts\\monitor_postgres.py",
+    "priority": 4.437,
+    "category": "database",
+    "description": "#!/usr/bin/env python3\n🐘 Мониторинг состояния PostgreSQL базы данных Rap Scraper\n\nНАЗНАЧЕНИЕ:\n- Мони",
+    "last_modified": "",
+    "size_lines": 72,
+    "dependencies": [
+      "sys",
+      "pathlib",
+      "logging",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 5.5,
+    "coupling_score": 4.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\rap_scraper_cli.py": {
+    "path": "scripts\\rap_scraper_cli.py",
+    "priority": 4.817,
+    "category": "cli",
+    "description": "#!/usr/bin/env python3\n🎤 Главный CLI-интерфейс для управления проектом Rap Scraper\n\nНАЗНАЧЕНИЕ:\n- За",
+    "last_modified": "",
+    "size_lines": 550,
+    "dependencies": [
+      "pandas",
+      "sqlite3",
+      "json",
+      "sys",
+      "os",
+      "pathlib",
+      "archive",
+      "traceback",
+      "argparse",
+      "subprocess",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 2,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 75.0,
+    "coupling_score": 15.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\run_spotify_enhancement.py": {
+    "path": "scripts\\run_spotify_enhancement.py",
+    "priority": 2.338,
+    "category": "scripts",
+    "description": "#!/usr/bin/env python3\n🎵 Точка входа для обогащения данных Spotify\n\nНАЗНАЧЕНИЕ:\n- Запуск процесса об",
+    "last_modified": "",
+    "size_lines": 35,
+    "dependencies": [
+      "os",
+      "src",
+      "sys"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 1,
+    "coupling_score": 1.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\__init__.py": {
+    "path": "scripts\\__init__.py",
+    "priority": 2.306,
+    "category": "scripts",
+    "description": "Entry Points & Main Commands - CLI scripts and legacy wrappers.",
+    "last_modified": "",
+    "size_lines": 1,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\__init__.py": {
+    "path": "src\\__init__.py",
+    "priority": 2.806,
+    "category": "other",
+    "description": "#!/usr/bin/env python3\n🎤 Rap Scraper Project — основной пакет исходного кода\n\nНАЗНАЧЕНИЕ:\n- Централь",
+    "last_modified": "",
+    "size_lines": 20,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "tests\\conftest.py": {
+    "path": "tests\\conftest.py",
+    "priority": 3.0220000000000002,
+    "category": "tests",
+    "description": "Временная база данных для тестов",
+    "last_modified": "",
+    "size_lines": 154,
+    "dependencies": [
+      "enhancers",
+      "unittest",
+      "sqlite3",
+      "sys",
+      "os",
+      "pathlib",
+      "pytest",
+      "models",
+      "tempfile"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 3.0,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "tests\\test_emotion_analyzer.py": {
+    "path": "tests\\test_emotion_analyzer.py",
+    "priority": 4.0718,
+    "category": "analyzer",
+    "description": "🧪 Test Suite для Emotion Analyzer\nКомплексное тестирование анализатора эмоций\n\nНАЗНАЧЕНИЕ:\n- Unit те",
+    "last_modified": "",
+    "size_lines": 328,
+    "dependencies": [
+      "unittest",
+      "typing",
+      "sys",
+      "os",
+      "analyzers",
+      "asyncio",
+      "pytest",
+      "interfaces",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 11.5,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "tests\\test_integration_comprehensive.py": {
+    "path": "tests\\test_integration_comprehensive.py",
+    "priority": 3.2289,
+    "category": "tests",
+    "description": "Комплексные тесты для всей архитектуры rap-scraper-project\nФаза 4: Интеграция и тестирование",
+    "last_modified": "",
+    "size_lines": 389,
+    "dependencies": [
+      "unittest",
+      "typing",
+      "json",
+      "sys",
+      "pathlib",
+      "asyncio",
+      "pytest",
+      "core",
+      "cli",
+      "interfaces",
+      "tempfile"
+    ],
+    "git_commits_count": 2,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 39.0,
+    "coupling_score": 12.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "tests\\test_models.py": {
+    "path": "tests\\test_models.py",
+    "priority": 3.411,
+    "category": "models",
+    "description": "Тесты для Pydantic моделей Spotify",
+    "last_modified": "",
+    "size_lines": 188,
+    "dependencies": [
+      "pydantic",
+      "unittest",
+      "models"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 7.5,
+    "coupling_score": 3.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "tests\\test_spotify_enhancer.py": {
+    "path": "tests\\test_spotify_enhancer.py",
+    "priority": 3.0563000000000002,
+    "category": "tests",
+    "description": "Тесты для SpotifyEnhancer класса",
+    "last_modified": "",
+    "size_lines": 223,
+    "dependencies": [
+      "unittest",
+      "sqlite3",
+      "json",
+      "models",
+      "spotify_enhancer",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 9.0,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "tests\\__init__.py": {
+    "path": "tests\\__init__.py",
+    "priority": 2.806,
+    "category": "tests",
+    "description": "Test Suite - Unit and integration tests.",
+    "last_modified": "",
+    "size_lines": 1,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\analyzers\\algorithmic_analyzer.py": {
+    "path": "src\\analyzers\\algorithmic_analyzer.py",
+    "priority": 4.424,
+    "category": "analyzer",
+    "description": "🧮 Продвинутый алгоритмический анализатор текстов песен\n\nКЛЮЧЕВЫЕ УЛУЧШЕНИЯ:\n✨ Фонетический анализ ри",
+    "last_modified": "",
+    "size_lines": 2267,
+    "dependencies": [
+      "asyncpg",
+      "typing",
+      "re",
+      "json",
+      "sys",
+      "math",
+      "datetime",
+      "pathlib",
+      "logging",
+      "traceback",
+      "asyncio",
+      "argparse",
+      "dataclasses",
+      "collections",
+      "hashlib",
+      "interfaces",
+      "time",
+      "yaml"
+    ],
+    "git_commits_count": 4,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 264.0,
+    "coupling_score": 17.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\analyzers\\create_visual_analysis.py": {
+    "path": "src\\analyzers\\create_visual_analysis.py",
+    "priority": 4.0608,
+    "category": "analyzer",
+    "description": "Создание красивого анализа данных для GitHub профиля",
+    "last_modified": "",
+    "size_lines": 278,
+    "dependencies": [
+      "pandas",
+      "sqlite3",
+      "os",
+      "datetime",
+      "collections",
+      "numpy",
+      "seaborn",
+      "matplotlib"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 8.5,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\analyzers\\emotion_analyzer.py": {
+    "path": "src\\analyzers\\emotion_analyzer.py",
+    "priority": 4.412,
+    "category": "analyzer",
+    "description": "🎯 Advanced Emotion Analyzer - Production Ready\nАнализ эмоций в рэп-лирике с использованием Hugging F",
+    "last_modified": "",
+    "size_lines": 1409,
+    "dependencies": [
+      "typing",
+      "sys",
+      "torch",
+      "argparse",
+      "dataclasses",
+      "json",
+      "functools",
+      "datetime",
+      "pathlib",
+      "transformers",
+      "src",
+      "re",
+      "os",
+      "contextlib",
+      "interfaces",
+      "traceback",
+      "logging",
+      "asyncio",
+      "numpy"
+    ],
+    "git_commits_count": 2,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 134.0,
+    "coupling_score": 17.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\analyzers\\mass_qwen_analysis.py": {
+    "path": "src\\analyzers\\mass_qwen_analysis.py",
+    "priority": 4.397,
+    "category": "analyzer",
+    "description": "🤖 Объединенный массовый Qwen анализатор (PostgreSQL + встроенный Qwen)\n\nНАЗНАЧЕНИЕ:\n- Встроенный Qwe",
+    "last_modified": "",
+    "size_lines": 1030,
+    "dependencies": [
+      "typing",
+      "json",
+      "sys",
+      "re",
+      "os",
+      "datetime",
+      "pathlib",
+      "logging",
+      "asyncio",
+      "argparse",
+      "dotenv",
+      "dataclasses",
+      "openai",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 2,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 92.5,
+    "coupling_score": 14.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\analyzers\\multi_model_analyzer.py": {
+    "path": "src\\analyzers\\multi_model_analyzer.py",
+    "priority": 4.418,
+    "category": "analyzer",
+    "description": "TO_DO\n🎉 **Отлично! Скрипт теперь работает полностью корректно!**\n\n## ✅ **Проблема решена:**\n- **Name",
+    "last_modified": "",
+    "size_lines": 1828,
+    "dependencies": [
+      "asyncpg",
+      "typing",
+      "json",
+      "re",
+      "os",
+      "datetime",
+      "traceback",
+      "logging",
+      "asyncio",
+      "dotenv",
+      "google",
+      "collections",
+      "pydantic",
+      "requests",
+      "psycopg2",
+      "time"
+    ],
+    "git_commits_count": 3,
+    "git_last_commit": "6 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 218.5,
+    "coupling_score": 18.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\analyzers\\multi_model_analyzer_backup.py": {
+    "path": "src\\analyzers\\multi_model_analyzer_backup.py",
+    "priority": 4.406,
+    "category": "analyzer",
+    "description": "🤖 Многоуровневый AI анализатор текстов песен с Safety & Hallucination Detection\n\nНАЗНАЧЕНИЕ:\n- Глубо",
+    "last_modified": "",
+    "size_lines": 1673,
+    "dependencies": [
+      "typing",
+      "sqlite3",
+      "json",
+      "re",
+      "os",
+      "datetime",
+      "logging",
+      "dotenv",
+      "google",
+      "collections",
+      "pydantic",
+      "requests",
+      "models",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "6 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 206.5,
+    "coupling_score": 15.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\analyzers\\ollama_analyzer.py": {
+    "path": "src\\analyzers\\ollama_analyzer.py",
+    "priority": 4.1462,
+    "category": "analyzer",
+    "description": "🦙 Ollama AI анализатор текстов песен (локальные модели)\n\nНАЗНАЧЕНИЕ:\n- Локальный AI-анализ текстов п",
+    "last_modified": "",
+    "size_lines": 462,
+    "dependencies": [
+      "typing",
+      "json",
+      "datetime",
+      "logging",
+      "requests",
+      "interfaces",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 42.0,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\analyzers\\optimized_ollama_analyzer.py": {
+    "path": "src\\analyzers\\optimized_ollama_analyzer.py",
+    "priority": 4.2387,
+    "category": "analyzer",
+    "description": "🦙 Ollama AI анализатор текстов песен (оптимизированная версия для слабых ПК)\n\nОПТИМИЗАЦИИ:\n- Легкие ",
+    "last_modified": "",
+    "size_lines": 537,
+    "dependencies": [
+      "typing",
+      "json",
+      "datetime",
+      "logging",
+      "psutil",
+      "threading",
+      "requests",
+      "interfaces",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 54.5,
+    "coupling_score": 9.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\analyzers\\simplified_feature_analyzer.py": {
+    "path": "src\\analyzers\\simplified_feature_analyzer.py",
+    "priority": 4.412,
+    "category": "analyzer",
+    "description": "Professional PostgreSQL Lyrics Analyzer\n========================================\n\nA production-ready",
+    "last_modified": "",
+    "size_lines": 1419,
+    "dependencies": [
+      "asyncpg",
+      "typing",
+      "sys",
+      "argparse",
+      "dataclasses",
+      "json",
+      "datetime",
+      "pathlib",
+      "pydantic",
+      "signal",
+      "psycopg2",
+      "time",
+      "re",
+      "os",
+      "contextlib",
+      "collections",
+      "math",
+      "traceback",
+      "logging",
+      "asyncio"
+    ],
+    "git_commits_count": 2,
+    "git_last_commit": "6 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 126.0,
+    "coupling_score": 19.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\analyzers\\__init__.py": {
+    "path": "src\\analyzers\\__init__.py",
+    "priority": 3.938,
+    "category": "analyzer",
+    "description": "Analyzers module for the rap scraper project.\n\nСодержит реализации различных анализаторов текста пес",
+    "last_modified": "",
+    "size_lines": 25,
+    "dependencies": [
+      "algorithmic_analyzer",
+      "mass_qwen_analysis",
+      "ollama_analyzer",
+      "emotion_analyzer"
+    ],
+    "git_commits_count": 3,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 4.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\cli\\analyzer_cli.py": {
+    "path": "src\\cli\\analyzer_cli.py",
+    "priority": 4.1392,
+    "category": "analyzer",
+    "description": "🧩 CLI-интерфейс для анализа текстов с помощью разных моделей\n\nНАЗНАЧЕНИЕ:\n- Анализ текстов через ком",
+    "last_modified": "",
+    "size_lines": 342,
+    "dependencies": [
+      "typing",
+      "json",
+      "sys",
+      "pathlib",
+      "asyncio",
+      "argparse",
+      "core",
+      "interfaces",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 29.5,
+    "coupling_score": 8.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\cli\\batch_processor.py": {
+    "path": "src\\cli\\batch_processor.py",
+    "priority": 4.6953,
+    "category": "cli",
+    "description": "📦 CLI-утилита для пакетной обработки текстов\n\nНАЗНАЧЕНИЕ:\n- Пакетная обработка больших файлов с текс",
+    "last_modified": "",
+    "size_lines": 373,
+    "dependencies": [
+      "typing",
+      "json",
+      "sys",
+      "pathlib",
+      "logging",
+      "asyncio",
+      "core",
+      "dataclasses",
+      "interfaces",
+      "concurrent",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 26.0,
+    "coupling_score": 10.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\cli\\performance_monitor.py": {
+    "path": "src\\cli\\performance_monitor.py",
+    "priority": 4.8168,
+    "category": "cli",
+    "description": "📊 CLI-утилита для мониторинга производительности анализаторов\n\nНАЗНАЧЕНИЕ:\n- Измерение скорости, точ",
+    "last_modified": "",
+    "size_lines": 738,
+    "dependencies": [
+      "typing",
+      "sys",
+      "argparse",
+      "io",
+      "dataclasses",
+      "json",
+      "memory_profiler",
+      "pathlib",
+      "pytest",
+      "prometheus_client",
+      "tempfile",
+      "time",
+      "cProfile",
+      "statistics",
+      "subprocess",
+      "interfaces",
+      "traceback",
+      "logging",
+      "asyncio",
+      "core",
+      "pstats",
+      "psutil"
+    ],
+    "git_commits_count": 2,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 65.5,
+    "coupling_score": 21.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\cli\\__init__.py": {
+    "path": "src\\cli\\__init__.py",
+    "priority": 4.396,
+    "category": "cli",
+    "description": "CLI утилиты для rap-scraper-project\n\nЭтот модуль содержит утилиты командной строки для:\n- Анализа от",
+    "last_modified": "",
+    "size_lines": 19,
+    "dependencies": [
+      "batch_processor",
+      "performance_monitor",
+      "analyzer_cli"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 3.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\core\\app.py": {
+    "path": "src\\core\\app.py",
+    "priority": 3.2461,
+    "category": "other",
+    "description": "Application factory and core initialization module.\n\nProvides centralized application setup, depende",
+    "last_modified": "",
+    "size_lines": 361,
+    "dependencies": [
+      "typing",
+      "sys",
+      "analyzers",
+      "pathlib",
+      "archive",
+      "logging",
+      "src"
+    ],
+    "git_commits_count": 2,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 49.0,
+    "coupling_score": 11.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\core\\config.py": {
+    "path": "src\\core\\config.py",
+    "priority": 3.1964,
+    "category": "other",
+    "description": "Configuration management module.\n\nProvides centralized configuration handling with support for:\n- En",
+    "last_modified": "",
+    "size_lines": 394,
+    "dependencies": [
+      "typing",
+      "abc",
+      "json",
+      "os",
+      "pathlib",
+      "logging",
+      "dataclasses",
+      "yaml"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 70.5,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\core\\__init__.py": {
+    "path": "src\\core\\__init__.py",
+    "priority": 2.866,
+    "category": "other",
+    "description": "Core module for the rap scraper project.\n\nThis module provides the foundational components for the a",
+    "last_modified": "",
+    "size_lines": 59,
+    "dependencies": [
+      "app",
+      "config"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 2.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\database\\postgres_adapter.py": {
+    "path": "src\\database\\postgres_adapter.py",
+    "priority": 4.746,
+    "category": "database",
+    "description": "🎯 PostgreSQL Database Adapter with ML Support\nConcurrent-safe database operations with vector embedd",
+    "last_modified": "",
+    "size_lines": 560,
+    "dependencies": [
+      "asyncpg",
+      "typing",
+      "json",
+      "os",
+      "datetime",
+      "numpy",
+      "logging",
+      "asyncio",
+      "contextlib",
+      "dataclasses",
+      "hashlib",
+      "psycopg2"
+    ],
+    "git_commits_count": 2,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 39.0,
+    "coupling_score": 12.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\enhancers\\bulk_spotify_enhancement.py": {
+    "path": "src\\enhancers\\bulk_spotify_enhancement.py",
+    "priority": 3.3998,
+    "category": "other",
+    "description": "🎵 Улучшенное массовое обогащение базы данных метаданными из Spotify API\n\nНАЗНАЧЕНИЕ:\n- Массовое обог",
+    "last_modified": "",
+    "size_lines": 938,
+    "dependencies": [
+      "typing",
+      "sqlite3",
+      "json",
+      "sys",
+      "re",
+      "os",
+      "datetime",
+      "traceback",
+      "logging",
+      "ssl",
+      "dotenv",
+      "models",
+      "spotify_enhancer",
+      "requests",
+      "src",
+      "urllib3",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 102.0,
+    "coupling_score": 18.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\enhancers\\spotify_analysis_utils.py": {
+    "path": "src\\enhancers\\spotify_analysis_utils.py",
+    "priority": 2.9974,
+    "category": "other",
+    "description": "🔎 Утилиты для анализа и мониторинга процесса обогащения Spotify\n\nНАЗНАЧЕНИЕ:\n- Получение статистики,",
+    "last_modified": "",
+    "size_lines": 304,
+    "dependencies": [
+      "datetime",
+      "typing",
+      "sqlite3",
+      "json"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 20.5,
+    "coupling_score": 4.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\enhancers\\spotify_enhancer.py": {
+    "path": "src\\enhancers\\spotify_enhancer.py",
+    "priority": 3.2446,
+    "category": "other",
+    "description": "🎵 Pure PostgreSQL Spotify Enhancer\n\nНАЗНАЧЕНИЕ:\n- Интеграция с Spotify API для обогащения треков\n- П",
+    "last_modified": "",
+    "size_lines": 436,
+    "dependencies": [
+      "spotipy",
+      "typing",
+      "json",
+      "sys",
+      "os",
+      "pathlib",
+      "logging",
+      "asyncio",
+      "argparse",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 47.5,
+    "coupling_score": 10.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\enhancers\\__init__.py": {
+    "path": "src\\enhancers\\__init__.py",
+    "priority": 2.806,
+    "category": "other",
+    "description": "Data Enhancement Layer - APIs for enriching collected data.",
+    "last_modified": "",
+    "size_lines": 1,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\interfaces\\analyzer_interface.py": {
+    "path": "src\\interfaces\\analyzer_interface.py",
+    "priority": 4.418,
+    "category": "analyzer",
+    "description": "🧠 Унифицированные интерфейсы для всех анализаторов проекта Rap Scraper (PostgreSQL Edition)\n\nНАЗНАЧЕ",
+    "last_modified": "",
+    "size_lines": 1264,
+    "dependencies": [
+      "typing",
+      "abc",
+      "json",
+      "sys",
+      "re",
+      "os",
+      "datetime",
+      "traceback",
+      "archive",
+      "logging",
+      "asyncio",
+      "enum",
+      "dataclasses",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 3,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 152.0,
+    "coupling_score": 19.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\interfaces\\analyzer_interface_archive.py": {
+    "path": "src\\interfaces\\analyzer_interface_archive.py",
+    "priority": 4.0221,
+    "category": "analyzer",
+    "description": "🧠 Базовые интерфейсы для всех анализаторов проекта Rap Scraper\n\nНАЗНАЧЕНИЕ:\n- Определение абстрактны",
+    "last_modified": "",
+    "size_lines": 231,
+    "dependencies": [
+      "typing",
+      "abc",
+      "re",
+      "enum",
+      "dataclasses"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 21.5,
+    "coupling_score": 5.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\interfaces\\__init__.py": {
+    "path": "src\\interfaces\\__init__.py",
+    "priority": 2.836,
+    "category": "other",
+    "description": "Interfaces module for the rap scraper project.\n\nThis module defines the core interfaces and abstract",
+    "last_modified": "",
+    "size_lines": 21,
+    "dependencies": [
+      "analyzer_interface"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 1.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\models\\models.py": {
+    "path": "src\\models\\models.py",
+    "priority": 3.436,
+    "category": "models",
+    "description": "🎼 Pydantic модели для структурированного анализа песен и метаданных\n\nНАЗНАЧЕНИЕ:\n- Описание структур",
+    "last_modified": "",
+    "size_lines": 137,
+    "dependencies": [
+      "pydantic",
+      "datetime",
+      "typing"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 20,
+    "coupling_score": 3.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\models\\__init__.py": {
+    "path": "src\\models\\__init__.py",
+    "priority": 3.306,
+    "category": "models",
+    "description": "Data Models & Storage - Pydantic models and database operations.",
+    "last_modified": "",
+    "size_lines": 1,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\scrapers\\rap_scraper_postgres.py": {
+    "path": "src\\scrapers\\rap_scraper_postgres.py",
+    "priority": 4.912,
+    "category": "database",
+    "description": "🎤 Массовый скрапер для анализа и загрузки текстов песен в PostgreSQL (ОПТИМИЗИРОВАННАЯ ВЕРСИЯ)\n\nКЛЮЧ",
+    "last_modified": "",
+    "size_lines": 1026,
+    "dependencies": [
+      "asyncpg",
+      "typing",
+      "sys",
+      "random",
+      "dataclasses",
+      "requests",
+      "gc",
+      "importlib",
+      "json",
+      "datetime",
+      "pathlib",
+      "concurrent",
+      "signal",
+      "time",
+      "re",
+      "os",
+      "enum",
+      "lyricsgenius",
+      "logging",
+      "asyncio",
+      "psutil",
+      "dotenv",
+      "hashlib",
+      "utils"
+    ],
+    "git_commits_count": 2,
+    "git_last_commit": "6 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 149.0,
+    "coupling_score": 23.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\scrapers\\ultra_rap_scraper_postgres.py": {
+    "path": "src\\scrapers\\ultra_rap_scraper_postgres.py",
+    "priority": 4.8911,
+    "category": "database",
+    "description": "Архитектурный подход:\n1. Основной скрапер (ваш текущий rap_scraper_postgres.py)\n\nСтабильная, провере",
+    "last_modified": "",
+    "size_lines": 851,
+    "dependencies": [
+      "asyncpg",
+      "typing",
+      "sys",
+      "random",
+      "dataclasses",
+      "redis",
+      "queue",
+      "json",
+      "functools",
+      "rap_scraper_postgres",
+      "prometheus_client",
+      "time",
+      "os",
+      "contextlib",
+      "collections",
+      "pickle",
+      "logging",
+      "asyncio",
+      "threading",
+      "dotenv",
+      "utils"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "6 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 105.0,
+    "coupling_score": 19.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\scrapers\\__init__.py": {
+    "path": "src\\scrapers\\__init__.py",
+    "priority": 2.806,
+    "category": "other",
+    "description": "Data Collection Layer - Web scrapers for lyrics and metadata.",
+    "last_modified": "",
+    "size_lines": 1,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\utils\\config.py": {
+    "path": "src\\utils\\config.py",
+    "priority": 2.867,
+    "category": "other",
+    "description": "#!/usr/bin/env python3\n⚙️ Централизованное управление конфигурацией проекта Rap Scraper\n\nНАЗНАЧЕНИЕ:",
+    "last_modified": "",
+    "size_lines": 62,
+    "dependencies": [
+      "os",
+      "pathlib",
+      "dotenv"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.5,
+    "coupling_score": 2.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\utils\\file_utils.py": {
+    "path": "src\\utils\\file_utils.py",
+    "priority": 2.908,
+    "category": "other",
+    "description": "📁 Утилиты для работы с файлами\n\nБезопасные операции с файлами и JSON.",
+    "last_modified": "",
+    "size_lines": 72,
+    "dependencies": [
+      "os",
+      "pathlib",
+      "typing",
+      "json"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 6.0,
+    "coupling_score": 3.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\utils\\logging_utils.py": {
+    "path": "src\\utils\\logging_utils.py",
+    "priority": 2.902,
+    "category": "other",
+    "description": "📝 Утилиты логирования\n\nЦентрализованная настройка логирования для всех компонентов.",
+    "last_modified": "",
+    "size_lines": 61,
+    "dependencies": [
+      "os",
+      "pathlib",
+      "typing",
+      "logging"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 3.0,
+    "coupling_score": 3.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\utils\\postgres_db.py": {
+    "path": "src\\utils\\postgres_db.py",
+    "priority": 4.5888,
+    "category": "database",
+    "description": "#!/usr/bin/env python3\n🐘 Менеджер PostgreSQL базы данных для проекта Rap Scraper\n\nНАЗНАЧЕНИЕ:\n- Упра",
+    "last_modified": "",
+    "size_lines": 338,
+    "dependencies": [
+      "typing",
+      "sys",
+      "os",
+      "pathlib",
+      "logging",
+      "psycopg2",
+      "yaml"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 34.5,
+    "coupling_score": 6.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\utils\\setup_spotify.py": {
+    "path": "src\\utils\\setup_spotify.py",
+    "priority": 2.923,
+    "category": "other",
+    "description": "🎵 Настройка и тестирование интеграции с Spotify API\n\nНАЗНАЧЕНИЕ:\n- Проверка и настройка Spotify API ",
+    "last_modified": "",
+    "size_lines": 165,
+    "dependencies": [
+      "os",
+      "dotenv",
+      "json",
+      "spotify_enhancer"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 13.5,
+    "coupling_score": 3.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\utils\\validation_utils.py": {
+    "path": "src\\utils\\validation_utils.py",
+    "priority": 2.878,
+    "category": "other",
+    "description": "✅ Утилиты валидации\n\nОбщие функции для валидации и очистки данных.",
+    "last_modified": "",
+    "size_lines": 60,
+    "dependencies": [
+      "typing",
+      "re"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 6.0,
+    "coupling_score": 2.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "src\\utils\\__init__.py": {
+    "path": "src\\utils\\__init__.py",
+    "priority": 2.896,
+    "category": "other",
+    "description": "🔧 Общие утилиты проекта\n\nЦентрализованные утилиты для:\n- Логирование\n- Валидация данных\n- Общие функ",
+    "last_modified": "",
+    "size_lines": 28,
+    "dependencies": [
+      "file_utils",
+      "logging_utils",
+      "validation_utils"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0,
+    "coupling_score": 3.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\archive\\run_full_analysis.py": {
+    "path": "scripts\\archive\\run_full_analysis.py",
+    "priority": 1.232,
+    "category": "legacy",
+    "description": "🤖 Batch AI Analysis Tool - Production-grade dataset processor\n\nProcesses large rap lyrics datasets i",
+    "last_modified": "",
+    "size_lines": 175,
+    "dependencies": [
+      "typing",
+      "sqlite3",
+      "sys",
+      "pathlib",
+      "logging",
+      "argparse",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 11.0,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\development\\analyze_confidence_results.py": {
+    "path": "scripts\\development\\analyze_confidence_results.py",
+    "priority": 2.362,
+    "category": "scripts",
+    "description": "Финальная демонстрация confidence scores в продакшене\n\nПоказывает практическое применение confidence",
+    "last_modified": "",
+    "size_lines": 124,
+    "dependencies": [
+      "json"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 13.0,
+    "coupling_score": 1.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\development\\demo_confidence_scores.py": {
+    "path": "scripts\\development\\demo_confidence_scores.py",
+    "priority": 2.376,
+    "category": "scripts",
+    "description": "Демонстрация новых confidence scores в ML feature analysis\n\nПоказывает, как новые метрики уверенност",
+    "last_modified": "",
+    "size_lines": 153,
+    "dependencies": [
+      "os",
+      "src",
+      "json",
+      "sys"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 5.0,
+    "coupling_score": 2.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\development\\demo_simplified_ml_features.py": {
+    "path": "scripts\\development\\demo_simplified_ml_features.py",
+    "priority": 2.5295,
+    "category": "scripts",
+    "description": "Упрощенная демонстрация новых ML-фичей (без NLTK)\n\nДемонстрирует базовые возможности Feature Enginee",
+    "last_modified": "",
+    "size_lines": 385,
+    "dependencies": [
+      "json",
+      "sys",
+      "pathlib",
+      "traceback",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 17.5,
+    "coupling_score": 5.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\development\\run_remaining_artists.py": {
+    "path": "scripts\\development\\run_remaining_artists.py",
+    "priority": 2.37,
+    "category": "scripts",
+    "description": "Быстрый запуск основного скрапера с правильной загрузкой remaining_artists.json",
+    "last_modified": "",
+    "size_lines": 29,
+    "dependencies": [
+      "os",
+      "pathlib",
+      "src",
+      "sys"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 2,
+    "coupling_score": 2.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\development\\run_scraping_debug.py": {
+    "path": "scripts\\development\\run_scraping_debug.py",
+    "priority": 2.48,
+    "category": "scripts",
+    "description": "Улучшенный скрипт запуска скрапинга с детальной отладкой загрузки артистов.",
+    "last_modified": "",
+    "size_lines": 123,
+    "dependencies": [
+      "json",
+      "sys",
+      "os",
+      "pathlib",
+      "logging",
+      "src"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 12.0,
+    "coupling_score": 5.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\development\\run_scraping_improved.py": {
+    "path": "scripts\\development\\run_scraping_improved.py",
+    "priority": 2.546,
+    "category": "scripts",
+    "description": "Улучшенный скрипт запуска скрапинга с дополнительными проверками и настройками.\nИсправляет проблемы ",
+    "last_modified": "",
+    "size_lines": 160,
+    "dependencies": [
+      "json",
+      "sys",
+      "os",
+      "pathlib",
+      "logging",
+      "requests",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 15.0,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\legacy\\rap_scraper_optimized.py": {
+    "path": "scripts\\legacy\\rap_scraper_optimized.py",
+    "priority": 2.338,
+    "category": "scripts",
+    "description": "Backward compatibility wrapper for rap_scraper_optimized.py",
+    "last_modified": "",
+    "size_lines": 10,
+    "dependencies": [
+      "os",
+      "src",
+      "sys"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 1,
+    "coupling_score": 1.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\legacy\\run_analysis.py": {
+    "path": "scripts\\legacy\\run_analysis.py",
+    "priority": 2.338,
+    "category": "scripts",
+    "description": "Main analysis entry point.",
+    "last_modified": "",
+    "size_lines": 10,
+    "dependencies": [
+      "os",
+      "src",
+      "sys"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 1,
+    "coupling_score": 1.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\legacy\\run_scraping.py": {
+    "path": "scripts\\legacy\\run_scraping.py",
+    "priority": 2.338,
+    "category": "scripts",
+    "description": "Legacy scraping entry point with backward compatibility.\n\n⚠️  DEPRECATED: Consider using the main CL",
+    "last_modified": "",
+    "size_lines": 20,
+    "dependencies": [
+      "os",
+      "src",
+      "sys"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 1,
+    "coupling_score": 1.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\tools\\ai_context_manager.py": {
+    "path": "scripts\\tools\\ai_context_manager.py",
+    "priority": 2.6609,
+    "category": "scripts",
+    "description": "🤖 AI Context Manager — интеллектуальный менеджер контекста для AI ассистентов в VS Code\n\nНАЗНАЧЕНИЕ:",
+    "last_modified": "",
+    "size_lines": 579,
+    "dependencies": [
+      "typing",
+      "json",
+      "re",
+      "sys",
+      "os",
+      "datetime",
+      "pathlib",
+      "subprocess",
+      "dataclasses"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 43.5,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\tools\\ai_context_manager_pro.py": {
+    "path": "scripts\\tools\\ai_context_manager_pro.py",
+    "priority": 2.6,
+    "category": "scripts",
+    "description": "🤖 AI Context Manager PRO — продвинутый менеджер контекста с ML и интеграциями\n\nУЛУЧШЕНИЯ:\n- Динамиче",
+    "last_modified": "",
+    "size_lines": 1218,
+    "dependencies": [
+      "typing",
+      "sys",
+      "argparse",
+      "dataclasses",
+      "json",
+      "datetime",
+      "pathlib",
+      "ast",
+      "time",
+      "re",
+      "os",
+      "hashlib",
+      "subprocess",
+      "collections",
+      "pickle",
+      "ai_project_analyzer",
+      "sklearn",
+      "pyperclip",
+      "numpy"
+    ],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 198.5,
+    "coupling_score": 18.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\tools\\ai_project_analyzer.py": {
+    "path": "scripts\\tools\\ai_project_analyzer.py",
+    "priority": 4.2709,
+    "category": "analyzer",
+    "description": "🧠 AI Project Analyzer — интеллектуальная система анализа проекта для AI ассистентов\n\nНАЗНАЧЕНИЕ:\n- С",
+    "last_modified": "",
+    "size_lines": 489,
+    "dependencies": [
+      "typing",
+      "sqlite3",
+      "json",
+      "sys",
+      "os",
+      "pathlib",
+      "subprocess",
+      "dataclasses",
+      "collections",
+      "hashlib",
+      "ast"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 73.0,
+    "coupling_score": 9.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\tools\\batch_ai_analysis.py": {
+    "path": "scripts\\tools\\batch_ai_analysis.py",
+    "priority": 2.5606,
+    "category": "scripts",
+    "description": "🤖 Batch AI Analysis Tool - Production-grade dataset processor\n\nProcesses large rap lyrics datasets i",
+    "last_modified": "",
+    "size_lines": 206,
+    "dependencies": [
+      "typing",
+      "sqlite3",
+      "sys",
+      "pathlib",
+      "logging",
+      "argparse",
+      "src",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 12.0,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\tools\\check_spotify_coverage.py": {
+    "path": "scripts\\tools\\check_spotify_coverage.py",
+    "priority": 2.394,
+    "category": "scripts",
+    "description": "🎯 Quick Spotify Coverage Report\nБыстрый отчет по покрытию данных Spotify в базе\n\nНАЗНАЧЕНИЕ:\n- Подсч",
+    "last_modified": "",
+    "size_lines": 110,
+    "dependencies": [
+      "pathlib",
+      "sqlite3"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 14.0,
+    "coupling_score": 2.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\tools\\comprehensive_ai_stats.py": {
+    "path": "scripts\\tools\\comprehensive_ai_stats.py",
+    "priority": 2.5279,
+    "category": "scripts",
+    "description": "🎯 Comprehensive AI Analysis Statistics Generator\nГенератор подробной статистики по результатам AI-ан",
+    "last_modified": "",
+    "size_lines": 429,
+    "dependencies": [
+      "typing",
+      "sqlite3",
+      "json",
+      "datetime",
+      "collections"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 14.5,
+    "coupling_score": 5.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\tools\\create_cli_showcase.py": {
+    "path": "scripts\\tools\\create_cli_showcase.py",
+    "priority": 4.413,
+    "category": "cli",
+    "description": "Создание красивого CLI showcase для GitHub профиля (без matplotlib)",
+    "last_modified": "",
+    "size_lines": 181,
+    "dependencies": [
+      "os",
+      "datetime",
+      "sqlite3",
+      "collections"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 8.5,
+    "coupling_score": 3.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\tools\\database_diagnostics.py": {
+    "path": "scripts\\tools\\database_diagnostics.py",
+    "priority": 4.7641,
+    "category": "database",
+    "description": "🔍 Unified Database Diagnostics Tool (PostgreSQL)\nОбъединенный инструмент диагностики PostgreSQL базы",
+    "last_modified": "",
+    "size_lines": 741,
+    "dependencies": [
+      "json",
+      "sys",
+      "os",
+      "datetime",
+      "pathlib",
+      "argparse",
+      "src",
+      "psycopg2"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 87.0,
+    "coupling_score": 7.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\tools\\dependency_manager.py": {
+    "path": "scripts\\tools\\dependency_manager.py",
+    "priority": 2.7588,
+    "category": "scripts",
+    "description": "🔐 Dependency Security Manager — автоматическое управление зависимостями и безопасностью\n\nНАЗНАЧЕНИЕ:",
+    "last_modified": "",
+    "size_lines": 498,
+    "dependencies": [
+      "typing",
+      "re",
+      "json",
+      "sys",
+      "datetime",
+      "pathlib",
+      "subprocess",
+      "dataclasses",
+      "requests",
+      "shutil"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "7 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 66.5,
+    "coupling_score": 9.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\tools\\monitor_qwen_progress.py": {
+    "path": "scripts\\tools\\monitor_qwen_progress.py",
+    "priority": 2.46,
+    "category": "scripts",
+    "description": "📊 Мониторинг прогресса массового анализа Qwen",
+    "last_modified": "",
+    "size_lines": 172,
+    "dependencies": [
+      "sqlite3",
+      "sys",
+      "os",
+      "datetime",
+      "argparse",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 17.0,
+    "coupling_score": 4.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "scripts\\utils\\code_analyzer.py": {
+    "path": "scripts\\utils\\code_analyzer.py",
+    "priority": 4.0897,
+    "category": "analyzer",
+    "description": "🎯 Code Analysis Tool for Refactoring\nАнализ кода для выявления кандидатов на рефакторинг и дублирова",
+    "last_modified": "",
+    "size_lines": 297,
+    "dependencies": [
+      "re",
+      "json",
+      "os",
+      "datetime",
+      "pathlib",
+      "collections",
+      "ast"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 37.0,
+    "coupling_score": 6.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "monitoring\\scripts\\system_monitor.py": {
+    "path": "monitoring\\scripts\\system_monitor.py",
+    "priority": 2.4859999999999998,
+    "category": "scripts",
+    "description": "System Resource Monitor\nМониторинг системных ресурсов",
+    "last_modified": "",
+    "size_lines": 149,
+    "dependencies": [
+      "typing",
+      "json",
+      "os",
+      "datetime",
+      "psutil",
+      "time"
+    ],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 15.0,
+    "coupling_score": 5.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "archive\\legacy_monitoring\\database_diagnostics_sqlite.py": {
+    "path": "archive\\legacy_monitoring\\database_diagnostics_sqlite.py",
+    "priority": 4.0552,
+    "category": "database",
+    "description": "🔍 Unified Database Diagnostics Tool (PostgreSQL)\nОбъединенный инструмент диагностики PostgreSQL базы",
+    "last_modified": "",
+    "size_lines": 552,
+    "dependencies": [],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "archive\\legacy_monitoring_full\\db_monitor.py": {
+    "path": "archive\\legacy_monitoring_full\\db_monitor.py",
+    "priority": 1.2368,
+    "category": "legacy",
+    "description": "PostgreSQL Database Health Monitor\nМониторинг состояния PostgreSQL базы данных",
+    "last_modified": "",
+    "size_lines": 208,
+    "dependencies": [
+      "typing",
+      "json",
+      "sys",
+      "os",
+      "datetime",
+      "src",
+      "psycopg2",
+      "time"
+    ],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 18.0,
+    "coupling_score": 6.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "archive\\legacy_monitoring\\monitoring\\check_analysis_status.py": {
+    "path": "archive\\legacy_monitoring\\monitoring\\check_analysis_status.py",
+    "priority": 1.107,
+    "category": "legacy",
+    "description": "Быстрая проверка статуса анализов в базе данных",
+    "last_modified": "",
+    "size_lines": 90,
+    "dependencies": [
+      "sqlite3",
+      "sys",
+      "os",
+      "datetime",
+      "src"
+    ],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 8.5,
+    "coupling_score": 3.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "archive\\legacy_monitoring\\monitoring\\monitor_gemma_progress.py": {
+    "path": "archive\\legacy_monitoring\\monitoring\\monitor_gemma_progress.py",
+    "priority": 1.11,
+    "category": "legacy",
+    "description": "Мониторинг прогресса анализа Gemma 3 27B в реальном времени",
+    "last_modified": "",
+    "size_lines": 148,
+    "dependencies": [
+      "sqlite3",
+      "sys",
+      "os",
+      "datetime",
+      "time"
+    ],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 10.0,
+    "coupling_score": 3.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "archive\\legacy_monitoring\\monitoring\\__init__.py": {
+    "path": "archive\\legacy_monitoring\\monitoring\\__init__.py",
+    "priority": 1.0,
+    "category": "legacy",
+    "description": "Monitoring & Status - Progress tracking and health checks.",
+    "last_modified": "",
+    "size_lines": 1,
+    "dependencies": [],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "AI_Engineer_Journal\\Projects\\Rap_Scraper_Project\\2multi_agent_system (!IMPORTANT_UPDATE 2.0! (реализация идеи multi_agent_system PY).py": {
+    "path": "AI_Engineer_Journal\\Projects\\Rap_Scraper_Project\\2multi_agent_system (!IMPORTANT_UPDATE 2.0! (реализация идеи multi_agent_system PY).py",
+    "priority": 2.9145,
+    "category": "other",
+    "description": "src/agents/multi_agent_orchestrator.py",
+    "last_modified": "",
+    "size_lines": 445,
+    "dependencies": [
+      "typing",
+      "json",
+      "pathlib",
+      "enum",
+      "dataclasses",
+      "src"
+    ],
+    "git_commits_count": 0,
+    "git_last_commit": "",
+    "git_authors": [],
+    "complexity_score": 50.0,
+    "coupling_score": 9.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "config.yaml": {
+    "path": "config.yaml",
+    "priority": 3.812,
+    "category": "config",
+    "description": "🎯 Rap Scraper Project Configuration",
+    "last_modified": "",
+    "size_lines": 156,
+    "dependencies": [],
+    "git_commits_count": 2,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "docker-compose.pgvector.yml": {
+    "path": "docker-compose.pgvector.yml",
+    "priority": 3.806,
+    "category": "config",
+    "description": "🧬 PostgreSQL + pgvector Setup for Rap Scraper",
+    "last_modified": "",
+    "size_lines": 63,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "docker-compose.postgres.yml": {
+    "path": "docker-compose.postgres.yml",
+    "priority": 4.3338,
+    "category": "database",
+    "description": "🐘 PostgreSQL-Powered Rap Scraper & Analyzer Stack",
+    "last_modified": "",
+    "size_lines": 278,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "docker-compose.yml": {
+    "path": "docker-compose.yml",
+    "priority": 3.806,
+    "category": "config",
+    "description": "🐳 Production Docker Compose for Rap Lyrics Analyzer API",
+    "last_modified": "",
+    "size_lines": 120,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "docs\\AI_ONBOARDING_CHECKLIST.md": {
+    "path": "docs\\AI_ONBOARDING_CHECKLIST.md",
+    "priority": 3.3628,
+    "category": "docs",
+    "description": "Professional PostgreSQL Lyrics Analyzer - AI Agent Guide",
+    "last_modified": "",
+    "size_lines": 448,
+    "dependencies": [],
+    "git_commits_count": 3,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "docs\\API.md": {
+    "path": "docs\\API.md",
+    "priority": 3.3363,
+    "category": "docs",
+    "description": "📚 API Documentation",
+    "last_modified": "",
+    "size_lines": 303,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "docs\\claude.md": {
+    "path": "docs\\claude.md",
+    "priority": 3.3697,
+    "category": "docs",
+    "description": "Rap Scraper Project — AI Agent Context (Обновлено: 2025-09-15)",
+    "last_modified": "",
+    "size_lines": 577,
+    "dependencies": [],
+    "git_commits_count": 2,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "docs\\PGVECTOR_CONNECTION.md": {
+    "path": "docs\\PGVECTOR_CONNECTION.md",
+    "priority": 3.306,
+    "category": "docs",
+    "description": "🔐 pgvector Connection Information",
+    "last_modified": "",
+    "size_lines": 66,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "docs\\PROGRESS.md": {
+    "path": "docs\\PROGRESS.md",
+    "priority": 3.43,
+    "category": "docs",
+    "description": "📋 Дневник изменений проекта Rap Scraper",
+    "last_modified": "",
+    "size_lines": 1609,
+    "dependencies": [],
+    "git_commits_count": 5,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "docs\\STRUCTURE.md": {
+    "path": "docs\\STRUCTURE.md",
+    "priority": 3.306,
+    "category": "docs",
+    "description": "Project Structure",
+    "last_modified": "",
+    "size_lines": 46,
+    "dependencies": [],
+    "git_commits_count": 1,
+    "git_last_commit": "8 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  },
+  "docs\\TO_DO.md": {
+    "path": "docs\\TO_DO.md",
+    "priority": 3.3778,
+    "category": "docs",
+    "description": "🎯 TO-DO List - Rap Scraper Project",
+    "last_modified": "",
+    "size_lines": 538,
+    "dependencies": [],
+    "git_commits_count": 4,
+    "git_last_commit": "2 days ago",
+    "git_authors": [
+      "Vastargazing"
+    ],
+    "complexity_score": 0.0,
+    "coupling_score": 0.0,
+    "usage_frequency": 0,
+    "semantic_embedding": null
+  }
+}

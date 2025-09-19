@@ -22,6 +22,12 @@ nltk>=3.8.0
 # System monitoring
 psutil>=5.9.0
 
+# Performance monitoring & benchmarking 🚀
+rich>=13.0.0  # для красивого CLI вывода в performance_monitor.py
+tabulate>=0.9.0  # для таблиц сравнения анализаторов
+pytest-benchmark>=4.0.0  # для профессионального бенчмаркинга (опционально)
+memory-profiler>=0.60.0  # для memory profiling (опционально)
+
 # Optional: Analysis and visualization
 matplotlib>=3.7.0
 seaborn>=0.12.0

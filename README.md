@@ -121,7 +121,7 @@ graph TB
 | 🌐 **Web API** | FastAPI endpoints + web interface | PostgreSQL + pgvector | ✅ Production |
 | 🧠 **5 AI Analyzers** | Multi-model analysis pipeline | PostgreSQL + pgvector | ✅ Production |
 | 📊 **Batch Processing** | High-throughput concurrent analysis | PostgreSQL + pgvector | ✅ Production |
-| 🔍 **Performance Monitor** | Connection pool & query monitoring | PostgreSQL + pgvector | ✅ Production |
+| 🔍 **Performance Monitor** | Enterprise-grade analyzer benchmarking, Rich UI, async/sync compatibility | PostgreSQL + pgvector | ✅ Production |
 | � **Vector Search** | Semantic similarity and recommendations | pgvector Extension | ✅ Production |
 | �🤖 **AI Context Manager** | Intelligent project context generation for AI assistants | Results Archive | ✅ Production |
 | 📊 **AI Project Analyzer** | Automated code analysis, metrics & insights | Results Archive | ✅ Production |
@@ -591,6 +591,9 @@ cd rap-scraper-project
 pip install -r requirements.txt
 pip install asyncpg psycopg2-binary  # PostgreSQL drivers
 
+# Optional: Enhanced performance monitoring tools 🚀
+pip install rich tabulate pytest-benchmark memory-profiler  # For performance_monitor.py
+
 # Environment configuration
 cp .env.example .env
 # Edit .env with your PostgreSQL credentials
@@ -602,6 +605,10 @@ cp .env.example .env
 # Testing with PostgreSQL
 pytest tests/ -v
 python scripts/tools/database_diagnostics.py --quick  # Verify PostgreSQL connection
+
+# Automated Performance Testing (CI/CD)
+pytest tests/benchmarks/ --benchmark-only              # Local benchmark tests
+# GitHub Actions automatically runs these on every push/PR
 
 # Code Quality
 black .
@@ -640,6 +647,11 @@ rap-scraper-project/
 │   ├── debug_sql.py           # � PostgreSQL debugging
 │   └── archive/               # 📦 SQLite legacy scripts
 ├── tests/                      # 🧪 Test suites
+│   └── benchmarks/             # 🚀 Performance tests & CI/CD
+├── results/                    # 📊 Analysis outputs & checkpoints
+│   ├── qwen_analysis_checkpoint.json     # 🤖 Qwen progress tracking
+│   ├── spotify_enhancement_checkpoint.json # 🎵 Spotify API progress  
+│   └── *.json                  # 📈 Analysis reports & metrics
 └── docs/                       # 📚 PostgreSQL documentation
     ├── claude.md              # 🤖 AI assistant context (updated)
     ├── AI_ONBOARDING_CHECKLIST.md # 📋 PostgreSQL workflows
@@ -670,6 +682,41 @@ rap-scraper-project/
 | **PostgreSQL 15 + pgvector** | Enterprise database with vector operations | ✅ 20-connection pool, ACID transactions, semantic search | ✅ Production |
 | **Docker + docker-compose** | Containerization and deployment | ✅ PostgreSQL + pgvector containerization available | ✅ Production |
 | **asyncpg + psycopg2** | High-performance PostgreSQL drivers | ✅ Async/sync dual support + vector operations | ✅ Production |
+
+```
+
+## 🤖 CI/CD & Automated Testing
+
+### GitHub Actions Workflows
+- **🚀 Performance Benchmarks** (`.github/workflows/benchmarks.yml`)
+  - Automatic performance testing on every push/PR
+  - Regression detection (fails if analyzer > 5 seconds)
+  - Daily performance monitoring (3 AM UTC)
+  - PR comments with benchmark results
+
+### Performance Testing Commands
+```bash
+# Quick CI benchmarks (for GitHub Actions)
+pytest tests/benchmarks/ -m quick --benchmark-only
+
+# Full benchmark suite
+pytest tests/benchmarks/ --benchmark-only
+
+# Compare with baseline
+pytest tests/benchmarks/ --benchmark-compare=.benchmarks/
+
+# Save new baseline
+pytest tests/benchmarks/ --benchmark-save=production
+
+# Interactive performance monitoring (Rich UI)
+python src/cli/performance_monitor.py --analyzer qwen --mode compare
+```
+
+### CI/CD Features
+- **Automated regression testing** - catches performance degradation
+- **Cross-platform testing** - Python 3.9, 3.10 on Ubuntu
+- **Benchmark history** - GitHub Pages with performance graphs
+- **Pull request integration** - automatic performance reports
 
 ### PostgreSQL + pgvector Migration Benefits
 ```bash

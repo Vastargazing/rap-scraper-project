@@ -538,7 +538,8 @@ class UnifiedQwenMassAnalyzer:
         self.db_manager = None
         self.stats = AnalysisStats()
         self.last_processed_id = 0
-        self.checkpoint_file = Path("qwen_analysis_checkpoint.json")
+        # Сохраняем checkpoint в папку results
+        self.checkpoint_file = Path("results") / "qwen_analysis_checkpoint.json"
         
     async def initialize(self) -> bool:
         """Инициализация компонентов"""
@@ -611,6 +612,9 @@ class UnifiedQwenMassAnalyzer:
     async def save_checkpoint(self):
         """Сохранение чекпоинта"""
         try:
+            # Создаем папку results если её нет
+            self.checkpoint_file.parent.mkdir(exist_ok=True)
+            
             data = {
                 'last_processed_id': self.last_processed_id,
                 'timestamp': datetime.now().isoformat(),

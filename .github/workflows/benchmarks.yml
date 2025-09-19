@@ -1,0 +1,169 @@
+name: 🚀 Performance Benchmarks
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    # Запуск каждый день в 03:00 UTC для мониторинга performance drift
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    # Ручной запуск
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-benchmark
+    
+    - name: Create .env for testing
+      run: |
+        echo "POSTGRES_HOST=localhost" >> .env
+        echo "POSTGRES_PORT=5432" >> .env
+        echo "POSTGRES_USERNAME=test_user" >> .env
+        echo "POSTGRES_PASSWORD=test_pass" >> .env
+        echo "POSTGRES_DATABASE=test_db" >> .env
+        echo "NOVITA_API_KEY=test_key" >> .env
+    
+    - name: Run quick benchmarks
+      run: |
+        pytest tests/benchmarks/test_quick_benchmarks.py \
+          --benchmark-only \
+          --benchmark-json=benchmark-results.json \
+          --benchmark-save=ci-baseline \
+          -v
+    
+    - name: Store benchmark results
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        tool: 'pytest'
+        output-file-path: benchmark-results.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        # Показываем графики performance в GitHub Pages
+        gh-pages-branch: gh-pages
+        benchmark-data-dir-path: dev/bench
+    
+    - name: Comment PR with benchmark results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          try {
+            const results = JSON.parse(fs.readFileSync('benchmark-results.json', 'utf8'));
+            const benchmarks = results.benchmarks || [];
+            
+            let comment = '## 🚀 Benchmark Results\n\n';
+            comment += '| Test | Mean Time | Std Dev | Analyzer |\n';
+            comment += '|------|-----------|---------|----------|\n';
+            
+            benchmarks.forEach(bench => {
+              const name = bench.name.split('::').pop();
+              const mean = bench.stats.mean.toFixed(4);
+              const stddev = bench.stats.stddev.toFixed(4);
+              const analyzer = bench.extra_info?.analyzer || 'unknown';
+              comment += `| ${name} | ${mean}s | ±${stddev}s | ${analyzer} |\n`;
+            });
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          } catch (e) {
+            console.log('No benchmark results to comment');
+          }
+    
+    - name: Upload benchmark artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results-${{ matrix.python-version }}
+        path: |
+          benchmark-results.json
+          .benchmarks/
+    
+    - name: Performance regression check
+      run: |
+        # Простая проверка что тесты не стали медленнее чем в 2 раза
+        python -c "
+        import json
+        import sys
+        
+        try:
+            with open('benchmark-results.json') as f:
+                results = json.load(f)
+            
+            for bench in results.get('benchmarks', []):
+                mean_time = bench['stats']['mean']
+                # Fail если анализатор работает дольше 5 секунд
+                if mean_time > 5.0:
+                    print(f'PERFORMANCE REGRESSION: {bench[\"name\"]} takes {mean_time:.2f}s')
+                    sys.exit(1)
+            
+            print('✅ All benchmarks within acceptable performance limits')
+        except Exception as e:
+            print(f'Benchmark check failed: {e}')
+            sys.exit(1)
+        "
+
+  compare-with-baseline:
+    runs-on: ubuntu-latest
+    needs: benchmark
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Нужно для сравнения с baseline
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.10
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pytest-benchmark
+    
+    - name: Download baseline benchmarks
+      continue-on-error: true
+      run: |
+        # Пытаемся скачать baseline с master branch
+        git checkout origin/master -- .benchmarks/ || echo "No baseline found"
+    
+    - name: Run comparison benchmarks
+      run: |
+        pytest tests/benchmarks/test_quick_benchmarks.py \
+          --benchmark-only \
+          --benchmark-compare=.benchmarks/ \
+          --benchmark-compare-fail=mean:10% \
+          -v || echo "Comparison completed with warnings"

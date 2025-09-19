@@ -1,0 +1,40 @@
+digraph Dependencies {
+  rankdir=LR;
+  node [shape=box, style=rounded, fontname=Arial];
+  edge [color=gray50];
+
+  "api_py" [fillcolor="#34495e", style=filled, width=1.1, tooltip=""];
+  "main_py" [fillcolor="#e74c3c", style=filled, width=1.5, tooltip="🎯 Единая точка входа для всей системы анализа и сб"];
+  "gemma_27b_fixed_py" [fillcolor="#7f8c8d", style=filled, width=0.8, tooltip="Исправленный анализатор песен через Google Gemma 3"];
+  "performance_monitor_py" [fillcolor="#7f8c8d", style=filled, width=0.8, tooltip="📊 CLI-утилита для мониторинга производительности а"];
+  "qwen_analyzer_py" [fillcolor="#2ecc71", style=filled, width=1.3, tooltip="🤖 Qwen AI анализатор текстов песен (Novita AI)
+
+НА"];
+  "spotify_enhancer_sqlite_backup_py" [fillcolor="#7f8c8d", style=filled, width=0.8, tooltip="Spotify Enhancer — интеграция с Spotify API для об"];
+  "continue_spotify_enhancement_py" [fillcolor="#34495e", style=filled, width=1.0, tooltip="#!/usr/bin/env python3
+🔄 Продолжение Spotify enhan"];
+  "db_browser_py" [fillcolor="#34495e", style=filled, width=1.0, tooltip="#!/usr/bin/env python3
+🔍 Database Browser — просмо"];
+  "monitor_postgres_py" [fillcolor="#3498db", style=filled, width=1.4, tooltip="#!/usr/bin/env python3
+🐘 Мониторинг состояния Post"];
+  "rap_scraper_cli_py" [fillcolor="#e74c3c", style=filled, width=1.5, tooltip="#!/usr/bin/env python3
+🎤 Главный CLI-интерфейс для"];
+  "run_spotify_enhancement_py" [fillcolor="#34495e", style=filled, width=1.0, tooltip="#!/usr/bin/env python3
+🎵 Точка входа для обогащени"];
+  "__init___py" [fillcolor="#34495e", style=filled, width=1.0, tooltip="Entry Points & Main Commands - CLI scripts and leg"];
+  "__init___py" [fillcolor="#34495e", style=filled, width=1.1, tooltip="#!/usr/bin/env python3
+🎤 Rap Scraper Project — осн"];
+  "conftest_py" [fillcolor="#95a5a6", style=filled, width=1.1, tooltip="Временная база данных для тестов"];
+  "test_emotion_analyzer_py" [fillcolor="#2ecc71", style=filled, width=1.3, tooltip="🧪 Test Suite для Emotion Analyzer
+Комплексное тест"];
+  "test_integration_comprehensive_py" [fillcolor="#95a5a6", style=filled, width=1.1, tooltip="Комплексные тесты для всей архитектуры rap-scraper"];
+  "test_models_py" [fillcolor="#f39c12", style=filled, width=1.2, tooltip="Тесты для Pydantic моделей Spotify"];
+  "test_spotify_enhancer_py" [fillcolor="#95a5a6", style=filled, width=1.1, tooltip="Тесты для SpotifyEnhancer класса"];
+  "__init___py" [fillcolor="#95a5a6", style=filled, width=1.1, tooltip="Test Suite - Unit and integration tests."];
+  "algorithmic_analyzer_py" [fillcolor="#2ecc71", style=filled, width=1.4, tooltip="🧮 Продвинутый алгоритмический анализатор текстов п"];
+  "api_py" -> "monitor_postgres_py";
+  "qwen_analyzer_py" -> "monitor_postgres_py";
+  "continue_spotify_enhancement_py" -> "monitor_postgres_py";
+  "run_spotify_enhancement_py" -> "monitor_postgres_py";
+  "algorithmic_analyzer_py" -> "monitor_postgres_py";
+}
