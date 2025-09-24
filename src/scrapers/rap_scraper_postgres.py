@@ -592,7 +592,7 @@ class OptimizedPostgreSQLScraper:
             
             self.metrics.api_calls += 1
             
-            if not artist or not hasattr(artist, 'songs') or not artist.songs:
+            if not artist or not hasattr(artist, 'tracks) or not artist.songs:
                 logger.warning(f"❌ Артист {artist_name} не найден или нет песен")
                 return
             
@@ -600,11 +600,11 @@ class OptimizedPostgreSQLScraper:
             logger.info(f"📀 Найдено {total_songs} песен для {artist_name}")
             
             # Кэшируем результат
-            self.artist_cache[artist_name] = artist.songs[:20]  # Кэшируем первые 20 песен
+            self.artist_cache[artist_name] = artist.tracks[:20]  # Кэшируем первые 20 песен
             
             # Показываем первые песни
             logger.info("🎵 Первые найденные песни:")
-            for i, song in enumerate(artist.songs[:5], 1):
+            for i, song in enumerate(artist.tracks[:5], 1):
                 logger.info(f"  {i}. {song.title}")
             
             # Возвращаем песни

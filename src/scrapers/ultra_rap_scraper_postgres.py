@@ -236,7 +236,7 @@ class AsyncPostgreSQLManager:
         async with self.get_connection() as conn:
             # Подготавливаем данные для COPY
             rows = []
-            for song in songs_batch:
+            for track in tracks_batch:
                 rows.append((
                     song['artist'],
                     song['title'],
@@ -264,7 +264,7 @@ class AsyncPostgreSQLManager:
         """Fallback метод с обычными INSERT"""
         saved_count = 0
         async with conn.transaction():
-            for song in songs_batch:
+            for track in tracks_batch:
                 try:
                     await conn.execute("""
                         INSERT INTO tracks (artist, title, lyrics, url, genius_id, metadata_json)
@@ -588,7 +588,7 @@ class UltraOptimizedScraper(OptimizedPostgreSQLScraper):
             return
         
         # Кэшируем результат в Redis
-        self.redis_cache.cache_artist_songs(artist_name, artist.songs[:50])
+        self.redis_cache.cache_artist_songs(artist_name, artist.tracks[:50])
         
         logger.info(f"📀 Найдено {len(artist.songs)} песен для {artist_name}")
         

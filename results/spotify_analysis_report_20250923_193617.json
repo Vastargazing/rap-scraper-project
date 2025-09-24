@@ -1,0 +1,3527 @@
+{
+  "timestamp": "2025-09-23T19:36:17.719054",
+  "detailed_stats": {
+    "total_songs": 57717,
+    "spotify_tracks": 34134,
+    "spotify_artists": 441,
+    "top_unprocessed_artists": [
+      [
+        "E-40",
+        473
+      ],
+      [
+        "Boosie Badazz",
+        452
+      ],
+      [
+        "Berner",
+        391
+      ],
+      [
+        "Pi’erre Bourne",
+        376
+      ],
+      [
+        "Ty Dolla $ign",
+        334
+      ],
+      [
+        "XV",
+        320
+      ],
+      [
+        "Young Buck",
+        301
+      ],
+      [
+        "Mac Dre",
+        289
+      ],
+      [
+        "Slim Thug",
+        277
+      ],
+      [
+        "Three 6 Mafia",
+        276
+      ]
+    ],
+    "top_processed_artists": [
+      [
+        "Gucci Mane",
+        476
+      ],
+      [
+        "Snoop Dogg",
+        469
+      ],
+      [
+        "Chief Keef",
+        469
+      ],
+      [
+        "Russ",
+        459
+      ],
+      [
+        "Future",
+        458
+      ],
+      [
+        "French Montana",
+        446
+      ],
+      [
+        "Tech N9ne",
+        444
+      ],
+      [
+        "The Game",
+        436
+      ],
+      [
+        "B.o.B",
+        431
+      ],
+      [
+        "Gunna",
+        425
+      ]
+    ],
+    "popularity": {
+      "avg": 30.51,
+      "min": 1,
+      "max": 94
+    },
+    "most_popular_tracks": [
+      [
+        "Jump",
+        "Don Toliver",
+        94
+      ],
+      [
+        "Free",
+        "Ja Rule",
+        94
+      ],
+      [
+        "All The Stars",
+        "Kendrick Lamar",
+        91
+      ],
+      [
+        "In My Car",
+        "Playboi Carti",
+        90
+      ],
+      [
+        "Creep",
+        "Nipsey Hussle",
+        90
+      ],
+      [
+        "Sugar On My Tongue",
+        "Tyler, The Creator",
+        89
+      ],
+      [
+        "See You Again",
+        "Tyler, The Creator",
+        88
+      ],
+      [
+        "luther",
+        "Kendrick Lamar",
+        87
+      ],
+      [
+        "One Dance",
+        "Drake",
+        87
+      ],
+      [
+        "Without Me",
+        "Eminem",
+        87
+      ]
+    ]
+  },
+  "problematic_tracks": {
+    "long_titles": [
+      [
+        56850,
+        "when you’re a ant and you wake up in an awesome mood, about to drive your son to school, only to discover that you left the lights on in the car last night so your battery is drained",
+        "André 3000",
+        182
+      ],
+      [
+        54191,
+        "J-Zone, Al-Shid, Celph Titled, and Rok One Freestyle (Brothers on the Slide: The Lost Freestyle Sessions)",
+        "DJ Unk",
+        105
+      ],
+      [
+        54202,
+        "Punchline, J.U.I.C.E., and Eddie Brock Freestyle (Brothers on the Slide: The Lost Freestyle Sessions)",
+        "DJ Unk",
+        101
+      ],
+      [
+        54188,
+        "Akrobatik, Rise, and Eddie Brock Freestyle (Brothers on the Slide: The Lost Freestyle Sessions)",
+        "DJ Unk",
+        95
+      ],
+      [
+        16897,
+        "15. Big Pun, Fat Joe, Cuban Link & Triple Seis Stretch Armstrong & Bobbito Freestyle On Hot 97",
+        "Big Pun",
+        94
+      ],
+      [
+        873,
+        "2Pac ft. Ice Cube - Gangsta Rap Made Me Do It (ft. Eminem, Eazy E, Biggie, Snoop Dogg)",
+        "Tupac",
+        86
+      ],
+      [
+        16766,
+        "Write This Down (ft. Biggie, DMX, Eazy E, Ice Cube, Dr Dre, NWA, Nipsey, Snoop Dogg)",
+        "Tupac Shakur",
+        84
+      ],
+      [
+        33227,
+        "​wu tang freestyle i made dis shit like 2 seconds ago & i aint mix it so whatever",
+        "JPEGMAFIA",
+        81
+      ],
+      [
+        29824,
+        "616 Rewind [Deluxe Edition] (feat. Tonedeff, Sankofa, Kashal Tee & Celph Titled)",
+        "CunninLynguists",
+        80
+      ],
+      [
+        54194,
+        "L-Fudge and Big L Freestyle (Brothers on the Slide: The Lost Freestyle Sessions)",
+        "DJ Unk",
+        80
+      ],
+      [
+        26823,
+        "ID1 (from Today’s Hits, November, 2022) / Kiss Me More / Congratulations [Mixed]",
+        "Doja Cat",
+        80
+      ],
+      [
+        26296,
+        "Big Energy / I Like You (A Happier Song) / First Class / No Role Modelz (Mixed)",
+        "Latto",
+        79
+      ],
+      [
+        20135,
+        "Ride Wit Me / London Bridge / I Don’t Fuck With You / Rock Your Body (Mixed)",
+        "Nelly",
+        76
+      ],
+      [
+        33984,
+        "Nimbus (Club Goin’ Up / Abracadabra / In The Club / One You Love / 50 Cent)",
+        "Pi’erre Bourne",
+        75
+      ],
+      [
+        54217,
+        "Birthwrite Freestyle (Brothers on the Slide: The Lost Freestyle Sessions)",
+        "DJ Unk",
+        73
+      ],
+      [
+        42598,
+        "My Conception - Freestyle over Nas - The Message, on Sway in the morning",
+        "Big K.R.I.T.",
+        72
+      ],
+      [
+        44180,
+        "C U When U Get There (feat. 40 Thevz) (Bill & Humberto’s Orchestra mix)",
+        "Coolio",
+        71
+      ],
+      [
+        54207,
+        "Jaysonic Freestyle (Brothers on the Slide: The Lost Freestyle Sessions)",
+        "DJ Unk",
+        71
+      ],
+      [
+        54196,
+        "Percee P Freestyle (Brothers on the Slide: The Lost Freestyle Sessions)",
+        "DJ Unk",
+        71
+      ],
+      [
+        54218,
+        "Roolette Freestyle (Brothers on the Slide: The Lost Freestyle Sessions)",
+        "DJ Unk",
+        71
+      ]
+    ],
+    "special_characters": [
+      [
+        23454,
+        "Alien (Reference)",
+        "2 Chainz"
+      ],
+      [
+        23453,
+        "Don’t Do It (Intro)",
+        "2 Chainz"
+      ],
+      [
+        23483,
+        "Everyday Drugs Music (EDM)",
+        "2 Chainz"
+      ],
+      [
+        23533,
+        "Game Time (Angels Freestyle)",
+        "2 Chainz"
+      ],
+      [
+        23371,
+        "Good Drank 2.0 (as seen on Jimmy Fallon)",
+        "2 Chainz"
+      ],
+      [
+        23537,
+        "Interlude (Lingo)",
+        "2 Chainz"
+      ],
+      [
+        23449,
+        "Intro (T.R.U. Realigion)",
+        "2 Chainz"
+      ],
+      [
+        23482,
+        "Off The Grid (Reference)",
+        "2 Chainz"
+      ],
+      [
+        23543,
+        "Outro (TAT2)",
+        "2 Chainz"
+      ],
+      [
+        23491,
+        "Rolls Royce Bitch (Feat. Frank Ocean)",
+        "2 Chainz"
+      ],
+      [
+        8892,
+        "Bitch Please*",
+        "21 Savage"
+      ],
+      [
+        8816,
+        "Fuck My Teacher (Tootie)",
+        "21 Savage"
+      ],
+      [
+        1257,
+        "Gang Shit (Knife Talk Original)",
+        "21 Savage"
+      ],
+      [
+        8781,
+        "Issa (Single Mix)",
+        "21 Savage"
+      ],
+      [
+        8839,
+        "Reacher*",
+        "21 Savage"
+      ],
+      [
+        8857,
+        "Sugar Hill (Brand New Draco Original)",
+        "21 Savage"
+      ],
+      [
+        8825,
+        "Untitled (Ouu Ouu)",
+        "21 Savage"
+      ],
+      [
+        8800,
+        "Whole Lot (Demo)",
+        "21 Savage"
+      ],
+      [
+        8804,
+        "pop ur shit (Explicit)",
+        "21 Savage"
+      ],
+      [
+        8901,
+        "sneaky (Mixed) [Apr. 2024]",
+        "21 Savage"
+      ]
+    ]
+  },
+  "artist_coverage": {
+    "no_coverage": [
+      [
+        "E-40",
+        473,
+        0,
+        0.0
+      ],
+      [
+        "Boosie Badazz",
+        452,
+        0,
+        0.0
+      ],
+      [
+        "Berner",
+        391,
+        0,
+        0.0
+      ],
+      [
+        "Ty Dolla $ign",
+        334,
+        0,
+        0.0
+      ],
+      [
+        "XV",
+        320,
+        0,
+        0.0
+      ],
+      [
+        "Slim Thug",
+        277,
+        0,
+        0.0
+      ],
+      [
+        "Three 6 Mafia",
+        276,
+        0,
+        0.0
+      ],
+      [
+        "Rich Homie Quan",
+        275,
+        0,
+        0.0
+      ],
+      [
+        "Philthy Rich",
+        272,
+        0,
+        0.0
+      ],
+      [
+        "Mozzy",
+        269,
+        0,
+        0.0
+      ],
+      [
+        "Project Pat",
+        251,
+        0,
+        0.0
+      ],
+      [
+        "DJ Muggs",
+        234,
+        0,
+        0.0
+      ],
+      [
+        "Iamsu!",
+        227,
+        0,
+        0.0
+      ],
+      [
+        "Brotha Lynch Hung",
+        200,
+        0,
+        0.0
+      ],
+      [
+        "Travis Porter",
+        190,
+        0,
+        0.0
+      ],
+      [
+        "Spice 1",
+        168,
+        0,
+        0.0
+      ],
+      [
+        "Kurupt",
+        164,
+        0,
+        0.0
+      ],
+      [
+        "DJ Paul",
+        158,
+        0,
+        0.0
+      ],
+      [
+        "Cee-Lo Green",
+        154,
+        0,
+        0.0
+      ],
+      [
+        "DaBoii",
+        147,
+        0,
+        0.0
+      ],
+      [
+        "Tony Yayo",
+        146,
+        0,
+        0.0
+      ],
+      [
+        "Chiddy Bang",
+        136,
+        0,
+        0.0
+      ],
+      [
+        "Andre Nickatina",
+        134,
+        0,
+        0.0
+      ],
+      [
+        "Mistah F.A.B.",
+        132,
+        0,
+        0.0
+      ],
+      [
+        "Killer Mike",
+        131,
+        0,
+        0.0
+      ],
+      [
+        "Pastor Troy",
+        131,
+        0,
+        0.0
+      ],
+      [
+        "The Jacka",
+        124,
+        0,
+        0.0
+      ],
+      [
+        "8Ball",
+        116,
+        0,
+        0.0
+      ],
+      [
+        "Mike Jones",
+        116,
+        0,
+        0.0
+      ],
+      [
+        "Yhung T.O.",
+        115,
+        0,
+        0.0
+      ],
+      [
+        "Petey Pablo",
+        110,
+        0,
+        0.0
+      ],
+      [
+        "Ying Yang Twins",
+        104,
+        0,
+        0.0
+      ],
+      [
+        "Coolio",
+        103,
+        0,
+        0.0
+      ],
+      [
+        "Lil Wyte",
+        103,
+        0,
+        0.0
+      ],
+      [
+        "Goodie Mob",
+        99,
+        0,
+        0.0
+      ],
+      [
+        "Webbie",
+        97,
+        0,
+        0.0
+      ],
+      [
+        "Digital Underground",
+        96,
+        0,
+        0.0
+      ],
+      [
+        "J. Stalin",
+        95,
+        0,
+        0.0
+      ],
+      [
+        "Kamaiyah",
+        95,
+        0,
+        0.0
+      ],
+      [
+        "Lil Debbie",
+        95,
+        0,
+        0.0
+      ],
+      [
+        "Nef The Pharaoh",
+        94,
+        0,
+        0.0
+      ],
+      [
+        "Paris",
+        92,
+        0,
+        0.0
+      ],
+      [
+        "MC Ren",
+        79,
+        0,
+        0.0
+      ],
+      [
+        "Lil Jon",
+        77,
+        0,
+        0.0
+      ],
+      [
+        "Clyde Carson",
+        72,
+        0,
+        0.0
+      ],
+      [
+        "Professor Green",
+        72,
+        0,
+        0.0
+      ],
+      [
+        "Chingy",
+        71,
+        0,
+        0.0
+      ],
+      [
+        "Suga Free",
+        71,
+        0,
+        0.0
+      ],
+      [
+        "Memphis Bleek",
+        70,
+        0,
+        0.0
+      ],
+      [
+        "Roots Manuva",
+        66,
+        0,
+        0.0
+      ],
+      [
+        "Mac Mall",
+        65,
+        0,
+        0.0
+      ],
+      [
+        "Shootergang Kony",
+        64,
+        0,
+        0.0
+      ],
+      [
+        "C-Bo",
+        62,
+        0,
+        0.0
+      ],
+      [
+        "Kam",
+        62,
+        0,
+        0.0
+      ],
+      [
+        "JT the Bigga Figga",
+        59,
+        0,
+        0.0
+      ],
+      [
+        "YoungBloodZ",
+        51,
+        0,
+        0.0
+      ],
+      [
+        "Babyface Ray",
+        50,
+        0,
+        0.0
+      ],
+      [
+        "Big Pokey",
+        50,
+        0,
+        0.0
+      ],
+      [
+        "Gunplay",
+        50,
+        0,
+        0.0
+      ],
+      [
+        "Lil Reese",
+        50,
+        0,
+        0.0
+      ],
+      [
+        "Sada Baby",
+        50,
+        0,
+        0.0
+      ],
+      [
+        "SoFaygo",
+        50,
+        0,
+        0.0
+      ],
+      [
+        "Big Moe",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "Fat Trel",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "Kid Cudi",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "King Von",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "Lil Durk",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "NoCap",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "Plies",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "Rejjie Snow",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "RondoNumbaNine",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "Shy Glizzy",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "South Central Cartel",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "Tee Grizzley",
+        49,
+        0,
+        0.0
+      ],
+      [
+        "Lud Foe",
+        48,
+        0,
+        0.0
+      ],
+      [
+        "N.O.R.E.",
+        48,
+        0,
+        0.0
+      ],
+      [
+        "Rylo Rodriguez",
+        48,
+        0,
+        0.0
+      ],
+      [
+        "Slaine",
+        48,
+        0,
+        0.0
+      ],
+      [
+        "Tierra Whack",
+        48,
+        0,
+        0.0
+      ],
+      [
+        "Waka Flocka Flame",
+        48,
+        0,
+        0.0
+      ],
+      [
+        "Zaytoven",
+        48,
+        0,
+        0.0
+      ],
+      [
+        "Benzino",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "Bone Thugs-n-Harmony",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "G Herbo",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "Juicy J",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "Lil Yachty",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "Michael Christmas",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "Phil Ade",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "Sir Michael Rocks",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "Slimmy B",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "The Alchemist",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "Westside Gunn",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "YBN Almighty Jay",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "Z-Ro",
+        47,
+        0,
+        0.0
+      ],
+      [
+        "Benny the Butcher",
+        46,
+        0,
+        0.0
+      ],
+      [
+        "Common",
+        46,
+        0,
+        0.0
+      ],
+      [
+        "Husalah",
+        46,
+        0,
+        0.0
+      ],
+      [
+        "MGK",
+        46,
+        0,
+        0.0
+      ],
+      [
+        "NAV",
+        46,
+        0,
+        0.0
+      ],
+      [
+        "Termanology",
+        46,
+        0,
+        0.0
+      ],
+      [
+        "The Roots",
+        46,
+        0,
+        0.0
+      ],
+      [
+        "YNW Melly",
+        46,
+        0,
+        0.0
+      ],
+      [
+        "AR-AB",
+        45,
+        0,
+        0.0
+      ],
+      [
+        "Dark Lo",
+        45,
+        0,
+        0.0
+      ],
+      [
+        "Do or Die",
+        45,
+        0,
+        0.0
+      ],
+      [
+        "Lupe Fiasco",
+        45,
+        0,
+        0.0
+      ],
+      [
+        "Trae Tha Truth",
+        45,
+        0,
+        0.0
+      ],
+      [
+        "Yeat",
+        45,
+        0,
+        0.0
+      ],
+      [
+        "D12",
+        44,
+        0,
+        0.0
+      ],
+      [
+        "Papoose",
+        44,
+        0,
+        0.0
+      ],
+      [
+        "Poor Righteous Teachers",
+        44,
+        0,
+        0.0
+      ],
+      [
+        "SOB X RBE",
+        44,
+        0,
+        0.0
+      ],
+      [
+        "Smoke DZA",
+        44,
+        0,
+        0.0
+      ],
+      [
+        "600Breezy",
+        43,
+        0,
+        0.0
+      ],
+      [
+        "Vic Mensa",
+        43,
+        0,
+        0.0
+      ],
+      [
+        "Reks",
+        42,
+        0,
+        0.0
+      ],
+      [
+        "DJ Jazzy Jeff & The Fresh Prince",
+        41,
+        0,
+        0.0
+      ],
+      [
+        "Schoolly D",
+        41,
+        0,
+        0.0
+      ],
+      [
+        "Joe Budden",
+        40,
+        0,
+        0.0
+      ],
+      [
+        "Mick Jenkins",
+        40,
+        0,
+        0.0
+      ],
+      [
+        "Ant Banks",
+        39,
+        0,
+        0.0
+      ],
+      [
+        "B-Legit",
+        38,
+        0,
+        0.0
+      ],
+      [
+        "Field Mob",
+        38,
+        0,
+        0.0
+      ],
+      [
+        "Richie Rich",
+        37,
+        0,
+        0.0
+      ],
+      [
+        "Chuck Inglish",
+        36,
+        0,
+        0.0
+      ],
+      [
+        "Messy Marv",
+        34,
+        0,
+        0.0
+      ],
+      [
+        "Tela",
+        33,
+        0,
+        0.0
+      ],
+      [
+        "Dru Down",
+        32,
+        0,
+        0.0
+      ],
+      [
+        "DJ Unk",
+        31,
+        0,
+        0.0
+      ],
+      [
+        "Bad Azz",
+        30,
+        0,
+        0.0
+      ],
+      [
+        "Flesh-n-Bone",
+        30,
+        0,
+        0.0
+      ],
+      [
+        "Crime Mob",
+        28,
+        0,
+        0.0
+      ],
+      [
+        "Jacki-O",
+        28,
+        0,
+        0.0
+      ],
+      [
+        "Psychodrama",
+        28,
+        0,
+        0.0
+      ],
+      [
+        "Too Short",
+        27,
+        0,
+        0.0
+      ],
+      [
+        "Fat Pat",
+        26,
+        0,
+        0.0
+      ],
+      [
+        "Gangsta Blac",
+        26,
+        0,
+        0.0
+      ],
+      [
+        "Crucial Conflict",
+        25,
+        0,
+        0.0
+      ],
+      [
+        "MJG",
+        25,
+        0,
+        0.0
+      ],
+      [
+        "Tabi Bonney",
+        25,
+        0,
+        0.0
+      ],
+      [
+        "André 3000",
+        23,
+        0,
+        0.0
+      ],
+      [
+        "Rappin' 4-Tay",
+        22,
+        0,
+        0.0
+      ],
+      [
+        "JT Money",
+        21,
+        0,
+        0.0
+      ],
+      [
+        "Keak da Sneak",
+        21,
+        0,
+        0.0
+      ],
+      [
+        "42 Dugg",
+        20,
+        0,
+        0.0
+      ],
+      [
+        "Fredo Santana",
+        20,
+        0,
+        0.0
+      ],
+      [
+        "JayDaYoungan",
+        20,
+        0,
+        0.0
+      ],
+      [
+        "Lizzo Banga",
+        20,
+        0,
+        0.0
+      ],
+      [
+        "Artifacts",
+        19,
+        0,
+        0.0
+      ],
+      [
+        "Bump J",
+        19,
+        0,
+        0.0
+      ],
+      [
+        "Drakeo the Ruler",
+        19,
+        0,
+        0.0
+      ],
+      [
+        "Drama",
+        19,
+        0,
+        0.0
+      ],
+      [
+        "Quando Rondo",
+        19,
+        0,
+        0.0
+      ],
+      [
+        "Steady B",
+        19,
+        0,
+        0.0
+      ],
+      [
+        "Icewear Vezzo",
+        18,
+        0,
+        0.0
+      ],
+      [
+        "Proof",
+        18,
+        0,
+        0.0
+      ],
+      [
+        "San Quinn",
+        18,
+        0,
+        0.0
+      ],
+      [
+        "Peedi Crakk",
+        17,
+        0,
+        0.0
+      ],
+      [
+        "Sam Adams",
+        17,
+        0,
+        0.0
+      ],
+      [
+        "Chill Rob G",
+        16,
+        0,
+        0.0
+      ],
+      [
+        "LoveRance",
+        16,
+        0,
+        0.0
+      ],
+      [
+        "Skiibii",
+        16,
+        0,
+        0.0
+      ],
+      [
+        "Roach Gigz",
+        15,
+        0,
+        0.0
+      ],
+      [
+        "Cool Breeze",
+        14,
+        0,
+        0.0
+      ],
+      [
+        "Sasha Go Hard",
+        14,
+        0,
+        0.0
+      ],
+      [
+        "Seagram",
+        14,
+        0,
+        0.0
+      ],
+      [
+        "Huey",
+        13,
+        0,
+        0.0
+      ],
+      [
+        "Rich The Factor",
+        13,
+        0,
+        0.0
+      ],
+      [
+        "The Conscious Daughters",
+        13,
+        0,
+        0.0
+      ],
+      [
+        "Shop Boyz",
+        12,
+        0,
+        0.0
+      ],
+      [
+        "Backbone",
+        11,
+        0,
+        0.0
+      ],
+      [
+        "E.S.G.",
+        11,
+        0,
+        0.0
+      ],
+      [
+        "Gillie Da Kid",
+        11,
+        0,
+        0.0
+      ],
+      [
+        "Big Gipp",
+        10,
+        0,
+        0.0
+      ],
+      [
+        "Ciscero",
+        10,
+        0,
+        0.0
+      ],
+      [
+        "L.E.P. Bogus Boys",
+        10,
+        0,
+        0.0
+      ],
+      [
+        "Lil Blood",
+        10,
+        0,
+        0.0
+      ],
+      [
+        "Crunchy Black",
+        9,
+        0,
+        0.0
+      ],
+      [
+        "Too Much Trouble",
+        9,
+        0,
+        0.0
+      ],
+      [
+        "Kausion",
+        8,
+        0,
+        0.0
+      ],
+      [
+        "Oschino",
+        8,
+        0,
+        0.0
+      ],
+      [
+        "Guce",
+        7,
+        0,
+        0.0
+      ],
+      [
+        "Problem",
+        6,
+        0,
+        0.0
+      ],
+      [
+        "Ali",
+        5,
+        0,
+        0.0
+      ],
+      [
+        "Big Boi",
+        5,
+        0,
+        0.0
+      ],
+      [
+        "Guapdad 4000",
+        5,
+        0,
+        0.0
+      ],
+      [
+        "J-Kwon",
+        5,
+        0,
+        0.0
+      ],
+      [
+        "Kafani",
+        5,
+        0,
+        0.0
+      ],
+      [
+        "Lil Keke",
+        5,
+        0,
+        0.0
+      ],
+      [
+        "Mr. Lif",
+        5,
+        0,
+        0.0
+      ],
+      [
+        "Treach",
+        5,
+        0,
+        0.0
+      ]
+    ],
+    "low_coverage": [
+      [
+        "Young Buck",
+        302,
+        1,
+        0.33
+      ],
+      [
+        "Mac Dre",
+        290,
+        1,
+        0.34
+      ],
+      [
+        "Paul Wall",
+        235,
+        1,
+        0.43
+      ],
+      [
+        "Cassidy",
+        182,
+        1,
+        0.55
+      ],
+      [
+        "Big Daddy Kane",
+        98,
+        1,
+        1.02
+      ],
+      [
+        "Pro Era",
+        43,
+        5,
+        11.63
+      ],
+      [
+        "Jay Electronica",
+        130,
+        17,
+        13.08
+      ],
+      [
+        "Pi’erre Bourne",
+        482,
+        106,
+        21.99
+      ]
+    ],
+    "medium_coverage": [
+      [
+        "Roxanne Shanté",
+        29,
+        9,
+        31.03
+      ],
+      [
+        "Doja Cat",
+        302,
+        97,
+        32.12
+      ],
+      [
+        "Isaiah Rashad",
+        170,
+        55,
+        32.35
+      ],
+      [
+        "Baby Keem",
+        166,
+        60,
+        36.14
+      ],
+      [
+        "Lil Tjay",
+        247,
+        105,
+        42.51
+      ],
+      [
+        "Yo-Yo",
+        47,
+        21,
+        44.68
+      ],
+      [
+        "Big L",
+        101,
+        49,
+        48.51
+      ],
+      [
+        "Action Bronson",
+        236,
+        115,
+        48.73
+      ],
+      [
+        "Remy Ma",
+        93,
+        49,
+        52.69
+      ],
+      [
+        "Jadakiss",
+        255,
+        135,
+        52.94
+      ],
+      [
+        "Fivio Foreign",
+        132,
+        70,
+        53.03
+      ],
+      [
+        "Dom Kennedy",
+        229,
+        122,
+        53.28
+      ],
+      [
+        "Earl Sweatshirt",
+        183,
+        98,
+        53.55
+      ],
+      [
+        "Psalm One",
+        28,
+        15,
+        53.57
+      ],
+      [
+        "Stat Quo",
+        41,
+        22,
+        53.66
+      ],
+      [
+        "Del the Funky Homosapien",
+        148,
+        80,
+        54.05
+      ],
+      [
+        "NLE Choppa",
+        429,
+        237,
+        55.24
+      ],
+      [
+        "JPEGMAFIA",
+        264,
+        146,
+        55.3
+      ],
+      [
+        "Lil' Kim",
+        176,
+        100,
+        56.82
+      ],
+      [
+        "Big K.R.I.T.",
+        401,
+        230,
+        57.36
+      ],
+      [
+        "Flatbush Zombies",
+        108,
+        63,
+        58.33
+      ],
+      [
+        "Jackie-O",
+        24,
+        14,
+        58.33
+      ],
+      [
+        "Ice Spice",
+        61,
+        36,
+        59.02
+      ],
+      [
+        "Hopsin",
+        186,
+        110,
+        59.14
+      ],
+      [
+        "Immortal Technique",
+        86,
+        51,
+        59.3
+      ],
+      [
+        "El-P",
+        77,
+        46,
+        59.74
+      ],
+      [
+        "XXXTentacion",
+        340,
+        206,
+        60.59
+      ],
+      [
+        "Eyedea",
+        56,
+        34,
+        60.71
+      ],
+      [
+        "Talib Kweli",
+        293,
+        178,
+        60.75
+      ],
+      [
+        "Lady Leshurr",
+        69,
+        42,
+        60.87
+      ],
+      [
+        "Krizz Kaliko",
+        162,
+        99,
+        61.11
+      ],
+      [
+        "Company Flow",
+        31,
+        19,
+        61.29
+      ],
+      [
+        "NoName",
+        65,
+        40,
+        61.54
+      ],
+      [
+        "Smino",
+        144,
+        89,
+        61.81
+      ],
+      [
+        "Juice WRLD",
+        489,
+        307,
+        62.78
+      ],
+      [
+        "Rah Digga",
+        43,
+        27,
+        62.79
+      ],
+      [
+        "The LOX",
+        130,
+        82,
+        63.08
+      ],
+      [
+        "Freddie Gibbs",
+        346,
+        221,
+        63.87
+      ],
+      [
+        "Charli Baltimore",
+        28,
+        18,
+        64.29
+      ],
+      [
+        "Latto",
+        202,
+        130,
+        64.36
+      ],
+      [
+        "Rico Nasty",
+        189,
+        122,
+        64.55
+      ],
+      [
+        "Cozz",
+        54,
+        35,
+        64.81
+      ],
+      [
+        "Foxy Brown",
+        101,
+        66,
+        65.35
+      ],
+      [
+        "KRS-One",
+        319,
+        210,
+        65.83
+      ],
+      [
+        "Obie Trice",
+        118,
+        78,
+        66.1
+      ],
+      [
+        "Gangsta Boo",
+        80,
+        53,
+        66.25
+      ],
+      [
+        "Tupac Shakur",
+        486,
+        327,
+        67.28
+      ],
+      [
+        "Kash Doll",
+        102,
+        69,
+        67.65
+      ],
+      [
+        "Da Brat",
+        65,
+        44,
+        67.69
+      ],
+      [
+        "Rakim",
+        90,
+        61,
+        67.78
+      ],
+      [
+        "Playboi Carti",
+        473,
+        322,
+        68.08
+      ],
+      [
+        "Jack Harlow",
+        153,
+        105,
+        68.63
+      ],
+      [
+        "A$AP Rocky",
+        278,
+        191,
+        68.71
+      ],
+      [
+        "Shawnna",
+        32,
+        22,
+        68.75
+      ],
+      [
+        "Jean Grae",
+        138,
+        95,
+        68.84
+      ],
+      [
+        "Megan Thee Stallion",
+        206,
+        142,
+        68.93
+      ],
+      [
+        "Cypress Hill",
+        261,
+        180,
+        68.97
+      ],
+      [
+        "Danny Brown",
+        201,
+        139,
+        69.15
+      ],
+      [
+        "Curren$y",
+        484,
+        338,
+        69.83
+      ],
+      [
+        "Polo G",
+        252,
+        176,
+        69.84
+      ],
+      [
+        "Asian Doll",
+        217,
+        153,
+        70.51
+      ],
+      [
+        "Young M.A",
+        106,
+        75,
+        70.75
+      ],
+      [
+        "Lil Uzi Vert",
+        493,
+        349,
+        70.79
+      ],
+      [
+        "Conway the Machine",
+        292,
+        207,
+        70.89
+      ],
+      [
+        "Sheek Louch",
+        139,
+        99,
+        71.22
+      ],
+      [
+        "GoldLink",
+        87,
+        62,
+        71.26
+      ],
+      [
+        "Invincible",
+        21,
+        15,
+        71.43
+      ],
+      [
+        "Twista",
+        269,
+        193,
+        71.75
+      ],
+      [
+        "GZA",
+        85,
+        61,
+        71.76
+      ],
+      [
+        "Beanie Sigel",
+        128,
+        92,
+        71.88
+      ],
+      [
+        "BbyMutha",
+        121,
+        87,
+        71.9
+      ],
+      [
+        "Styles P",
+        372,
+        269,
+        72.31
+      ],
+      [
+        "Tyler, The Creator",
+        335,
+        243,
+        72.54
+      ],
+      [
+        "Denzel Curry",
+        255,
+        185,
+        72.55
+      ],
+      [
+        "Saweetie",
+        88,
+        64,
+        72.73
+      ],
+      [
+        "CunninLynguists",
+        173,
+        127,
+        73.41
+      ],
+      [
+        "Dr. Dre",
+        194,
+        144,
+        74.23
+      ],
+      [
+        "Nicki Minaj",
+        381,
+        283,
+        74.28
+      ],
+      [
+        "Capital STEEZ",
+        59,
+        44,
+        74.58
+      ],
+      [
+        "Heather B",
+        20,
+        15,
+        75.0
+      ]
+    ],
+    "high_coverage": [
+      [
+        "Kool Keith",
+        319,
+        241,
+        75.55
+      ],
+      [
+        "Lil Dicky",
+        123,
+        93,
+        75.61
+      ],
+      [
+        "The Pharcyde",
+        82,
+        62,
+        75.61
+      ],
+      [
+        "Casey Veggies",
+        214,
+        162,
+        75.7
+      ],
+      [
+        "Ski Mask the Slump God",
+        260,
+        197,
+        75.77
+      ],
+      [
+        "Bali Baby",
+        102,
+        78,
+        76.47
+      ],
+      [
+        "Pharoahe Monch",
+        81,
+        62,
+        76.54
+      ],
+      [
+        "Queen Latifah",
+        107,
+        82,
+        76.64
+      ],
+      [
+        "Brother Ali",
+        211,
+        163,
+        77.25
+      ],
+      [
+        "MF Grimm",
+        130,
+        101,
+        77.69
+      ],
+      [
+        "Amil",
+        18,
+        14,
+        77.78
+      ],
+      [
+        "EarthGang",
+        137,
+        107,
+        78.1
+      ],
+      [
+        "ZelooperZ",
+        145,
+        114,
+        78.62
+      ],
+      [
+        "JID",
+        178,
+        140,
+        78.65
+      ],
+      [
+        "Joey Bada$$",
+        174,
+        137,
+        78.74
+      ],
+      [
+        "Bahamadia",
+        19,
+        15,
+        78.95
+      ],
+      [
+        "Atmosphere",
+        426,
+        338,
+        79.34
+      ],
+      [
+        "IDK",
+        214,
+        170,
+        79.44
+      ],
+      [
+        "Kota the Friend",
+        229,
+        182,
+        79.48
+      ],
+      [
+        "Dreezy",
+        78,
+        62,
+        79.49
+      ],
+      [
+        "Lola Brooke",
+        39,
+        31,
+        79.49
+      ],
+      [
+        "Lloyd Banks",
+        484,
+        385,
+        79.55
+      ],
+      [
+        "The Notorious B.I.G.",
+        176,
+        140,
+        79.55
+      ],
+      [
+        "DMX",
+        349,
+        280,
+        80.23
+      ],
+      [
+        "Madlib",
+        162,
+        130,
+        80.25
+      ],
+      [
+        "Chika",
+        51,
+        41,
+        80.39
+      ],
+      [
+        "Coi Leray",
+        123,
+        99,
+        80.49
+      ],
+      [
+        "Smokepurpp",
+        309,
+        249,
+        80.58
+      ],
+      [
+        "Trippie Redd",
+        491,
+        399,
+        81.26
+      ],
+      [
+        "Aesop Rock",
+        252,
+        205,
+        81.35
+      ],
+      [
+        "ScHoolboy Q",
+        171,
+        140,
+        81.87
+      ],
+      [
+        "Iggy Azalea",
+        189,
+        155,
+        82.01
+      ],
+      [
+        "DJ Quik",
+        167,
+        137,
+        82.04
+      ],
+      [
+        "Princess Nokia",
+        85,
+        70,
+        82.35
+      ],
+      [
+        "Quavo",
+        193,
+        159,
+        82.38
+      ],
+      [
+        "Trina",
+        171,
+        141,
+        82.46
+      ],
+      [
+        "Slick Rick",
+        86,
+        71,
+        82.56
+      ],
+      [
+        "G-Eazy",
+        350,
+        289,
+        82.57
+      ],
+      [
+        "Awkwafina",
+        23,
+        19,
+        82.61
+      ],
+      [
+        "Missy Elliott",
+        167,
+        138,
+        82.63
+      ],
+      [
+        "Mobb Deep",
+        272,
+        225,
+        82.72
+      ],
+      [
+        "Desiigner",
+        145,
+        120,
+        82.76
+      ],
+      [
+        "YBN Nahmir",
+        116,
+        96,
+        82.76
+      ],
+      [
+        "Eazy-E",
+        64,
+        53,
+        82.81
+      ],
+      [
+        "Big Pun",
+        82,
+        68,
+        82.93
+      ],
+      [
+        "Cordae",
+        137,
+        114,
+        83.21
+      ],
+      [
+        "Ja Rule",
+        162,
+        135,
+        83.33
+      ],
+      [
+        "Juelz Santana",
+        132,
+        110,
+        83.33
+      ],
+      [
+        "The Diplomats",
+        85,
+        71,
+        83.53
+      ],
+      [
+        "Big Sean",
+        293,
+        245,
+        83.62
+      ],
+      [
+        "Ab-Soul",
+        191,
+        160,
+        83.77
+      ],
+      [
+        "Skyzoo",
+        236,
+        198,
+        83.9
+      ],
+      [
+        "LL Cool J",
+        277,
+        233,
+        84.12
+      ],
+      [
+        "City Girls",
+        76,
+        64,
+        84.21
+      ],
+      [
+        "A$AP Ferg",
+        165,
+        140,
+        84.85
+      ],
+      [
+        "Warren G",
+        99,
+        84,
+        84.85
+      ],
+      [
+        "Kodak Black",
+        494,
+        420,
+        85.02
+      ],
+      [
+        "Jay Rock",
+        196,
+        167,
+        85.2
+      ],
+      [
+        "Fabolous",
+        384,
+        328,
+        85.42
+      ],
+      [
+        "Wale",
+        428,
+        366,
+        85.51
+      ],
+      [
+        "MIKE",
+        76,
+        65,
+        85.53
+      ],
+      [
+        "Gunna",
+        496,
+        425,
+        85.69
+      ],
+      [
+        "Souls of Mischief",
+        84,
+        72,
+        85.71
+      ],
+      [
+        "Takeoff",
+        35,
+        30,
+        85.71
+      ],
+      [
+        "Little Brother",
+        148,
+        127,
+        85.81
+      ],
+      [
+        "MF DOOM",
+        128,
+        110,
+        85.94
+      ],
+      [
+        "Roddy Ricch",
+        164,
+        141,
+        85.98
+      ],
+      [
+        "DaBaby",
+        308,
+        265,
+        86.04
+      ],
+      [
+        "Flo Milli",
+        72,
+        62,
+        86.11
+      ],
+      [
+        "Ms. Dynamite",
+        36,
+        31,
+        86.11
+      ],
+      [
+        "Young Thug",
+        486,
+        419,
+        86.21
+      ],
+      [
+        "MC Lyte",
+        117,
+        101,
+        86.32
+      ],
+      [
+        "Saba",
+        125,
+        108,
+        86.4
+      ],
+      [
+        "Method Man",
+        221,
+        191,
+        86.43
+      ],
+      [
+        "Baby Tate",
+        111,
+        96,
+        86.49
+      ],
+      [
+        "Tink",
+        201,
+        174,
+        86.57
+      ],
+      [
+        "Pusha T",
+        97,
+        84,
+        86.6
+      ],
+      [
+        "Ice Cube",
+        280,
+        243,
+        86.79
+      ],
+      [
+        "Cupcakke",
+        126,
+        110,
+        87.3
+      ],
+      [
+        "Don Toliver",
+        451,
+        394,
+        87.36
+      ],
+      [
+        "Cam'ron",
+        309,
+        270,
+        87.38
+      ],
+      [
+        "AZ",
+        191,
+        167,
+        87.43
+      ],
+      [
+        "Rapsody",
+        157,
+        138,
+        87.9
+      ],
+      [
+        "Murs",
+        307,
+        270,
+        87.95
+      ],
+      [
+        "Redman",
+        243,
+        214,
+        88.07
+      ],
+      [
+        "Wu-Tang Clan",
+        162,
+        143,
+        88.27
+      ],
+      [
+        "21 Savage",
+        273,
+        241,
+        88.28
+      ],
+      [
+        "Freeway",
+        128,
+        113,
+        88.28
+      ],
+      [
+        "Open Mike Eagle",
+        180,
+        159,
+        88.33
+      ],
+      [
+        "Tyga",
+        433,
+        384,
+        88.68
+      ],
+      [
+        "Mia X",
+        45,
+        40,
+        88.89
+      ],
+      [
+        "Childish Gambino",
+        94,
+        84,
+        89.36
+      ],
+      [
+        "The Game",
+        486,
+        436,
+        89.71
+      ],
+      [
+        "Chance the Rapper",
+        98,
+        88,
+        89.8
+      ],
+      [
+        "Tech N9ne",
+        494,
+        444,
+        89.88
+      ],
+      [
+        "Offset",
+        178,
+        160,
+        89.89
+      ],
+      [
+        "Maiya The Don",
+        20,
+        18,
+        90.0
+      ],
+      [
+        "Xzibit",
+        182,
+        164,
+        90.11
+      ],
+      [
+        "French Montana",
+        493,
+        446,
+        90.47
+      ],
+      [
+        "Eve",
+        75,
+        68,
+        90.67
+      ],
+      [
+        "Lil Baby",
+        302,
+        274,
+        90.73
+      ],
+      [
+        "Reason",
+        122,
+        111,
+        90.98
+      ],
+      [
+        "Hieroglyphics",
+        67,
+        61,
+        91.04
+      ],
+      [
+        "Shoreline Mafia",
+        123,
+        112,
+        91.06
+      ],
+      [
+        "Sa-Roc",
+        103,
+        94,
+        91.26
+      ],
+      [
+        "KenTheMan",
+        58,
+        53,
+        91.38
+      ],
+      [
+        "2 Chainz",
+        396,
+        363,
+        91.67
+      ],
+      [
+        "Cannibal Ox",
+        36,
+        33,
+        91.67
+      ],
+      [
+        "Monaleo",
+        36,
+        33,
+        91.67
+      ],
+      [
+        "Lady of Rage",
+        12,
+        11,
+        91.67
+      ],
+      [
+        "YG",
+        284,
+        262,
+        92.25
+      ],
+      [
+        "A$AP Nast",
+        13,
+        12,
+        92.31
+      ],
+      [
+        "Lil Wayne",
+        93,
+        86,
+        92.47
+      ],
+      [
+        "Key Glock",
+        213,
+        197,
+        92.49
+      ],
+      [
+        "Blueface",
+        97,
+        90,
+        92.78
+      ],
+      [
+        "Future",
+        493,
+        458,
+        92.9
+      ],
+      [
+        "Nate Dogg",
+        86,
+        80,
+        93.02
+      ],
+      [
+        " Dessa",
+        75,
+        70,
+        93.33
+      ],
+      [
+        "Bas",
+        108,
+        101,
+        93.52
+      ],
+      [
+        "Young Dolph",
+        373,
+        349,
+        93.57
+      ],
+      [
+        "Boldy James",
+        345,
+        323,
+        93.62
+      ],
+      [
+        "Duckwrth",
+        113,
+        106,
+        93.81
+      ],
+      [
+        "Underachievers",
+        113,
+        106,
+        93.81
+      ],
+      [
+        "T.I.",
+        383,
+        360,
+        93.99
+      ],
+      [
+        "Post Malone",
+        100,
+        94,
+        94.0
+      ],
+      [
+        "Chief Keef",
+        498,
+        469,
+        94.18
+      ],
+      [
+        "SiR",
+        88,
+        83,
+        94.32
+      ],
+      [
+        "Snoop Dogg",
+        497,
+        469,
+        94.37
+      ],
+      [
+        "Nelly",
+        162,
+        153,
+        94.44
+      ],
+      [
+        "Moneybagg Yo",
+        288,
+        273,
+        94.79
+      ],
+      [
+        "Travis Scott",
+        97,
+        92,
+        94.85
+      ],
+      [
+        "Jay-Z",
+        98,
+        93,
+        94.9
+      ],
+      [
+        "Pink Siifu",
+        102,
+        97,
+        95.1
+      ],
+      [
+        "Oddisee",
+        106,
+        101,
+        95.28
+      ],
+      [
+        "B.o.B",
+        452,
+        431,
+        95.35
+      ],
+      [
+        "Russ",
+        481,
+        459,
+        95.43
+      ],
+      [
+        "Eminem",
+        98,
+        94,
+        95.92
+      ],
+      [
+        "Nipsey Hussle",
+        256,
+        246,
+        96.09
+      ],
+      [
+        "Gucci Mane",
+        493,
+        476,
+        96.55
+      ],
+      [
+        "Logic",
+        94,
+        92,
+        97.87
+      ],
+      [
+        "Kendrick Lamar",
+        95,
+        93,
+        97.89
+      ],
+      [
+        "Vince Staples",
+        98,
+        96,
+        97.96
+      ],
+      [
+        "Drake",
+        99,
+        97,
+        97.98
+      ],
+      [
+        "Wiz Khalifa",
+        100,
+        98,
+        98.0
+      ],
+      [
+        "J. Cole",
+        96,
+        95,
+        98.96
+      ],
+      [
+        "Nas",
+        96,
+        95,
+        98.96
+      ],
+      [
+        "Mac Miller",
+        97,
+        96,
+        98.97
+      ],
+      [
+        "Meek Mill",
+        98,
+        97,
+        98.98
+      ]
+    ],
+    "full_coverage": [
+      [
+        "Kanye West",
+        98,
+        98,
+        100.0
+      ],
+      [
+        "Tasha the Amazon",
+        9,
+        9,
+        100.0
+      ]
+    ]
+  },
+  "optimization_targets": {
+    "high_volume_artists": [
+      [
+        "E-40",
+        473
+      ],
+      [
+        "Boosie Badazz",
+        452
+      ],
+      [
+        "Berner",
+        391
+      ],
+      [
+        "Pi’erre Bourne",
+        376
+      ],
+      [
+        "Ty Dolla $ign",
+        334
+      ],
+      [
+        "XV",
+        320
+      ],
+      [
+        "Young Buck",
+        301
+      ],
+      [
+        "Mac Dre",
+        289
+      ],
+      [
+        "Slim Thug",
+        277
+      ],
+      [
+        "Three 6 Mafia",
+        276
+      ],
+      [
+        "Rich Homie Quan",
+        275
+      ],
+      [
+        "Philthy Rich",
+        272
+      ],
+      [
+        "Mozzy",
+        269
+      ],
+      [
+        "Project Pat",
+        251
+      ],
+      [
+        "DJ Muggs",
+        234
+      ]
+    ],
+    "easy_targets": [
+      [
+        12254,
+        "RIP THICC SHADY",
+        "A$AP Ferg"
+      ],
+      [
+        49091,
+        "Ghetto Smile",
+        "B-Legit"
+      ],
+      [
+        53424,
+        "I Keep That",
+        "Project Pat"
+      ],
+      [
+        49656,
+        "Cutty",
+        "Husalah"
+      ],
+      [
+        47672,
+        "Like This",
+        "Ty Dolla $ign"
+      ],
+      [
+        48910,
+        "Taking Back Sunday",
+        "Paris"
+      ],
+      [
+        53440,
+        "Gucci Skully",
+        "Project Pat"
+      ],
+      [
+        51290,
+        "Hidden Messages",
+        "Berner"
+      ],
+      [
+        44291,
+        "Eat Boiled Peanutz",
+        "Digital Underground"
+      ],
+      [
+        35729,
+        "For You",
+        "Trina"
+      ],
+      [
+        43001,
+        "Rent Money",
+        "Hopsin"
+      ],
+      [
+        48716,
+        "Welcome to Your Own Death",
+        "Brotha Lynch Hung"
+      ],
+      [
+        31989,
+        "Westside Like Gatsby",
+        "EarthGang"
+      ],
+      [
+        50085,
+        "Let Her Know",
+        "Iamsu!"
+      ],
+      [
+        30237,
+        "Mary, Nothing Above Thee",
+        "Flatbush Zombies"
+      ],
+      [
+        50229,
+        "3 16's",
+        "Iamsu!"
+      ],
+      [
+        50055,
+        "Fire Up",
+        "Iamsu!"
+      ],
+      [
+        46665,
+        "Pulling Me Back",
+        "Chingy"
+      ],
+      [
+        30159,
+        "Amuse Bouche",
+        "Action Bronson"
+      ],
+      [
+        46281,
+        "Purse First",
+        "Young Buck"
+      ],
+      [
+        44405,
+        "I’m a Beast Hit ’Em Up",
+        "Spice 1"
+      ],
+      [
+        54989,
+        "Grandson For President",
+        "King Von"
+      ],
+      [
+        57283,
+        "Split",
+        "Yeat"
+      ],
+      [
+        6452,
+        "This Weed Is Mine",
+        "Snoop Dogg"
+      ],
+      [
+        51150,
+        "Box Boy",
+        "Berner"
+      ],
+      [
+        56674,
+        "Can’t Do Golds",
+        "Waka Flocka Flame"
+      ],
+      [
+        15029,
+        "Get This Money",
+        "Young Dolph"
+      ],
+      [
+        46758,
+        "My Life",
+        "Paul Wall"
+      ],
+      [
+        12471,
+        "Herpes & Cupcakes",
+        "Tyler, The Creator"
+      ],
+      [
+        55754,
+        "Trappin Chinese",
+        "Dark Lo"
+      ],
+      [
+        41383,
+        "Get Down",
+        "DJ Quik"
+      ],
+      [
+        40154,
+        "Same Ole Thang",
+        "Beanie Sigel"
+      ],
+      [
+        25363,
+        "Loud & Clear",
+        "NLE Choppa"
+      ],
+      [
+        34146,
+        "Fadeaway",
+        "Pi’erre Bourne"
+      ],
+      [
+        45925,
+        "Game Don’t Change",
+        "Cassidy"
+      ],
+      [
+        49542,
+        "They Don’t Know",
+        "The Jacka"
+      ],
+      [
+        14542,
+        "Insecurities",
+        "Kodak Black"
+      ],
+      [
+        33862,
+        "La Bari Pizza",
+        "Pi’erre Bourne"
+      ],
+      [
+        26534,
+        "I Feel You",
+        "Megan Thee Stallion"
+      ],
+      [
+        52132,
+        "In Da Game",
+        "Three 6 Mafia"
+      ],
+      [
+        44123,
+        "I Like Girls",
+        "Coolio"
+      ],
+      [
+        55637,
+        "Hot Shyt",
+        "Peedi Crakk"
+      ],
+      [
+        29933,
+        "26 Inches",
+        "Danny Brown"
+      ],
+      [
+        50015,
+        "I Can’t Lose",
+        "Iamsu!"
+      ],
+      [
+        51247,
+        "No More Deals",
+        "Berner"
+      ],
+      [
+        51645,
+        "Woofin",
+        "DaBoii"
+      ],
+      [
+        23406,
+        "Teriyaki Salmon",
+        "2 Chainz"
+      ],
+      [
+        34892,
+        "Cell Block Tango",
+        "Queen Latifah"
+      ],
+      [
+        46696,
+        "Hands Up",
+        "Chingy"
+      ],
+      [
+        33982,
+        "Sweet Tooth",
+        "Pi’erre Bourne"
+      ],
+      [
+        34797,
+        "5500",
+        "Conway the Machine"
+      ],
+      [
+        41298,
+        "No Disrespect",
+        "Obie Trice"
+      ],
+      [
+        55608,
+        "Guns Are Drawn",
+        "The Roots"
+      ],
+      [
+        48641,
+        "That’s How My Trigga Went",
+        "Brotha Lynch Hung"
+      ],
+      [
+        42833,
+        "Ill Mind of Hopsin",
+        "Hopsin"
+      ],
+      [
+        56045,
+        "Hoola Hoop",
+        "Benzino"
+      ],
+      [
+        26509,
+        "Nasty Girl",
+        "Megan Thee Stallion"
+      ],
+      [
+        49677,
+        "Just Another",
+        "Husalah"
+      ],
+      [
+        54335,
+        "Devil Ass City",
+        "Z-Ro"
+      ],
+      [
+        46232,
+        "Died and Came Back",
+        "Young Buck"
+      ],
+      [
+        44018,
+        "Doo Rag",
+        "XV"
+      ],
+      [
+        54552,
+        "Issues",
+        "Plies"
+      ],
+      [
+        56120,
+        "Do You Understand?",
+        "Shy Glizzy"
+      ],
+      [
+        57405,
+        "Off Instagram",
+        "YBN Almighty Jay"
+      ],
+      [
+        41813,
+        "Chandelier",
+        "Curren$y"
+      ],
+      [
+        46653,
+        "Elimination",
+        "Petey Pablo"
+      ],
+      [
+        53415,
+        "Right Back",
+        "Project Pat"
+      ],
+      [
+        49746,
+        "Ruff Neckin’",
+        "Richie Rich"
+      ],
+      [
+        25666,
+        "Living life",
+        "Lil Tjay"
+      ],
+      [
+        45370,
+        "We Will Survive",
+        "DJ Muggs"
+      ],
+      [
+        55167,
+        "Bars",
+        "600Breezy"
+      ],
+      [
+        43863,
+        "Warmup Freestyle",
+        "XV"
+      ],
+      [
+        25232,
+        "Smile Thru My Pain",
+        "NLE Choppa"
+      ],
+      [
+        56628,
+        "Dusk 2 Dusk",
+        "Smoke DZA"
+      ],
+      [
+        57670,
+        "Egyptian Luvr",
+        "Rejjie Snow"
+      ],
+      [
+        45081,
+        "Rapper Gone Bad",
+        "Mac Dre"
+      ],
+      [
+        44094,
+        "Third Eviction",
+        "XV"
+      ],
+      [
+        25617,
+        "DONT GOTTA EXPLAIN",
+        "Lil Tjay"
+      ],
+      [
+        36636,
+        "On the Road",
+        "Lady Leshurr"
+      ],
+      [
+        46215,
+        "Oh Lord",
+        "Young Buck"
+      ],
+      [
+        14359,
+        "Paper Cha$in Haitian",
+        "Kodak Black"
+      ],
+      [
+        13499,
+        "Look At Me!",
+        "XXXTentacion"
+      ],
+      [
+        53856,
+        "Here We Go Again",
+        "Boosie Badazz"
+      ],
+      [
+        45279,
+        "General Principles",
+        "DJ Muggs"
+      ],
+      [
+        48352,
+        "Koo Koo",
+        "Travis Porter"
+      ],
+      [
+        46635,
+        "Oooh Oooh",
+        "Petey Pablo"
+      ],
+      [
+        54465,
+        "27-Jun",
+        "Big Moe"
+      ],
+      [
+        51121,
+        "Bad For Your Health",
+        "Berner"
+      ],
+      [
+        46644,
+        "Change",
+        "Petey Pablo"
+      ],
+      [
+        50745,
+        "Heart Colder",
+        "Philthy Rich"
+      ],
+      [
+        55750,
+        "Shots Ringing",
+        "Dark Lo"
+      ],
+      [
+        42550,
+        "Send Me An Angel",
+        "Big K.R.I.T."
+      ],
+      [
+        40639,
+        "Ghost Blunts",
+        "Styles P"
+      ],
+      [
+        49717,
+        "Bad Boys",
+        "Dru Down"
+      ],
+      [
+        15905,
+        "Deadstar Lifestyle :/",
+        "Smokepurpp"
+      ],
+      [
+        45931,
+        "I’m Hungry",
+        "Cassidy"
+      ],
+      [
+        2349,
+        "Drug Dealers Anonymous",
+        "Pusha T"
+      ],
+      [
+        49375,
+        "Flypn’ Nygaz Lyke Ounces",
+        "JT the Bigga Figga"
+      ],
+      [
+        16886,
+        "The Nicest",
+        "Big Pun"
+      ],
+      [
+        45369,
+        "The Eternal Now",
+        "DJ Muggs"
+      ]
+    ]
+  }
+}

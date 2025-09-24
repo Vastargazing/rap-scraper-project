@@ -632,7 +632,7 @@ class ImprovedBulkSpotifyEnhancement:
         # Получаем треки начиная с checkpoint
         cursor.execute("""
             SELECT s.id, s.title, s.artist 
-            FROM songs s
+            FROM tracks s
             LEFT JOIN spotify_tracks st ON s.id = st.song_id
             WHERE st.song_id IS NULL AND s.id >= ?
             ORDER BY s.id

@@ -187,7 +187,7 @@ class PostgreSQLManager:
                 metadata = {}
             
             self.cursor.execute(
-                """INSERT INTO songs (
+                """INSERT INTO tracks (
                     artist, title, lyrics, url, genius_id, word_count,
                     genre, release_date, album, language, explicit,
                     song_art_url, popularity_score, lyrics_quality_score
@@ -252,9 +252,9 @@ class PostgreSQLManager:
         """Проверка существования песни"""
         try:
             if url:
-                self.cursor.execute("SELECT 1 FROM songs WHERE url = %s", (url,))
+                self.cursor.execute("SELECT 1 FROM tracks WHERE url = %s", (url,))
             elif genius_id:
-                self.cursor.execute("SELECT 1 FROM songs WHERE genius_id = %s", (genius_id,))
+                self.cursor.execute("SELECT 1 FROM tracks WHERE genius_id = %s", (genius_id,))
             else:
                 return False
             return self.cursor.fetchone() is not None
@@ -272,7 +272,7 @@ class PostgreSQLManager:
                     AVG(word_count) as avg_words,
                     AVG(lyrics_quality_score) as avg_quality,
                     COUNT(CASE WHEN genre IS NOT NULL THEN 1 END) as with_genre
-                FROM songs
+                FROM tracks
             """)
             result = self.cursor.fetchone()
             return {
@@ -291,7 +291,7 @@ class PostgreSQLManager:
         try:
             self.cursor.execute("""
                 SELECT artist, title, word_count, lyrics_quality_score, genre, scraped_date 
-                FROM songs 
+                FROM tracks 
                 ORDER BY id DESC 
                 LIMIT %s
             """, (limit,))
@@ -303,7 +303,7 @@ class PostgreSQLManager:
     def get_artist_count(self, artist: str) -> int:
         """Получение количества песен артиста"""
         try:
-            self.cursor.execute("SELECT COUNT(*) as count FROM songs WHERE artist = %s", (artist,))
+            self.cursor.execute("SELECT COUNT(*) as count FROM tracks WHERE artist = %s", (artist,))
             result = self.cursor.fetchone()
             return result["count"]
         except psycopg2.Error as e:

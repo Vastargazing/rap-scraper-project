@@ -46,7 +46,7 @@ def count_remaining(db_path: str) -> int:
     cur = conn.cursor()
     cur.execute("""
         SELECT COUNT(*) as cnt
-        FROM songs s
+        FROM tracks s
         LEFT JOIN ai_analysis a ON s.id = a.song_id
         WHERE a.id IS NULL
     """)
@@ -181,7 +181,7 @@ if __name__ == '__main__':
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s --batch-size 50                    # Process 50 songs per batch
+  %(prog)s --batch-size 50                    # Process 50 tracks per batch
   %(prog)s --batch-size 10 --sleep 3          # Smaller batches with 3s pause
   %(prog)s --max-batches 20 --dry-run         # Test run for first 20 batches
   %(prog)s --db custom.db --batch-size 100    # Custom database path

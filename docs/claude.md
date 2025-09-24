@@ -41,24 +41,42 @@ python scripts/tools/database_diagnostics.py --connections
 
 ## 📊 ПОЛНАЯ СХЕМА БАЗЫ ДАННЫХ (PostgreSQL)
 
-### 🎵 Таблица `tracks` (57,718 записей)
+### 🎵 Таблица `tracks` (57,718 записей) - ОСНОВНАЯ ТАБЛИЦА
 ```sql
 CREATE TABLE tracks (
-    id                SERIAL PRIMARY KEY,           -- Уникальный ID трека
-    title             VARCHAR(500),                 -- Название трека
-    artist            VARCHAR(200),                 -- Исполнитель
-    lyrics            TEXT,                         -- Текст песни (ОСНОВНОЕ ПОЛЕ)
-    url               VARCHAR(500),                 -- URL на Genius.com
-    created_at        TIMESTAMP DEFAULT NOW(),      -- Дата добавления
-    spotify_data      JSONB,                       -- Метаданные Spotify
-    audio_features    JSONB                        -- Аудио характеристики
+    id                      SERIAL PRIMARY KEY,              -- Уникальный ID трека
+    title                   VARCHAR NOT NULL,                -- Название трека
+    artist                  VARCHAR NOT NULL,                -- Исполнитель
+    lyrics                  TEXT,                            -- Текст песни (ОСНОВНОЕ ПОЛЕ)
+    url                     TEXT,                            -- URL на Genius.com
+    genius_id               INTEGER,                         -- ID в Genius API
+    scraped_date            TIMESTAMP,                       -- Дата скрапинга
+    word_count              INTEGER,                         -- Количество слов
+    genre                   VARCHAR,                         -- Жанр
+    release_date            DATE,                            -- Дата релиза
+    album                   VARCHAR,                         -- Альбом
+    language                VARCHAR,                         -- Язык
+    explicit                BOOLEAN,                         -- Explicit контент
+    song_art_url            TEXT,                           -- URL обложки
+    popularity_score        INTEGER,                        -- Оценка популярности
+    lyrics_quality_score    REAL,                           -- Качество текста (0-1)
+    created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Дата добавления
+    spotify_data            JSONB                           -- Метаданные Spotify (59% coverage)
 );
 
 -- ИНДЕКСЫ:
 CREATE INDEX idx_tracks_artist ON tracks(artist);
 CREATE INDEX idx_tracks_title ON tracks(title);
 CREATE INDEX idx_tracks_lyrics_not_null ON tracks(id) WHERE lyrics IS NOT NULL;
+CREATE INDEX idx_tracks_spotify_data ON tracks USING GIN(spotify_data);
 ```
+
+### 📊 СТАТИСТИКА SPOTIFY ОБОГАЩЕНИЯ
+- **Всего треков**: 57,718
+- **С Spotify данными**: 34,066 (59.02%)
+- **Без Spotify данных**: 23,652 (40.98%)
+- **Средняя популярность**: 30.5 (диапазон: 1-94)
+- **Топ исполнители**: Gucci Mane (476), Chief Keef (469), Snoop Dogg (469)
 
 ### 🤖 Таблица `analysis_results` (256,021 анализов)
 ```sql
@@ -187,6 +205,16 @@ LIMIT 20;
 - **Local Models**: Gemma, Ollama для локального анализа
 - **Progress Tracking**: Автоматическое сохранение прогресса
 - **Error Recovery**: Robust обработка ошибок API
+
+### 📋 ВСЕ ТАБЛИЦЫ В POSTGRESQL
+- **`tracks`** - ОСНОВНАЯ ТАБЛИЦА (57,718 записей)
+- **`analysis_results`** - результаты AI анализа (256,021 записей)  
+- **`songs`** - LEGACY ТАБЛИЦА (рекомендуется удаление)
+
+### ⚠️ ТАБЛИЦА `songs` - УДАЛИТЬ?
+**СТАТУС**: Legacy таблица, дублирует `tracks`
+**РЕКОМЕНДАЦИЯ**: ✅ **УДАЛИТЬ** после проверки зависимостей
+**ПРИЧИНА**: Все данные мигрированы в `tracks`, избыточность создает путаницу
 
 ---
 

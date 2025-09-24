@@ -11,7 +11,7 @@ from src.enhancers.spotify_analysis_utils import SpotifyEnhancementAnalyzer
 
 ЗАВИСИМОСТИ:
 - Python 3.8+
-- sqlite3
+- asyncpg (PostgreSQL)
 - Используется в скриптах мониторинга и анализа
 
 РЕЗУЛЬТАТ:
@@ -21,111 +21,138 @@ from src.enhancers.spotify_analysis_utils import SpotifyEnhancementAnalyzer
 АВТОР: AI Assistant
 ДАТА: Сентябрь 2025
 """
-import sqlite3
+import asyncio
 import json
+import sys
+import os
 from datetime import datetime
 from typing import Dict, List, Any
 
+# Add src to path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from database.postgres_adapter import PostgreSQLAdapter
+
 class SpotifyEnhancementAnalyzer:
-    """Анализатор процесса обогащения Spotify"""
+    """Анализатор процесса обогащения Spotify для PostgreSQL"""
     
-    def __init__(self, db_path: str = "data/rap_lyrics.db"):
-        self.db_path = db_path
+    def __init__(self):
+        self.db = PostgreSQLAdapter()
     
-    def get_detailed_stats(self) -> Dict[str, Any]:
+    async def get_detailed_stats(self) -> Dict[str, Any]:
         """Получение детальной статистики"""
-        conn = sqlite3.connect(self.db_path)
+        await self.db.connect()
         
         stats = {}
         
-        # Основная статистика
-        stats['total_songs'] = conn.execute("SELECT COUNT(*) FROM songs").fetchone()[0]
-        stats['spotify_tracks'] = conn.execute("SELECT COUNT(*) FROM spotify_tracks").fetchone()[0]
-        stats['spotify_artists'] = conn.execute("SELECT COUNT(*) FROM spotify_artists").fetchone()[0]
+        try:
+            # Основная статистика
+            result = await self.db.execute_query("SELECT COUNT(*) as total FROM tracks")
+            stats['total_songs'] = result[0]['total']
+            
+            result = await self.db.execute_query("SELECT COUNT(*) as enhanced FROM tracks WHERE spotify_data IS NOT NULL")
+            stats['spotify_tracks'] = result[0]['enhanced']
+            
+            result = await self.db.execute_query("SELECT COUNT(DISTINCT artist) as artists FROM tracks WHERE spotify_data IS NOT NULL")
+            stats['spotify_artists'] = result[0]['artists']
+            
+            # Процент обогащения
+            if stats['total_songs'] > 0:
+                stats['enhancement_percentage'] = round((stats['spotify_tracks'] / stats['total_songs']) * 100, 2)
+            else:
+                stats['enhancement_percentage'] = 0
+            
+            # Топ необработанных артистов
+            unprocessed_query = """
+                SELECT artist, COUNT(*) as tracks_count
+                FROM tracks
+                WHERE spotify_data IS NULL
+                GROUP BY artist
+                ORDER BY tracks_count DESC
+                LIMIT 10
+            """
+            result = await self.db.execute_query(unprocessed_query)
+            stats['top_unprocessed_artists'] = [(row['artist'], row['tracks_count']) for row in result]
+            
+            # Топ обработанных артистов
+            processed_query = """
+                SELECT artist, COUNT(*) as processed_tracks
+                FROM tracks
+                WHERE spotify_data IS NOT NULL
+                GROUP BY artist
+                ORDER BY processed_tracks DESC
+                LIMIT 10
+            """
+            result = await self.db.execute_query(processed_query)
+            stats['top_processed_artists'] = [(row['artist'], row['processed_tracks']) for row in result]
+            
+            # Статистика популярности
+            popularity_query = """
+                SELECT 
+                    AVG((spotify_data->>'popularity')::int) as avg_popularity,
+                    MIN((spotify_data->>'popularity')::int) as min_popularity,
+                    MAX((spotify_data->>'popularity')::int) as max_popularity
+                FROM tracks
+                WHERE spotify_data IS NOT NULL 
+                AND spotify_data->>'popularity' IS NOT NULL
+                AND spotify_data->>'popularity' != '0'
+            """
+            result = await self.db.execute_query(popularity_query)
+            if result and result[0]['avg_popularity']:
+                stats['popularity'] = {
+                    'avg': round(float(result[0]['avg_popularity']), 2),
+                    'min': result[0]['min_popularity'],
+                    'max': result[0]['max_popularity']
+                }
+            
+            # Треки с самой высокой популярностью
+            popular_query = """
+                SELECT title, artist, (spotify_data->>'popularity')::int as popularity
+                FROM tracks
+                WHERE spotify_data IS NOT NULL 
+                AND spotify_data->>'popularity' IS NOT NULL
+                ORDER BY (spotify_data->>'popularity')::int DESC
+                LIMIT 10
+            """
+            result = await self.db.execute_query(popular_query)
+            stats['most_popular_tracks'] = [(row['title'], row['artist'], row['popularity']) for row in result]
+            
+        finally:
+            await self.db.close()
         
-        # Топ необработанных артистов
-        cursor = conn.execute("""
-            SELECT s.artist, COUNT(*) as tracks_count
-            FROM songs s
-            LEFT JOIN spotify_tracks st ON s.id = st.song_id
-            WHERE st.song_id IS NULL
-            GROUP BY s.artist
-            ORDER BY tracks_count DESC
-            LIMIT 10
-        """)
-        stats['top_unprocessed_artists'] = cursor.fetchall()
-        
-        # Топ обработанных артистов
-        cursor = conn.execute("""
-            SELECT s.artist, COUNT(*) as processed_tracks
-            FROM songs s
-            INNER JOIN spotify_tracks st ON s.id = st.song_id
-            GROUP BY s.artist
-            ORDER BY processed_tracks DESC
-            LIMIT 10
-        """)
-        stats['top_processed_artists'] = cursor.fetchall()
-        
-        # Статистика популярности
-        cursor = conn.execute("""
-            SELECT 
-                AVG(popularity) as avg_popularity,
-                MIN(popularity) as min_popularity,
-                MAX(popularity) as max_popularity
-            FROM spotify_tracks
-            WHERE popularity > 0
-        """)
-        popularity_stats = cursor.fetchone()
-        if popularity_stats[0]:
-            stats['popularity'] = {
-                'avg': round(popularity_stats[0], 2),
-                'min': popularity_stats[1],
-                'max': popularity_stats[2]
-            }
-        
-        # Треки с самой высокой популярностью
-        cursor = conn.execute("""
-            SELECT s.title, s.artist, st.popularity
-            FROM songs s
-            INNER JOIN spotify_tracks st ON s.id = st.song_id
-            ORDER BY st.popularity DESC
-            LIMIT 10
-        """)
-        stats['most_popular_tracks'] = cursor.fetchall()
-        
-        conn.close()
         return stats
     
-    def find_problematic_tracks(self) -> List[Dict[str, Any]]:
+    async def find_problematic_tracks(self) -> Dict[str, List]:
         """Поиск проблематичных треков для обработки"""
-        conn = sqlite3.connect(self.db_path)
+        await self.db.connect()
         
-        # Треки с длинными названиями
-        cursor = conn.execute("""
-            SELECT s.id, s.title, s.artist, LENGTH(s.title) as title_length
-            FROM songs s
-            LEFT JOIN spotify_tracks st ON s.id = st.song_id
-            WHERE st.song_id IS NULL AND LENGTH(s.title) > 50
-            ORDER BY title_length DESC
-            LIMIT 20
-        """)
-        long_titles = cursor.fetchall()
-        
-        # Треки с специальными символами
-        cursor = conn.execute("""
-            SELECT s.id, s.title, s.artist
-            FROM songs s
-            LEFT JOIN spotify_tracks st ON s.id = st.song_id
-            WHERE st.song_id IS NULL 
-            AND (s.title LIKE '%[%' OR s.title LIKE '%(%' 
-                 OR s.title LIKE '%*%' OR s.title LIKE '%feat%'
-                 OR s.title LIKE '%ft.%' OR s.title LIKE '%demo%'
-                 OR s.title LIKE '%remix%' OR s.title LIKE '%version%')
-            LIMIT 20
-        """)
-        special_chars = cursor.fetchall()
-        
-        conn.close()
+        try:
+            # Треки с длинными названиями
+            long_query = """
+                SELECT id, title, artist, LENGTH(title) as title_length
+                FROM tracks
+                WHERE spotify_data IS NULL AND LENGTH(title) > 50
+                ORDER BY LENGTH(title) DESC
+                LIMIT 20
+            """
+            long_result = await self.db.execute_query(long_query)
+            long_titles = [(row['id'], row['title'], row['artist'], row['title_length']) for row in long_result]
+            
+            # Треки с специальными символами
+            special_query = """
+                SELECT id, title, artist
+                FROM tracks
+                WHERE spotify_data IS NULL 
+                AND (title LIKE '%[%' OR title LIKE '%(%' 
+                     OR title LIKE '%*%' OR title LIKE '%feat%'
+                     OR title LIKE '%ft.%' OR title LIKE '%demo%'
+                     OR title LIKE '%remix%' OR title LIKE '%version%')
+                LIMIT 20
+            """
+            special_result = await self.db.execute_query(special_query)
+            special_chars = [(row['id'], row['title'], row['artist']) for row in special_result]
+            
+        finally:
+            await self.db.close()
         
         return {
             'long_titles': long_titles,
@@ -143,7 +170,7 @@ class SpotifyEnhancementAnalyzer:
                 COUNT(*) as total_tracks,
                 COUNT(st.song_id) as processed_tracks,
                 ROUND(COUNT(st.song_id) * 100.0 / COUNT(*), 2) as coverage_percent
-            FROM songs s
+            FROM tracks s
             LEFT JOIN spotify_tracks st ON s.id = st.song_id
             GROUP BY s.artist
             HAVING total_tracks >= 5
@@ -185,7 +212,7 @@ class SpotifyEnhancementAnalyzer:
         # Артисты с большим количеством необработанных треков
         cursor = conn.execute("""
             SELECT s.artist, COUNT(*) as unprocessed_count
-            FROM songs s
+            FROM tracks s
             LEFT JOIN spotify_tracks st ON s.id = st.song_id
             WHERE st.song_id IS NULL
             GROUP BY s.artist
@@ -198,7 +225,7 @@ class SpotifyEnhancementAnalyzer:
         # Треки с простыми названиями (легче найти)
         cursor = conn.execute("""
             SELECT s.id, s.title, s.artist
-            FROM songs s
+            FROM tracks s
             LEFT JOIN spotify_tracks st ON s.id = st.song_id
             WHERE st.song_id IS NULL 
             AND LENGTH(s.title) < 30

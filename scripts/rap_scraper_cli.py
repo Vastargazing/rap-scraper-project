@@ -255,12 +255,12 @@ def run_mlfeatures(args):
             conn = sqlite3.connect(db_path)
             
             # Получаем записи
-            query = "SELECT artist, title, lyrics FROM songs WHERE lyrics IS NOT NULL LIMIT ?"
+            query = "SELECT artist, title, lyrics FROM tracks WHERE lyrics IS NOT NULL LIMIT ?"
             cursor = conn.execute(query, (args.batch,))
-            songs = cursor.fetchall()
+            tracks = cursor.fetchall()
             conn.close()
             
-            print(f"📊 Загружено {len(songs)} песен из БД")
+            print(f"📊 Загружено {len(tracks)} песен из БД")
             
             # Обрабатываем
             results = []
@@ -276,7 +276,7 @@ def run_mlfeatures(args):
                     })
                     
                     if (i + 1) % 10 == 0:
-                        print(f"   Обработано: {i + 1}/{len(songs)}")
+                        print(f"   Обработано: {i + 1}/{len(tracks)}")
                         
                 except Exception as e:
                     print(f"   ⚠️ Ошибка обработки '{artist} - {title}': {e}")
@@ -285,7 +285,7 @@ def run_mlfeatures(args):
             
             print(f"\n✅ Пакетная обработка завершена:")
             print(f"   Время: {processing_time:.2f}с")
-            print(f"   Успешно: {len(results)}/{len(songs)}")
+            print(f"   Успешно: {len(results)}/{len(tracks)}")
             print(f"   Скорость: {len(results)/processing_time:.1f} треков/сек")
             
             # Сохраняем результаты

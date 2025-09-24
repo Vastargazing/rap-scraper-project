@@ -73,7 +73,7 @@ class AIAnalysisStatsGenerator:
         cursor = conn.cursor()
         
         # Общие цифры
-        cursor.execute("SELECT COUNT(*) FROM songs")
+        cursor.execute("SELECT COUNT(*) FROM tracks")
         total_songs = cursor.fetchone()[0]
         
         cursor.execute("SELECT COUNT(*) FROM ai_analysis")
@@ -218,7 +218,7 @@ class AIAnalysisStatsGenerator:
         # Топ артисты по количеству анализов
         cursor.execute("""
             SELECT s.artist, COUNT(*) as analyzed_count
-            FROM songs s
+            FROM tracks s
             INNER JOIN ai_analysis a ON s.id = a.song_id
             GROUP BY s.artist
             ORDER BY analyzed_count DESC
@@ -232,7 +232,7 @@ class AIAnalysisStatsGenerator:
                    AVG(a.authenticity_score) as avg_authenticity,
                    AVG(a.lyrical_creativity) as avg_creativity,
                    COUNT(*) as track_count
-            FROM songs s
+            FROM tracks s
             INNER JOIN ai_analysis a ON s.id = a.song_id
             WHERE a.authenticity_score IS NOT NULL
             GROUP BY s.artist
@@ -296,7 +296,7 @@ class AIAnalysisStatsGenerator:
         # Треки с высоким коммерческим потенциалом
         cursor.execute("""
             SELECT s.artist, s.title, a.commercial_appeal
-            FROM songs s
+            FROM tracks s
             INNER JOIN ai_analysis a ON s.id = a.song_id
             WHERE a.commercial_appeal > 0.8
             ORDER BY a.commercial_appeal DESC

@@ -50,7 +50,7 @@ analysis_results/
 
 # Archive and legacy files
 archive/
-docs/legacy/
+docs/
 
 # JSON outputs (organized)
 results/json_outputs/

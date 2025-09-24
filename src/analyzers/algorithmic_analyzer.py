@@ -1995,8 +1995,8 @@ class PostgreSQLAnalyzer:
                 {limit_clause};
                 """
                 
-                songs = await conn.fetch(query)
-                total_songs = len(songs)
+                tracks = await conn.fetch(query)
+                total_songs = len(tracks)
                 
                 print(f"🚀 Начинаем анализ {total_songs:,} песен (батчи по {batch_size})")
                 
@@ -2005,7 +2005,7 @@ class PostgreSQLAnalyzer:
                 
                 # Обработка батчами
                 for i in range(0, total_songs, batch_size):
-                    batch = songs[i:i + batch_size]
+                    batch = tracks[i:i + batch_size]
                     batch_results = []
                     
                     for song in batch:

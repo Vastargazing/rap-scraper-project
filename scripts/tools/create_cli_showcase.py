@@ -21,10 +21,10 @@ def get_database_stats():
     
     try:
         # Основная статистика
-        cursor = conn.execute("SELECT COUNT(*) FROM songs")
+        cursor = conn.execute("SELECT COUNT(*) FROM tracks")
         stats['total_tracks'] = cursor.fetchone()[0]
         
-        cursor = conn.execute("SELECT COUNT(DISTINCT artist) FROM songs")
+        cursor = conn.execute("SELECT COUNT(DISTINCT artist) FROM tracks")
         stats['total_artists'] = cursor.fetchone()[0]
         
         cursor = conn.execute("SELECT COUNT(*) FROM ai_analysis")
@@ -33,7 +33,7 @@ def get_database_stats():
         # Топ артисты
         cursor = conn.execute("""
             SELECT artist, COUNT(*) as track_count 
-            FROM songs 
+            FROM tracks 
             GROUP BY artist 
             ORDER BY track_count DESC 
             LIMIT 10

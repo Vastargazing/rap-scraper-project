@@ -25,10 +25,10 @@ def get_database_stats():
     stats = {}
     
     # Общие метрики
-    cursor = conn.execute("SELECT COUNT(*) FROM songs")
+    cursor = conn.execute("SELECT COUNT(*) FROM tracks")
     stats['total_tracks'] = cursor.fetchone()[0]
     
-    cursor = conn.execute("SELECT COUNT(DISTINCT artist) FROM songs")
+    cursor = conn.execute("SELECT COUNT(DISTINCT artist) FROM tracks")
     stats['total_artists'] = cursor.fetchone()[0]
     
     cursor = conn.execute("SELECT COUNT(*) FROM ai_analysis")
@@ -37,7 +37,7 @@ def get_database_stats():
     # Топ артисты
     cursor = conn.execute("""
         SELECT artist, COUNT(*) as track_count 
-        FROM songs 
+        FROM tracks 
         GROUP BY artist 
         ORDER BY track_count DESC 
         LIMIT 15
@@ -66,7 +66,7 @@ def get_database_stats():
     stats['genres'] = cursor.fetchall()
     
     # Общий размер текстов
-    cursor = conn.execute("SELECT AVG(word_count), MAX(word_count) FROM songs WHERE word_count > 0")
+    cursor = conn.execute("SELECT AVG(word_count), MAX(word_count) FROM tracks WHERE word_count > 0")
     avg_words, max_words = cursor.fetchone()
     stats['avg_words'] = avg_words
     stats['max_words'] = max_words

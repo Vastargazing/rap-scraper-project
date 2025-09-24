@@ -87,7 +87,7 @@ class PostgreSQLManager:
                 command_timeout=30
             )
             self._initialized = True
-            logger.info(f"✅ PostgreSQL pool initialized: {self.config.max_connections} connections")
+            logger.info(f"PostgreSQL pool initialized: {self.config.max_connections} connections")
             
             # Setup ML extensions if enabled
             if self.config.enable_pgvector:
@@ -95,7 +95,7 @@ class PostgreSQLManager:
             
             return True
         except Exception as e:
-            logger.error(f"❌ Failed to initialize PostgreSQL pool: {e}")
+            logger.error(f"Failed to initialize PostgreSQL pool: {e}")
             return False
     
     async def setup_ml_extensions(self) -> bool:
@@ -104,7 +104,7 @@ class PostgreSQLManager:
             async with self.get_connection() as conn:
                 # Enable pgvector extension
                 await conn.execute('CREATE EXTENSION IF NOT EXISTS vector')
-                logger.info("✅ pgvector extension enabled")
+                logger.info("pgvector extension enabled")
                 
                 # Add vector columns to tracks table
                 await conn.execute('''
@@ -159,11 +159,11 @@ class PostgreSQLManager:
                 ''')
                 
                 self._vector_enabled = True
-                logger.info("✅ ML schema setup complete")
+                logger.info("ML schema setup complete")
                 return True
                 
         except Exception as e:
-            logger.warning(f"⚠️ ML extensions setup failed (non-critical): {e}")
+            logger.warning(f"ML extensions setup failed (non-critical): {e}")
             self._vector_enabled = False
             return False
     
@@ -214,7 +214,7 @@ class PostgreSQLManager:
                 except Exception as e:
                     logger.error(f"Failed to store embedding for track {track_id}: {e}")
         
-        logger.info(f"✅ Stored {stored}/{len(embeddings_data)} embeddings")
+        logger.info(f"Stored {stored}/{len(embeddings_data)} embeddings")
         return stored
     
     async def find_similar_tracks(self, track_id: int, limit: int = 10) -> List[Dict]:
@@ -315,7 +315,7 @@ class PostgreSQLManager:
             ''', version_tag, description, track_count, 
                 json.dumps(feature_schema), dataset_hash)
             
-            logger.info(f"✅ Created dataset version: {version_tag} (hash: {dataset_hash[:8]}...)")
+            logger.info(f"Created dataset version: {version_tag} (hash: {dataset_hash[:8]}...)")
             return dataset_hash
     
     async def get_unembedded_tracks(self, limit: int = 100) -> List[Dict]:
@@ -379,7 +379,7 @@ class PostgreSQLManager:
                 if row['lyrics_embedding']:
                     dataset['embeddings'].append(row['lyrics_embedding'])
             
-            logger.info(f"✅ Exported {len(dataset['tracks'])} tracks for ML training")
+            logger.info(f"Exported {len(dataset['tracks'])} tracks for ML training")
             return dataset
     
     # Keep existing methods...
@@ -552,7 +552,7 @@ class PostgreSQLManager:
         """Close connection pool"""
         if self.connection_pool:
             await self.connection_pool.close()
-            logger.info("✅ PostgreSQL connection pool closed")
+            logger.info("PostgreSQL connection pool closed")
 
 # Factory function
 def create_postgres_manager(config: Optional[DatabaseConfig] = None) -> PostgreSQLManager:

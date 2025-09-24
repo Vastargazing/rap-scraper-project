@@ -1233,7 +1233,7 @@ class MultiModelAnalyzer:
             # Получаем данные песни и анализа
             cursor = conn.execute("""
                 SELECT s.artist, s.title, s.lyrics, a.*
-                FROM songs s
+                FROM tracks s
                 JOIN ai_analysis a ON s.id = a.song_id
                 WHERE s.id = ?
             """, (song_id,))
@@ -1384,21 +1384,21 @@ class MultiModelAnalyzer:
             # Получаем песни для анализа
             cursor = conn.execute("""
                 SELECT s.id, s.artist, s.title, s.lyrics 
-                FROM songs s
+                FROM tracks s
                 LEFT JOIN ai_analysis a ON s.id = a.song_id
                 WHERE a.id IS NULL  -- Только неанализированные
                 LIMIT ? OFFSET ?
             """, (limit, offset))
             
-            songs = cursor.fetchall()
-            logger.info(f"📊 Найдено {len(songs)} песен для анализа")
+            tracks = cursor.fetchall()
+            logger.info(f"📊 Найдено {len(tracks)} песен для анализа")
             
             successful = 0
             failed = 0
             
-            for i, song in enumerate(songs, 1):
+            for i, track in enumerate(tracks, 1):
                 try:
-                    logger.info(f"📈 Прогресс: {i}/{len(songs)} - {song['artist']} - {song['title']}")
+                    logger.info(f"📈 Прогресс: {i}/{len(tracks)} - {song['artist']} - {song['title']}")
                     
                     analysis = self.analyze_song(song['artist'], song['title'], song['lyrics'])
                     
@@ -1412,7 +1412,7 @@ class MultiModelAnalyzer:
                         logger.warning(f"❌ Не удалось проанализировать")
                     
                     # Пауза между запросами
-                    if i < len(songs):  # Не делаем паузу после последней песни
+                    if i < len(tracks):  # Не делаем паузу после последней песни
                         time.sleep(2)  # 2 секунды между анализами
                         
                 except Exception as e:

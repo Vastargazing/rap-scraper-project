@@ -30,7 +30,7 @@ def monitor_qwen_progress():
     
     try:
         # Общее количество записей
-        total_query = "SELECT COUNT(*) FROM songs WHERE lyrics IS NOT NULL AND lyrics != ''"
+        total_query = "SELECT COUNT(*) FROM tracks WHERE lyrics IS NOT NULL AND lyrics != ''"
         total_records = conn.execute(total_query).fetchone()[0]
         
         # Количество уже проанализированных записей (любой моделью)
