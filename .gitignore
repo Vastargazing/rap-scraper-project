@@ -42,6 +42,9 @@ AI_Engineer_Journal/
 temp/
 cache/
 
+# Spotify cache files
+.cache
+
 # Large data files
 *.jsonl
 enhanced_data/
@@ -50,7 +53,7 @@ analysis_results/
 
 # Archive and legacy files
 archive/
-docs/
+docs/legacy/
 
 # JSON outputs (organized)
 results/json_outputs/
