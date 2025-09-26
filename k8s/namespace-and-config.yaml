@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rap-analyzer
+  labels:
+    name: rap-analyzer
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rap-analyzer-secrets
+  namespace: rap-analyzer
+type: Opaque
+data:
+  # Base64 encoded values - replace with actual encoded secrets
+  postgres-password: cmFwLWFuYWx5emVyLXBhc3M=  # rap-analyzer-pass
+  postgres-user: cmFwX2FuYWx5emVy  # rap_analyzer
+  api-secret-key: eW91ci1zdXBlci1zZWNyZXQta2V5LWhlcmU=  # your-super-secret-key-here
+  openai-api-key: eW91ci1vcGVuYWktYXBpLWtleQ==  # your-openai-api-key
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rap-analyzer-config
+  namespace: rap-analyzer
+  labels:
+    app: rap-analyzer
+data:
+  # Application configuration
+  app.yaml: |
+    database:
+      host: postgres-service
+      port: 5432
+      name: rap_lyrics
+      user: rap_analyzer
+      pool_size: 20
+      max_overflow: 30
+      echo: false
+    
+    api:
+      host: "0.0.0.0"
+      port: 8000
+      workers: 4
+      debug: false
+      cors_origins: 
+        - "http://localhost:3000"
+        - "https://rap-analyzer.com"
+    
+    monitoring:
+      enable_metrics: true
+      metrics_port: 8001
+      enable_tracing: true
+      jaeger_endpoint: "http://jaeger:14268/api/traces"
+    
+    analysis:
+      batch_size: 100
+      max_workers: 8
+      cache_ttl: 3600
+      enable_ai_analysis: true
+    
+    logging:
+      level: INFO
+      format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+      file: "/app/logs/app.log"
+      max_bytes: 10485760
+      backup_count: 5
+
+  # Environment-specific overrides
+  production.yaml: |
+    api:
+      debug: false
+      workers: 8
+    
+    database:
+      pool_size: 50
+      max_overflow: 100
+    
+    logging:
+      level: WARNING
+    
+    analysis:
+      max_workers: 16
+      batch_size: 500
+
+  # Nginx configuration for ingress
+  nginx.conf: |
+    upstream fastapi {
+        server rap-analyzer-service:8000;
+    }
+    
+    server {
+        listen 80;
+        server_name rap-analyzer.local;
+        
+        location / {
+            proxy_pass http://fastapi;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        location /metrics {
+            proxy_pass http://fastapi;
+            proxy_set_header Host $host;
+            allow 10.0.0.0/8;
+            allow 172.16.0.0/12;
+            allow 192.168.0.0/16;
+            deny all;
+        }
+        
+        location /health {
+            proxy_pass http://fastapi;
+            access_log off;
+        }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rap-analyzer-monitoring
+  namespace: rap-analyzer
+  labels:
+    app: rap-analyzer-monitoring
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: grafana
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: prometheus
+  selector:
+    app: grafana

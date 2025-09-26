@@ -1,0 +1,277 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rap-analyzer-config
+  namespace: rap-analyzer
+  labels:
+    app: rap-analyzer-api
+data:
+  # Application Configuration
+  APP_NAME: "Rap Analyzer API"
+  APP_VERSION: "2.0.0"
+  APP_DESCRIPTION: "Advanced lyrics analysis system with multiple AI and algorithmic approaches"
+  
+  # Database Configuration
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DATABASE: "rap_lyrics"
+  POSTGRES_USERNAME: "rap_user"
+  DATABASE_TYPE: "postgresql"
+  POSTGRES_MAX_CONNECTIONS: "20"
+  POSTGRES_MIN_CONNECTIONS: "5"
+  
+  # API Configuration
+  LOG_LEVEL: "INFO"
+  ENVIRONMENT: "production"
+  DEBUG_MODE: "false"
+  
+  # Analyzer Configuration
+  QWEN_MODEL_NAME: "qwen/qwen3-4b-fp8"
+  QWEN_BASE_URL: "https://api.novita.ai/openai/v1"
+  QWEN_TEMPERATURE: "0.1"
+  QWEN_MAX_TOKENS: "1500"
+  
+  OLLAMA_MODEL: "llama3.1:8b"
+  OLLAMA_BASE_URL: "http://localhost:11434"
+  OLLAMA_TEMPERATURE: "0.3"
+  
+  # Performance Settings
+  ASYNC_CONCURRENCY: "10"
+  REQUEST_TIMEOUT: "30"
+  RETRY_ATTEMPTS: "3"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rap-analyzer-secrets
+  namespace: rap-analyzer
+  labels:
+    app: rap-analyzer-api
+type: Opaque
+data:
+  # base64 encoded passwords and API keys
+  POSTGRES_PASSWORD: c2VjdXJlcGFzc3dvcmQxMjM=  # securepassword123
+  # Add your real API keys here (base64 encoded)
+  NOVITA_API_KEY: c2stQjFwdk9BMUY...  # Your actual API key base64 encoded
+  GENIUS_ACCESS_TOKEN: Z3JGa2JfZ05...  # Your actual token base64 encoded
+  SPOTIFY_CLIENT_ID: ZGM4ZTA5N2Y...    # Your actual client ID base64 encoded
+  SPOTIFY_CLIENT_SECRET: MzUyMjBm...   # Your actual client secret base64 encoded
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rap-analyzer-api
+  namespace: rap-analyzer
+  labels:
+    app: rap-analyzer-api
+    version: v2.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: rap-analyzer-api
+  template:
+    metadata:
+      labels:
+        app: rap-analyzer-api
+        version: v2.0.0
+    spec:
+      containers:
+      - name: rap-analyzer-api
+        image: rap-analyzer:k8s-latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        env:
+        # Configuration from ConfigMap
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: rap-analyzer-config
+              key: APP_NAME
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: rap-analyzer-config
+              key: POSTGRES_HOST
+        - name: POSTGRES_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: rap-analyzer-config
+              key: POSTGRES_PORT
+        - name: POSTGRES_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: rap-analyzer-config
+              key: POSTGRES_DATABASE
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: rap-analyzer-config
+              key: POSTGRES_USERNAME
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: rap-analyzer-config
+              key: LOG_LEVEL
+        # Secrets
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rap-analyzer-secrets
+              key: POSTGRES_PASSWORD
+        - name: NOVITA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rap-analyzer-secrets
+              key: NOVITA_API_KEY
+        - name: GENIUS_ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: rap-analyzer-secrets
+              key: GENIUS_ACCESS_TOKEN
+        - name: SPOTIFY_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: rap-analyzer-secrets
+              key: SPOTIFY_CLIENT_ID
+        - name: SPOTIFY_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: rap-analyzer-secrets
+              key: SPOTIFY_CLIENT_SECRET
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        volumeMounts:
+        - name: app-data
+          mountPath: /app/data
+        - name: app-logs
+          mountPath: /app/logs
+        - name: app-cache
+          mountPath: /app/cache
+      volumes:
+      - name: app-data
+        emptyDir: {}
+      - name: app-logs
+        emptyDir: {}
+      - name: app-cache
+        emptyDir: {}
+      initContainers:
+      - name: wait-for-postgres
+        image: postgres:15-alpine
+        command:
+        - /bin/bash
+        - -c
+        - |
+          echo "Waiting for PostgreSQL to be ready..."
+          until pg_isready -h postgres-service -p 5432 -U rap_user; do
+            echo "PostgreSQL is not ready yet..."
+            sleep 5
+          done
+          echo "PostgreSQL is ready!"
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rap-analyzer-secrets
+              key: POSTGRES_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rap-analyzer-service
+  namespace: rap-analyzer
+  labels:
+    app: rap-analyzer-api
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: rap-analyzer-api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rap-analyzer-ingress
+  namespace: rap-analyzer
+  labels:
+    app: rap-analyzer-api
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: rap-analyzer.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rap-analyzer-service
+            port:
+              number: 8000
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rap-analyzer-hpa
+  namespace: rap-analyzer
+  labels:
+    app: rap-analyzer-api
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rap-analyzer-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

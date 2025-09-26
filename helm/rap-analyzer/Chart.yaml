@@ -1,0 +1,36 @@
+apiVersion: v2
+name: rap-analyzer
+description: A comprehensive Kubernetes-native rap lyrics analysis platform with PostgreSQL, FastAPI, and monitoring stack
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - rap
+  - lyrics
+  - analysis
+  - ai
+  - postgresql
+  - fastapi
+  - monitoring
+home: https://github.com/your-org/rap-scraper-project
+sources:
+  - https://github.com/your-org/rap-scraper-project
+maintainers:
+  - name: VA
+    email: va@example.com
+dependencies:
+  - name: postgresql
+    version: "12.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: prometheus
+    version: "15.x.x"  
+    repository: "https://prometheus-community.github.io/helm-charts"
+    condition: monitoring.prometheus.enabled
+  - name: grafana
+    version: "6.x.x"
+    repository: "https://grafana.github.io/helm-charts"
+    condition: monitoring.grafana.enabled
+annotations:
+  category: Analytics
+  licenses: MIT

@@ -1,0 +1,285 @@
+# Default values for rap-analyzer.
+# This is a YAML-formatted file.
+# Declare variables to be substituted into your templates.
+
+# Global configuration
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+
+# Namespace configuration
+namespace:
+  create: true
+  name: rap-analyzer
+
+# Application configuration
+app:
+  name: rap-analyzer
+  version: "1.0.0"
+  
+  # API configuration
+  api:
+    replicaCount: 3
+    image:
+      repository: rap-analyzer/api
+      tag: "1.0.0"
+      pullPolicy: IfNotPresent
+    
+    service:
+      type: ClusterIP
+      port: 8000
+      targetPort: 8000
+    
+    ingress:
+      enabled: true
+      className: nginx
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+        nginx.ingress.kubernetes.io/ssl-redirect: "false"
+        nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+      hosts:
+        - host: rap-analyzer.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls: []
+    
+    # Resource configuration
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "2Gi"
+        cpu: "1000m"
+    
+    # Auto-scaling configuration
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 70
+      targetMemoryUtilizationPercentage: 80
+    
+    # Health checks
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8000
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+    
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: 8000
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 3
+    
+    # Environment variables
+    env:
+      - name: DATABASE_URL
+        value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres-service:5432/$(POSTGRES_DB)"
+      - name: API_HOST
+        value: "0.0.0.0"
+      - name: API_PORT
+        value: "8000"
+      - name: LOG_LEVEL
+        value: "INFO"
+
+# PostgreSQL configuration
+postgresql:
+  enabled: true
+  image:
+    repository: ankane/pgvector
+    tag: "v0.5.1"
+    pullPolicy: IfNotPresent
+  
+  auth:
+    postgresPassword: "rap-analyzer-pass"
+    username: "rap_analyzer"
+    password: "rap-analyzer-pass"
+    database: "rap_lyrics"
+  
+  primary:
+    persistence:
+      enabled: true
+      size: 20Gi
+      storageClass: ""
+    
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "4Gi"
+        cpu: "2000m"
+    
+    # PostgreSQL configuration
+    postgresql:
+      maxConnections: 200
+      sharedBuffers: "256MB"
+      effectiveCacheSize: "1GB"
+      maintenanceWorkMem: "64MB"
+      checkpointCompletionTarget: 0.9
+      walBuffers: "16MB"
+      defaultStatisticsTarget: 100
+      randomPageCost: 1.1
+      effectiveIoConcurrency: 200
+  
+  service:
+    type: ClusterIP
+    port: 5432
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  
+  prometheus:
+    enabled: true
+    image:
+      repository: prom/prometheus
+      tag: "v2.45.0"
+      pullPolicy: IfNotPresent
+    
+    service:
+      type: ClusterIP
+      port: 9090
+    
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "200m"
+      limits:
+        memory: "2Gi"
+        cpu: "1000m"
+    
+    retention: "200h"
+    
+    ingress:
+      enabled: true
+      className: nginx
+      hosts:
+        - host: prometheus.rap-analyzer.local
+          paths:
+            - path: /
+              pathType: Prefix
+  
+  grafana:
+    enabled: true
+    image:
+      repository: grafana/grafana
+      tag: "10.0.0"
+      pullPolicy: IfNotPresent
+    
+    adminUser: admin
+    adminPassword: admin123
+    
+    service:
+      type: ClusterIP
+      port: 3000
+    
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+    
+    ingress:
+      enabled: true
+      className: nginx  
+      hosts:
+        - host: grafana.rap-analyzer.local
+          paths:
+            - path: /
+              pathType: Prefix
+    
+    persistence:
+      enabled: false
+      size: 10Gi
+
+# Security configuration  
+security:
+  secrets:
+    postgresql:
+      password: "rap-analyzer-pass"
+      user: "rap_analyzer" 
+    api:
+      secretKey: "your-super-secret-key-here"
+      openaiApiKey: "your-openai-api-key"
+
+# Configuration
+config:
+  # Database configuration
+  database:
+    host: postgres-service
+    port: 5432
+    name: rap_lyrics
+    poolSize: 20
+    maxOverflow: 30
+    echo: false
+  
+  # API configuration  
+  api:
+    host: "0.0.0.0"
+    port: 8000
+    workers: 4
+    debug: false
+    corsOrigins:
+      - "http://localhost:3000"
+      - "https://rap-analyzer.com"
+  
+  # Analysis configuration
+  analysis:
+    batchSize: 100
+    maxWorkers: 8
+    cacheTtl: 3600
+    enableAiAnalysis: true
+  
+  # Logging configuration
+  logging:
+    level: INFO
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    file: "/app/logs/app.log"
+    maxBytes: 10485760
+    backupCount: 5
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Service account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod security context
+podSecurityContext: {}
+
+# Security context
+securityContext: {}
+
+# Image pull secrets
+imagePullSecrets: []
+
+# Full name override
+fullnameOverride: ""
+
+# Name override  
+nameOverride: ""

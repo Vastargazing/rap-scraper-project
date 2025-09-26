@@ -19,7 +19,8 @@
 ### 🚀 Production Infrastructure
 - **PostgreSQL + pgvector Database**: Enterprise-grade concurrent processing with vector similarity search
 - **Vector Operations**: Semantic similarity search, embedding storage, AI-powered track recommendations
-- **Docker-First Deployment**: Complete containerized stack with pgvector extension
+- **Kubernetes-Native**: Production-ready container orchestration with auto-scaling and monitoring
+- **Helm Chart**: Complete deployment package with PostgreSQL, FastAPI, Prometheus, and Grafana
 - **Enterprise Monitoring**: Prometheus + Grafana, health checks, metrics, observability
 - **Concurrent Processing**: Multiple analysis scripts running simultaneously
 - **Developer Experience**: Interactive docs, web interface, examples
@@ -47,12 +48,19 @@
 ## 🚀 Quick Start (PostgreSQL + pgvector Architecture)
 
 ```bash
-# 1. DATABASE SETUP: Install PostgreSQL 15 with pgvector extension
-# Option A: Use Docker (Recommended)
-docker-compose -f docker-compose.pgvector.yml up -d
+# OPTION 1: Kubernetes Production Deployment (Recommended)
+# Deploy complete stack with PostgreSQL, FastAPI, and monitoring
+helm install rap-analyzer ./helm/rap-analyzer --create-namespace --namespace rap-analyzer
 
-# Option B: Manual PostgreSQL + pgvector installation
-# Follow PostgreSQL + pgvector setup guide in docs/claude.md
+# Access applications
+kubectl port-forward svc/rap-analyzer-service 8000:8000 -n rap-analyzer
+kubectl port-forward svc/grafana-service 3000:3000 -n rap-analyzer
+open http://localhost:8000  # API + docs
+open http://localhost:3000  # Grafana dashboards (admin/admin123)
+
+# OPTION 2: Docker Development Setup
+# 1. DATABASE SETUP: Install PostgreSQL 15 with pgvector extension
+docker-compose -f docker-compose.pgvector.yml up -d
 
 # 2. ENVIRONMENT: Configure PostgreSQL + pgvector connection
 echo "POSTGRES_DB=rap_lyrics" > .env
@@ -719,6 +727,15 @@ python src/cli/performance_monitor.py --analyzer qwen --mode compare
 - **Benchmark history** - GitHub Pages with performance graphs
 - **Pull request integration** - automatic performance reports
 
+### Kubernetes Migration Complete ✅
+
+**Phase 1: Production Infrastructure**
+- **Complete Kubernetes manifests** for PostgreSQL, FastAPI, and monitoring stack
+- **Helm chart deployment** with configurable values and auto-scaling
+- **Production-ready monitoring** with Prometheus and Grafana dashboards
+- **Ingress configuration** for external access and load balancing
+- **Resource management** with limits, requests, and HPA scaling
+
 ### PostgreSQL + pgvector Migration Benefits
 ```bash
 # Before (SQLite): Database locking prevented concurrent processing
@@ -739,7 +756,14 @@ psql -h localhost -p 5433 -U rap_user -d rap_lyrics
 # Result: 37,866 tracks ready for concurrent Qwen analysis + semantic search capabilities
 ```
 
-## 📈 Roadmap (PostgreSQL-Enabled)
+## 📈 Roadmap
+
+### ✅ Phase 1: Kubernetes Migration Complete (2025-01-19)
+- [x] **Complete Kubernetes manifests** - PostgreSQL, FastAPI, monitoring stack
+- [x] **Helm chart package** - Production-ready deployment with auto-scaling
+- [x] **Monitoring dashboards** - Prometheus + Grafana with custom rap analyzer metrics
+- [x] **Ingress configuration** - Load balancing and external access
+- [x] **Deployment documentation** - Installation guide and operational procedures
 
 ### ✅ Completed (2025-09-08)
 - [x] **Complete SQLite → PostgreSQL migration** (57,717 tracks, 100% data integrity)

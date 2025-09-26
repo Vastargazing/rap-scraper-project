@@ -1,6 +1,6 @@
-# Rap Scraper Project — AI Agent Context (Обновлено: 2025-09-15)
+# Rap Scraper Project — AI Agent Context (Обновлено: 2025-01-19)
 
-> **Enterprise ML-pipeline** для анализа рэп-текстов с **PostgreSQL + pgvector** и concurrent processing
+> **Kubernetes-native enterprise ML-pipeline** для анализа рэп-текстов с **PostgreSQL + pgvector**, production-ready container orchestration, и comprehensive monitoring stack
 
 ## 🎯 ПРИОРИТЕТЫ ДЛЯ AI АГЕНТА
 

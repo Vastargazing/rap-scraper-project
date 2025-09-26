@@ -1,0 +1,67 @@
+# Многоэтапная сборка для оптимизации размера образа
+FROM python:3.11-slim as builder
+
+# Установка системных зависимостей
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    musl-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Создание виртуального окружения
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Копирование файлов зависимостей
+COPY requirements.txt .
+
+# Установка Python зависимостей
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Production образ
+FROM python:3.11-slim
+
+# Установка runtime зависимостей
+RUN apt-get update && apt-get install -y \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Копирование виртуального окружения из builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Создание пользователя для приложения
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Создание рабочей директории
+WORKDIR /app
+
+# Копирование исходного кода
+COPY --chown=appuser:appuser . .
+
+# Права на выполнение
+RUN chmod +x /app/*.py
+
+# Переключение на непривилегированного пользователя
+USER appuser
+
+# Переменные окружения
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV POSTGRES_HOST=postgres-service
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_DATABASE=rap_lyrics
+ENV POSTGRES_USERNAME=rap_user
+
+# Проверка здоровья
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Экспозиция порта
+EXPOSE 8000
+
+# Команда по умолчанию
+CMD ["python", "api.py"]
