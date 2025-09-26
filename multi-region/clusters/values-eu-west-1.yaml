@@ -1,0 +1,182 @@
+# Region-specific values for EU West 1 (Replica)
+global:
+  region: eu-west-1
+  zone: replica
+
+# Database configuration - Read Replica
+postgresql:
+  enabled: false  # Uses external replica deployment
+
+# External PostgreSQL replica configuration
+externalPostgreSQL:
+  enabled: true
+  host: postgresql-replica-eu-west-1.rap-analyzer.com
+  port: 5432
+  database: rap_lyrics
+  username: rap_analyzer
+  readOnly: true
+
+# API configuration - Replica region (EU)
+app:
+  api:
+    replicaCount: 3
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 15
+      targetCPUUtilizationPercentage: 70
+    
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "4Gi"
+        cpu: "2000m"
+    
+    env:
+    - name: DATABASE_ROLE
+      value: "replica"
+    - name: REGION
+      value: "eu-west-1"
+    - name: READ_REPLICA_ENABLED
+      value: "true"
+    - name: PRIMARY_API_URL
+      value: "https://api-us-east.rap-analyzer.com"
+    - name: GDPR_COMPLIANCE
+      value: "true"
+    
+    nodeSelector:
+      zone: eu-west-1a
+    
+    # EU-specific configuration
+    gdpr:
+      enabled: true
+      dataRetention: "2y"
+      anonymization: true
+    
+    # Read-only API configuration
+    readOnly: true
+    features:
+      analysis: false  # Disable analysis on replicas
+      search: true     # Enable search functionality
+      export: true     # Enable data export
+      gdprExport: true # Enable GDPR data export
+
+# Monitoring configuration - Reduced
+monitoring:
+  enabled: true
+  prometheus:
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "4Gi"
+        cpu: "2000m"
+    
+    retention: "15d"
+    storageSize: "50Gi"
+    
+    additionalLabels:
+      region: eu-west-1
+      zone: replica
+      compliance: gdpr
+    
+    # Remote write to primary region
+    remoteWrite:
+    - url: https://prometheus-us-east.rap-analyzer.com/api/v1/write
+      writeRelabelConfigs:
+      - sourceLabels: [__name__]
+        regex: 'rap_analyzer_.*'
+        action: keep
+      # GDPR compliance - anonymize user data
+      - sourceLabels: [user_id]
+        targetLabel: user_id
+        replacement: "anonymized"
+  
+  grafana:
+    enabled: false  # Use centralized Grafana in primary region
+
+# Load balancer configuration
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    # GDPR compliance headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-Content-Type-Options nosniff;
+      add_header X-Frame-Options DENY;
+      add_header X-XSS-Protection "1; mode=block";
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
+  
+  hosts:
+  - host: api-eu-west.rap-analyzer.com
+    paths:
+    - path: /
+      pathType: Prefix
+  
+  tls:
+  - secretName: rap-analyzer-tls-eu-west
+    hosts:
+    - api-eu-west.rap-analyzer.com
+
+# Backup configuration - Disabled (uses primary)
+backup:
+  enabled: false
+
+# Cache configuration for better read performance
+redis:
+  enabled: true
+  replica:
+    replicaCount: 2
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  
+  # EU data residency compliance
+  persistence:
+    enabled: true
+    storageClass: gp2-eu-west-1
+
+# CDN configuration for static assets
+cdn:
+  enabled: true
+  provider: cloudfront
+  origin: api-eu-west.rap-analyzer.com
+  caching:
+    defaultTTL: 3600
+    maxTTL: 86400
+  
+  # GDPR compliance
+  gdpr:
+    enabled: true
+    cookieConsent: true
+    dataMinimization: true
+
+# Network policies for EU compliance
+networkPolicy:
+  enabled: true
+  egress:
+    # Restrict outbound connections for GDPR compliance
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            name: rap-analyzer
+      ports:
+      - protocol: TCP
+        port: 5432
+    - to: []
+      ports:
+      - protocol: UDP
+        port: 53  # DNS only

@@ -1,0 +1,144 @@
+# Region-specific values for US East 1 (Primary)
+global:
+  region: us-east-1
+  zone: primary
+  
+# Database configuration - Primary
+postgresql:
+  enabled: true
+  primary:
+    configuration: |
+      # Primary database settings
+      wal_level = replica
+      max_wal_senders = 10
+      synchronous_standby_names = 'replica-us-west,replica-eu-west' 
+      synchronous_commit = on
+    
+    resources:
+      requests:
+        memory: "4Gi"
+        cpu: "2000m"
+      limits:
+        memory: "16Gi"
+        cpu: "8000m"
+    
+    persistence:
+      size: 500Gi
+      storageClass: fast-ssd
+    
+    nodeSelector:
+      zone: us-east-1a
+      instance-type: db.r5.2xlarge
+
+# API configuration - Primary region
+app:
+  api:
+    replicaCount: 8
+    autoscaling:
+      enabled: true
+      minReplicas: 8
+      maxReplicas: 30
+      targetCPUUtilizationPercentage: 60
+    
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "1000m"
+      limits:
+        memory: "8Gi"
+        cpu: "4000m"
+    
+    env:
+    - name: DATABASE_ROLE
+      value: "primary"
+    - name: REGION
+      value: "us-east-1"
+    - name: READ_REPLICA_ENABLED
+      value: "false"
+    
+    nodeSelector:
+      zone: us-east-1a
+    
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - rap-analyzer
+            topologyKey: kubernetes.io/hostname
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  prometheus:
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "1000m"
+      limits:
+        memory: "8Gi"
+        cpu: "4000m"
+    
+    retention: "30d"
+    storageSize: "100Gi"
+    
+    additionalLabels:
+      region: us-east-1
+      zone: primary
+    
+    nodeSelector:
+      zone: us-east-1b
+  
+  grafana:
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "4Gi"
+        cpu: "2000m"
+    
+    persistence:
+      enabled: true
+      size: 50Gi
+    
+    nodeSelector:
+      zone: us-east-1c
+
+# Load balancer configuration
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+  
+  hosts:
+  - host: api-us-east.rap-analyzer.com
+    paths:
+    - path: /
+      pathType: Prefix
+  
+  tls:
+  - secretName: rap-analyzer-tls-us-east
+    hosts:
+    - api-us-east.rap-analyzer.com
+
+# Backup configuration
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retention: "30d"
+  s3:
+    bucket: rap-analyzer-backups-us-east-1
+    region: us-east-1
+    storageClass: STANDARD_IA

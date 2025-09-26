@@ -1,0 +1,215 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Cluster
+metadata:
+  name: us-east-1-cluster
+  namespace: argocd
+  labels:
+    environment: production
+    region: us-east-1
+    zone: primary
+spec:
+  server: https://us-east-1.k8s.your-domain.com
+  name: us-east-1-cluster
+  config:
+    bearerToken: "your-cluster-token"
+    tlsClientConfig:
+      insecure: false
+      caData: "base64-encoded-ca-cert"
+  namespaces:
+    - rap-analyzer
+    - monitoring
+    - argocd
+  project: rap-analyzer-project
+  info:
+    - name: region
+      value: us-east-1
+    - name: zone  
+      value: primary
+    - name: description
+      value: "Primary cluster for US East region"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Cluster
+metadata:
+  name: us-west-2-cluster
+  namespace: argocd
+  labels:
+    environment: production
+    region: us-west-2
+    zone: replica
+spec:
+  server: https://us-west-2.k8s.your-domain.com
+  name: us-west-2-cluster
+  config:
+    bearerToken: "your-cluster-token"
+    tlsClientConfig:
+      insecure: false
+      caData: "base64-encoded-ca-cert"
+  namespaces:
+    - rap-analyzer
+    - monitoring
+  project: rap-analyzer-project
+  info:
+    - name: region
+      value: us-west-2
+    - name: zone
+      value: replica
+    - name: description
+      value: "Replica cluster for US West region"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Cluster
+metadata:
+  name: eu-west-1-cluster
+  namespace: argocd
+  labels:
+    environment: production
+    region: eu-west-1
+    zone: replica
+spec:
+  server: https://eu-west-1.k8s.your-domain.com
+  name: eu-west-1-cluster
+  config:
+    bearerToken: "your-cluster-token"
+    tlsClientConfig:
+      insecure: false
+      caData: "base64-encoded-ca-cert"
+  namespaces:
+    - rap-analyzer
+    - monitoring
+  project: rap-analyzer-project
+  info:
+    - name: region
+      value: eu-west-1
+    - name: zone
+      value: replica
+    - name: description
+      value: "Replica cluster for EU West region"
+---
+# ArgoCD ApplicationSet for multi-region deployment
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: rap-analyzer-multi-region
+  namespace: argocd
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          environment: production
+      values:
+        revision: HEAD
+        
+  template:
+    metadata:
+      name: 'rap-analyzer-{{name}}'
+      labels:
+        region: '{{metadata.labels.region}}'
+        zone: '{{metadata.labels.zone}}'
+    spec:
+      project: rap-analyzer-project
+      source:
+        repoURL: https://github.com/Vastargazing/rap-scraper-project
+        targetRevision: '{{values.revision}}'
+        path: helm/rap-analyzer
+        helm:
+          valueFiles:
+          - values.yaml
+          - values-{{metadata.labels.region}}.yaml
+          values: |
+            # Region-specific configuration
+            global:
+              region: "{{metadata.labels.region}}"
+              zone: "{{metadata.labels.zone}}"
+            
+            # Database configuration based on zone
+            postgresql:
+              enabled: {{- if eq metadata.labels.zone "primary" }}true{{- else }}false{{- end }}
+              primary:
+                configuration: |
+                  {{- if eq metadata.labels.zone "primary" }}
+                  # Primary database configuration
+                  synchronous_standby_names = 'replica-us-west,replica-eu-west'
+                  {{- else }}
+                  # Replica database configuration  
+                  hot_standby = on
+                  {{- end }}
+            
+            # API configuration
+            app:
+              api:
+                replicaCount: {{- if eq metadata.labels.zone "primary" }}5{{- else }}3{{- end }}
+                env:
+                - name: DATABASE_ROLE
+                  value: "{{metadata.labels.zone}}"
+                - name: REGION
+                  value: "{{metadata.labels.region}}"
+            
+            # Monitoring configuration
+            monitoring:
+              enabled: true
+              prometheus:
+                additionalLabels:
+                  region: "{{metadata.labels.region}}"
+                  zone: "{{metadata.labels.zone}}"
+      
+      destination:
+        server: '{{server}}'
+        namespace: rap-analyzer
+      
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+      
+      # Health check with region awareness
+      ignoreDifferences:
+      - group: apps
+        kind: Deployment
+        jsonPointers:
+        - /spec/replicas
+---
+# Cross-region network policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgresql-cross-region
+  namespace: rap-analyzer
+spec:
+  podSelector:
+    matchLabels:
+      app: postgresql
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow connections from API pods
+  - from:
+    - podSelector:
+        matchLabels:
+          app: rap-analyzer
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow replication traffic
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: rap-analyzer
+    ports:
+    - protocol: TCP
+      port: 5432
+  egress:
+  # Allow outbound replication
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53

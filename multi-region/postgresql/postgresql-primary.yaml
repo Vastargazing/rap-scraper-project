@@ -1,0 +1,277 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-primary-config
+  namespace: rap-analyzer
+  labels:
+    app: postgresql
+    role: primary
+data:
+  # PostgreSQL primary configuration for multi-region replication
+  postgresql.conf: |
+    # Basic Configuration
+    listen_addresses = '*'
+    port = 5432
+    max_connections = 200
+    shared_buffers = 512MB
+    effective_cache_size = 2GB
+    maintenance_work_mem = 128MB
+    checkpoint_completion_target = 0.9
+    wal_buffers = 32MB
+    default_statistics_target = 100
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    
+    # Multi-region Replication Settings
+    wal_level = replica
+    max_wal_senders = 10
+    max_replication_slots = 10
+    hot_standby = on
+    hot_standby_feedback = on
+    
+    # Streaming Replication
+    synchronous_commit = on
+    synchronous_standby_names = 'replica-us-west,replica-eu-west'
+    
+    # WAL Archiving for Point-in-Time Recovery
+    archive_mode = on
+    archive_command = 'gzip < %p > /backup/wal/%f.gz'
+    archive_timeout = 300
+    
+    # Logging
+    log_destination = 'stderr'
+    logging_collector = on
+    log_directory = '/var/log/postgresql'
+    log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
+    log_rotation_age = 1d
+    log_rotation_size = 100MB
+    log_min_duration_statement = 1000
+    log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+    log_checkpoints = on
+    log_connections = on
+    log_disconnections = on
+    log_lock_waits = on
+    log_temp_files = 1024
+    
+    # Performance Monitoring
+    shared_preload_libraries = 'pg_stat_statements'
+    track_activities = on
+    track_counts = on
+    track_io_timing = on
+    track_functions = all
+    
+  pg_hba.conf: |
+    # Database administrative login by Unix domain socket
+    local   all             postgres                                peer
+    local   all             all                                     md5
+    
+    # IPv4 local connections
+    host    all             all             127.0.0.1/32            md5
+    host    all             all             0.0.0.0/0               md5
+    
+    # IPv6 local connections
+    host    all             all             ::1/128                 md5
+    
+    # Replication connections
+    host    replication     replicator      0.0.0.0/0               md5
+    host    replication     replicator      ::/0                    md5
+    
+    # Application connections
+    host    rap_lyrics      rap_analyzer    0.0.0.0/0               md5
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql-primary
+  namespace: rap-analyzer
+  labels:
+    app: postgresql
+    role: primary
+    region: us-east-1
+spec:
+  serviceName: postgresql-primary
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+      role: primary
+  template:
+    metadata:
+      labels:
+        app: postgresql
+        role: primary
+        region: us-east-1
+    spec:
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+      containers:
+      - name: postgresql
+        image: ankane/pgvector:v0.5.1
+        ports:
+        - containerPort: 5432
+          name: postgresql
+        env:
+        - name: POSTGRES_DB
+          value: "rap_lyrics"
+        - name: POSTGRES_USER
+          value: "rap_analyzer"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: password
+        - name: POSTGRES_REPLICATION_USER
+          value: "replicator"
+        - name: POSTGRES_REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: replication-password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgresql-data
+          mountPath: /var/lib/postgresql/data
+        - name: postgresql-config
+          mountPath: /etc/postgresql/postgresql.conf
+          subPath: postgresql.conf
+        - name: postgresql-config
+          mountPath: /etc/postgresql/pg_hba.conf
+          subPath: pg_hba.conf
+        - name: backup-storage
+          mountPath: /backup
+        - name: logs
+          mountPath: /var/log/postgresql
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "8Gi"
+            cpu: "4000m"
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+      initContainers:
+      - name: init-postgresql
+        image: ankane/pgvector:v0.5.1
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Initializing PostgreSQL primary for multi-region replication..."
+          
+          # Create replication user
+          export PGPASSWORD="$POSTGRES_PASSWORD"
+          
+          # Wait for PostgreSQL to be ready
+          until pg_isready -h postgresql-primary -p 5432 -U "$POSTGRES_USER"; do
+            echo "Waiting for PostgreSQL primary to be ready..."
+            sleep 2
+          done
+          
+          # Create replication user if not exists
+          psql -h postgresql-primary -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "
+            DO \$\$
+            BEGIN
+              IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'replicator') THEN
+                CREATE ROLE replicator WITH REPLICATION LOGIN PASSWORD '$POSTGRES_REPLICATION_PASSWORD';
+              END IF;
+            END
+            \$\$;
+          " || echo "Replication user already exists or will be created later"
+          
+          echo "PostgreSQL primary initialization complete"
+        env:
+        - name: POSTGRES_DB
+          value: "rap_lyrics"
+        - name: POSTGRES_USER
+          value: "rap_analyzer"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: password
+        - name: POSTGRES_REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: replication-password
+      volumes:
+      - name: postgresql-config
+        configMap:
+          name: postgresql-primary-config
+      - name: backup-storage
+        persistentVolumeClaim:
+          claimName: postgresql-backup-pvc
+      - name: logs
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresql-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 100Gi
+      storageClassName: fast-ssd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-primary
+  namespace: rap-analyzer
+  labels:
+    app: postgresql
+    role: primary
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgresql
+  selector:
+    app: postgresql
+    role: primary
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-primary-external
+  namespace: rap-analyzer
+  labels:
+    app: postgresql
+    role: primary
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgresql
+  selector:
+    app: postgresql
+    role: primary

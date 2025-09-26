@@ -1,0 +1,134 @@
+# Region-specific values for US West 2 (Replica)
+global:
+  region: us-west-2
+  zone: replica
+
+# Database configuration - Read Replica
+postgresql:
+  enabled: false  # Uses external replica deployment
+  
+# External PostgreSQL replica configuration
+externalPostgreSQL:
+  enabled: true
+  host: postgresql-replica-us-west-2.rap-analyzer.com
+  port: 5432
+  database: rap_lyrics
+  username: rap_analyzer
+  readOnly: true
+
+# API configuration - Replica region
+app:
+  api:
+    replicaCount: 5
+    autoscaling:
+      enabled: true
+      minReplicas: 5
+      maxReplicas: 20
+      targetCPUUtilizationPercentage: 70
+    
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "4Gi"
+        cpu: "2000m"
+    
+    env:
+    - name: DATABASE_ROLE
+      value: "replica"
+    - name: REGION
+      value: "us-west-2"
+    - name: READ_REPLICA_ENABLED
+      value: "true"
+    - name: PRIMARY_API_URL
+      value: "https://api-us-east.rap-analyzer.com"
+    
+    nodeSelector:
+      zone: us-west-2a
+    
+    # Read-only API configuration
+    readOnly: true
+    features:
+      analysis: false  # Disable analysis on replicas
+      search: true     # Enable search functionality
+      export: true     # Enable data export
+
+# Monitoring configuration - Reduced
+monitoring:
+  enabled: true
+  prometheus:
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "4Gi"
+        cpu: "2000m"
+    
+    retention: "15d"
+    storageSize: "50Gi"
+    
+    additionalLabels:
+      region: us-west-2
+      zone: replica
+    
+    # Remote write to primary region
+    remoteWrite:
+    - url: https://prometheus-us-east.rap-analyzer.com/api/v1/write
+      writeRelabelConfigs:
+      - sourceLabels: [__name__]
+        regex: 'rap_analyzer_.*'
+        action: keep
+  
+  grafana:
+    enabled: false  # Use centralized Grafana in primary region
+
+# Load balancer configuration
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+  
+  hosts:
+  - host: api-us-west.rap-analyzer.com
+    paths:
+    - path: /
+      pathType: Prefix
+  
+  tls:
+  - secretName: rap-analyzer-tls-us-west
+    hosts:
+    - api-us-west.rap-analyzer.com
+
+# Backup configuration - Disabled (uses primary)
+backup:
+  enabled: false
+
+# Cache configuration for better read performance
+redis:
+  enabled: true
+  replica:
+    replicaCount: 2
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+# CDN configuration for static assets
+cdn:
+  enabled: true
+  provider: cloudfront
+  origin: api-us-west.rap-analyzer.com
+  caching:
+    defaultTTL: 3600
+    maxTTL: 86400

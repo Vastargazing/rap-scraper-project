@@ -1,0 +1,291 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-replica-config
+  namespace: rap-analyzer
+  labels:
+    app: postgresql
+    role: replica
+data:
+  # PostgreSQL replica configuration
+  postgresql.conf: |
+    # Basic Configuration
+    listen_addresses = '*'
+    port = 5432
+    max_connections = 200
+    shared_buffers = 512MB
+    effective_cache_size = 2GB
+    maintenance_work_mem = 128MB
+    checkpoint_completion_target = 0.9
+    wal_buffers = 32MB
+    default_statistics_target = 100
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    
+    # Hot Standby Configuration
+    hot_standby = on
+    hot_standby_feedback = on
+    max_standby_archive_delay = 30s
+    max_standby_streaming_delay = 30s
+    
+    # Read-only replica settings
+    default_transaction_read_only = on
+    
+    # Logging
+    log_destination = 'stderr'
+    logging_collector = on
+    log_directory = '/var/log/postgresql'
+    log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
+    log_rotation_age = 1d
+    log_rotation_size = 100MB
+    log_min_duration_statement = 1000
+    log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+    log_connections = on
+    log_disconnections = on
+    
+    # Performance Monitoring
+    shared_preload_libraries = 'pg_stat_statements'
+    track_activities = on
+    track_counts = on
+    track_io_timing = on
+    track_functions = all
+
+  pg_hba.conf: |
+    # Database administrative login by Unix domain socket
+    local   all             postgres                                peer
+    local   all             all                                     md5
+    
+    # IPv4 local connections
+    host    all             all             127.0.0.1/32            md5
+    host    all             all             0.0.0.0/0               md5
+    
+    # IPv6 local connections
+    host    all             all             ::1/128                 md5
+    
+    # Application connections (read-only)
+    host    rap_lyrics      rap_analyzer    0.0.0.0/0               md5
+
+  recovery.conf: |
+    # Recovery configuration for streaming replication
+    standby_mode = 'on'
+    primary_conninfo = 'host=postgresql-primary-external.rap-analyzer.svc.cluster.local port=5432 user=replicator password=$POSTGRES_REPLICATION_PASSWORD application_name=replica-$REGION'
+    trigger_file = '/tmp/postgresql.trigger.5432'
+    restore_command = 'gunzip < /backup/wal/%f.gz > %p'
+    archive_cleanup_command = 'pg_archivecleanup /backup/wal %r'
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql-replica
+  namespace: rap-analyzer
+  labels:
+    app: postgresql
+    role: replica
+spec:
+  serviceName: postgresql-replica
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+      role: replica
+  template:
+    metadata:
+      labels:
+        app: postgresql
+        role: replica
+    spec:
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+      containers:
+      - name: postgresql
+        image: ankane/pgvector:v0.5.1
+        ports:
+        - containerPort: 5432
+          name: postgresql
+        env:
+        - name: POSTGRES_DB
+          value: "rap_lyrics"
+        - name: POSTGRES_USER
+          value: "rap_analyzer"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: password
+        - name: POSTGRES_REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: replication-password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        - name: REGION
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['region']
+        - name: PGUSER
+          value: "rap_analyzer"
+        volumeMounts:
+        - name: postgresql-data
+          mountPath: /var/lib/postgresql/data
+        - name: postgresql-config
+          mountPath: /etc/postgresql/postgresql.conf
+          subPath: postgresql.conf
+        - name: postgresql-config
+          mountPath: /etc/postgresql/pg_hba.conf
+          subPath: pg_hba.conf
+        - name: postgresql-config
+          mountPath: /var/lib/postgresql/data/recovery.conf
+          subPath: recovery.conf
+        - name: backup-storage
+          mountPath: /backup
+        - name: logs
+          mountPath: /var/log/postgresql
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+      initContainers:
+      - name: init-replica
+        image: ankane/pgvector:v0.5.1
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Initializing PostgreSQL replica for region: $REGION"
+          
+          # Check if data directory exists and is empty
+          if [ ! -d "$PGDATA" ] || [ -z "$(ls -A $PGDATA 2>/dev/null)" ]; then
+            echo "Creating base backup from primary..."
+            
+            # Create data directory
+            mkdir -p "$PGDATA"
+            chmod 700 "$PGDATA"
+            
+            # Create base backup from primary
+            export PGPASSWORD="$POSTGRES_REPLICATION_PASSWORD"
+            pg_basebackup -h postgresql-primary-external.rap-analyzer.svc.cluster.local \
+              -D "$PGDATA" \
+              -U replicator \
+              -P -W -R
+            
+            echo "Base backup completed"
+          else
+            echo "Data directory already exists, skipping base backup"
+          fi
+          
+          # Copy recovery configuration
+          cp /etc/postgresql/recovery.conf "$PGDATA/recovery.conf"
+          
+          # Set permissions
+          chown -R 999:999 "$PGDATA"
+          chmod 600 "$PGDATA/recovery.conf"
+          
+          echo "PostgreSQL replica initialization complete for region: $REGION"
+        env:
+        - name: POSTGRES_DB
+          value: "rap_lyrics"
+        - name: POSTGRES_USER
+          value: "rap_analyzer"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: password
+        - name: POSTGRES_REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: replication-password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        - name: REGION
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['region']
+        volumeMounts:
+        - name: postgresql-data
+          mountPath: /var/lib/postgresql/data
+        - name: postgresql-config
+          mountPath: /etc/postgresql
+      volumes:
+      - name: postgresql-config
+        configMap:
+          name: postgresql-replica-config
+      - name: backup-storage
+        persistentVolumeClaim:
+          claimName: postgresql-backup-pvc
+      - name: logs
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresql-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 100Gi
+      storageClassName: fast-ssd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-replica
+  namespace: rap-analyzer
+  labels:
+    app: postgresql
+    role: replica
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgresql
+  selector:
+    app: postgresql
+    role: replica
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-read-only
+  namespace: rap-analyzer
+  labels:
+    app: postgresql
+    role: read-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgresql
+  selector:
+    app: postgresql
+    role: replica

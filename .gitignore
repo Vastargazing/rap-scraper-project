@@ -67,3 +67,34 @@ postgres_data/
 
 # Embedded git repositories
 pgvector/
+
+# Kubernetes secrets and sensitive data
+k8s/secrets/
+gitops/secrets/
+*.secret.yaml
+*-secret.yaml
+
+# ArgoCD generated files
+gitops/argocd/argocd-initial-admin-secret.yaml
+gitops/.argocd/
+
+# Helm generated files
+helm/*/charts/
+helm/*/Chart.lock
+helm/*/.helmignore
+
+# Kubernetes local development
+kubeconfig
+*.kubeconfig
+kube-config
+
+# TLS certificates and keys
+*.crt
+*.key
+*.pem
+*.p12
+tls/
+
+# Registry credentials
+.dockerconfigjson
+docker-config.json

@@ -1,4 +1,25 @@
-# Rap Scraper Project — AI Agent Context (Обновлено: 2025-01-19)
+# Rap Scraper Project — AI Agent Context (Об### 🔥 Критически важные команды
+```bash
+# QUICK COMMANDS (Start Here)
+# MULTI-REGION DEPLOYMENT (ПРИОРИТЕТ)
+.\multi-region\deploy-multi-region.ps1 -Action deploy      # Deploy all regions
+.\multi-region\deploy-multi-region.ps1 -Action status      # Check status
+python multi-region/test-multi-region.py                   # Test deployment
+
+# GITOPS DEPLOYMENT 
+./gitops/install-argocd.ps1                    # Install ArgoCD
+kubectl port-forward svc/argocd-server -n argocd 8080:443  # Access UI
+kubectl get applications -n argocd             # Check app status
+
+# KUBERNETES STATUS
+kubectl get pods -n rap-analyzer               # Check app pods
+helm status rap-analyzer -n rap-analyzer       # Helm status
+
+# DATABASE DIAGNOSTICS (для разработки)
+python scripts/tools/database_diagnostics.py --quick
+python scripts/mass_qwen_analysis.py --test
+python scripts/db_browser.py
+```01-19)
 
 > **Kubernetes-native enterprise ML-pipeline** для анализа рэп-текстов с **PostgreSQL + pgvector**,## 📊 ТЕКУЩИЙ СТАТУС ПРОЕКТА
 
@@ -14,11 +35,13 @@
 
 ### Состояние системы
 - ✅ **Phase 1: Kubernetes Migration ЗАВЕРШЕНА** (2025-01-19)
+- ✅ **Phase 2: Multi-Region Deployment ЗАВЕРШЕНА** (2025-01-19)
 - ✅ **Phase 2: GitOps Integration ЗАВЕРШЕНА** (2025-01-19)
 - ✅ **PostgreSQL миграция завершена** (100% целостность данных)
 - ✅ **Concurrent processing готов** (20 подключений в пуле)
 - ✅ **Полный анализ завершен** (269,646 анализов, 100% coverage)
 - ☸️ **Production Infrastructure**: Helm chart, monitoring, auto-scaling
+- 🌍 **Multi-Region Architecture**: Global deployment (US-East-1, US-West-2, EU-West-1)
 - 🚀 **GitOps Workflow**: ArgoCD, automated deployments, self-healing
 - 🎯 **Приоритет**: Phase 2 продолжение - multi-region, Jaeger, securitycontainer orchestration, и comprehensive monitoring stack
 
@@ -206,41 +229,71 @@ LIMIT 20;
 
 ## 🏗️ АРХИТЕКТУРА (PostgreSQL-центричная)
 
-### Kubernetes-Native Архитектура
+### Multi-Region + GitOps Architecture
 ```
-┌─────────────────── KUBERNETES CLUSTER ───────────────────┐
-│                                                          │
-│  ┌─── INGRESS CONTROLLER ───┐                           │
-│  │  • Load Balancing         │                           │
-│  │  • SSL Termination        │                           │
-│  │  • Multi-host Routing     │                           │
-│  └───────────┬───────────────┘                           │
-│              │                                           │
-│  ┌─────── FASTAPI SERVICE ────────┐                     │
-│  │  • 3-10 Auto-scaling Replicas  │                     │
-│  │  • HPA (CPU/Memory based)      │                     │  
-│  │  • Health Probes              │                     │
-│  │  • Resource Limits            │                     │
-│  └───────────┬───────────────────┘                     │
-│              │                                           │
-│  ┌────── POSTGRESQL + pgvector ──────┐                  │
-│  │  • StatefulSet Deployment         │                  │
-│  │  • Persistent Volume Claims       │                  │
-│  │  • Vector Similarity Search       │                  │
-│  │  • Connection Pooling             │                  │
-│  └───────────┬────────────────────────┘                  │
-│              │                                           │
-│  ┌─────── MONITORING STACK ─────────┐                   │
-│  │  ┌─── Prometheus ───┐             │                   │
-│  │  │  • Metrics Collection │         │                   │
-│  │  │  • Custom Alerts      │         │                   │
-│  │  └────────────────────────┘         │                   │
-│  │  ┌─── Grafana ──────┐             │                   │
-│  │  │  • Custom Dashboards  │         │                   │
-│  │  │  • Visualization      │         │                   │
-│  │  └────────────────────────┘         │                   │
-│  └─────────────────────────────────────┘                   │
-└──────────────────────────────────────────────────────────┘
+┌─────────────────── MULTI-REGION DEPLOYMENT ─────────────────────┐
+│                                                                  │
+│  ┌─── US-EAST-1 (PRIMARY) ───┐  ┌─── US-WEST-2 (REPLICA) ───┐   │
+│  │  • PostgreSQL Primary     │  │  • PostgreSQL Replica     │   │
+│  │  • Read/Write Operations  │──┤  • Read-Only Operations    │   │
+│  │  • Streaming Replication  │  │  • Hot Standby            │   │
+│  │  • ArgoCD ApplicationSet  │  │  • Regional API           │   │
+│  └────────────────────────────┘  └────────────────────────────┘   │
+│                   │                              │               │
+│                   └─────── Replication ─────────┤               │
+│                                                  │               │
+│  ┌─── EU-WEST-1 (REPLICA + GDPR) ───────────────┤               │
+│  │  • PostgreSQL Replica (GDPR Compliant)       │               │
+│  │  • Read-Only Operations                       │               │
+│  │  • Data Sovereignty Compliance                │               │
+│  │  • Regional API + Monitoring                  │               │
+│  └────────────────────────────────────────────────               │
+└──────────────────────────────────────────────────────────────────┘
+
+┌─────────────────── GITOPS WORKFLOW ───────────────────────┐
+│                                                           │
+│  ┌─── GIT REPOSITORY ────┐    ┌─── ARGOCD CONTROLLER ───┐ │
+│  │  • Helm Charts        │───▶│  • Monitors Git Repo    │ │
+│  │  • K8s Manifests      │    │  • Automated Sync       │ │
+│  │  • Multi-Region Config│    │  • Self-Healing         │ │
+│  └───────────────────────┘    │  • Cross-Region Deploy  │ │
+│                               └─────────────┬────────────┘ │
+│                                            │              │
+└────────────────────────────────────────────┼──────────────┘
+                                             │
+┌─────────────────── KUBERNETES CLUSTER ────┼──────────────┐
+│                                            ▼              │
+│  ┌─── INGRESS CONTROLLER ───┐                            │
+│  │  • Global Load Balancing  │                            │
+│  │  • SSL Termination        │                            │
+│  │  • Multi-Region Routing   │                            │
+│  └───────────┬───────────────┘                            │
+│              │                                            │
+│  ┌─────── FASTAPI SERVICE ────────┐                      │
+│  │  • Regional Auto-scaling       │                      │
+│  │  • HPA (CPU/Memory based)      │                      │  
+│  │  • Health Probes              │                      │
+│  │  • Cross-Region Load Balancing │                      │
+│  └───────────┬───────────────────┘                      │
+│              │                                            │
+│  ┌────── POSTGRESQL + pgvector ──────┐                   │
+│  │  • Primary/Replica StatefulSets   │                   │
+│  │  • Cross-Region Replication       │                   │
+│  │  • Vector Similarity Search       │                   │
+│  │  • Regional Connection Pools      │                   │
+│  └───────────┬────────────────────────┘                   │
+│              │                                            │
+│  ┌─────── MONITORING STACK ─────────┐                    │
+│  │  ┌─── Prometheus (Multi-Region) ─┐│                    │
+│  │  │  • Cross-Region Metrics       ││                    │
+│  │  │  • Replication Lag Alerts     ││                    │
+│  │  └────────────────────────────────┘│                    │
+│  │  ┌─── Grafana (Global) ──────────┐ │                    │
+│  │  │  • Multi-Region Dashboards    │ │                    │
+│  │  │  • Global Performance Views   │ │                    │
+│  │  └────────────────────────────────┘ │                    │
+│  └─────────────────────────────────────┘                    │
+└──────────────────────────────────────────────────────────────┘
 
 ### Legacy Development архитектура
 ```
@@ -703,14 +756,19 @@ performance:
 
 ## 🚀 KUBERNETES DEPLOYMENT
 
-### Quick Start Commands
+### Quick Start Commands (GitOps Approach)
 ```bash
-# Deploy complete stack
+# OPTION 1: GitOps Deployment (Recommended)
+./gitops/install-argocd.ps1                              # Install ArgoCD
+kubectl port-forward svc/argocd-server -n argocd 8080:443  # Access ArgoCD UI
+# https://localhost:8080 (admin/admin123)
+
+# OPTION 2: Direct Helm Deployment
 helm install rap-analyzer ./helm/rap-analyzer --create-namespace --namespace rap-analyzer
 
 # Check deployment status
 kubectl get pods -n rap-analyzer
-kubectl get svc -n rap-analyzer
+kubectl get applications -n argocd                       # ArgoCD applications
 
 # Access applications
 kubectl port-forward svc/rap-analyzer-service 8000:8000 -n rap-analyzer
@@ -718,9 +776,16 @@ kubectl port-forward svc/grafana-service 3000:3000 -n rap-analyzer
 ```
 
 ### Monitoring URLs (после port-forward)
-- **API**: http://localhost:8000/docs
-- **Grafana**: http://localhost:3000 (admin/admin123)
-- **Prometheus**: http://localhost:9090
+- **ArgoCD**: https://localhost:8080 (admin/admin123) - GitOps management
+- **API**: http://localhost:8000/docs - FastAPI documentation
+- **Grafana**: http://localhost:3000 (admin/admin123) - Monitoring dashboards
+- **Prometheus**: http://localhost:9090 - Metrics collection
+
+### GitOps Configuration
+- **ArgoCD Setup**: `gitops/argocd/` - Complete ArgoCD installation
+- **Applications**: `gitops/applications/rap-analyzer-app.yaml` - App configuration
+- **Installation**: `gitops/install-argocd.ps1` - Automated ArgoCD deployment
+- **Documentation**: `gitops/README.md` - Comprehensive GitOps guide
 
 ### Helm Configuration
 - **Chart Location**: `helm/rap-analyzer/`
