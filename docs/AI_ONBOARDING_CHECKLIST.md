@@ -1,6 +1,6 @@
-# Professional PostgreSQL Lyrics Analyzer - AI Agent Guide
+# Kubernetes-Native Rap Analyzer - AI Agent Guide
 
-> **Production-ready lyrics analysis system** with PostgreSQL backend, concurrent processing, and comprehensive AI integration
+> **Enterprise-grade Kubernetes lyrics analysis platform** with PostgreSQL + pgvector backend, container orchestration, monitoring stack, and production-ready infrastructure
 
 ## 🎯 QUICK START FOR AI AGENTS
 
@@ -23,14 +23,15 @@ python scripts/tools/database_diagnostics.py --connections
 
 ## 📊 DATABASE SCHEMA & CURRENT STATUS
 
-### Production Metrics (Updated 2025-09-15)
+### Production Metrics (Updated 2025-01-19)
 - **Tracks**: 57,718 total (100% with lyrics)
 - **Artists**: 345+ scraped from Genius.com
-- **Database**: PostgreSQL 15 with 20-connection pool
-- **Analyses**: 256,021 total across multiple analyzers
-- **AI Coverage**: 76.4% Qwen, 59.4% Gemma, 100% basic analysis
-- **Database Size**: 392 MB
-- **Architecture**: Concurrent processing ready
+- **Database**: PostgreSQL 15 with pgvector extension
+- **Analyses**: 269,646 total across multiple analyzers ✅ **COMPLETE**
+- **AI Coverage**: 100% Qwen ✅, 100% Algorithmic ✅, 59.4% Gemma
+- **Infrastructure**: Kubernetes-native with Helm chart deployment
+- **Monitoring**: Prometheus + Grafana dashboards
+- **Architecture**: Production-ready container orchestration
 
 ### Database Tables
 
@@ -65,19 +66,22 @@ CREATE TABLE analysis_results (
 );
 ```
 
-### Analyzer Coverage Statistics
+### Complete Analyzer Coverage ✅
 ```
 ┌─────────────────────────┬───────────┬───────────┬─────────┐
 │ Analyzer Type           │ Analyses  │ Tracks    │ Share   │
 ├─────────────────────────┼───────────┼───────────┼─────────┤
-│ simplified_features     │ 115,434   │ 57,717    │ 45.1%   │
-│ simplified_features_v2  │ 57,717    │ 57,717    │ 22.5%   │
-│ qwen-3-4b-fp8          │ 48,308    │ 44,091    │ 18.9%   │
-│ gemma-3-27b-it         │ 34,320    │ 34,320    │ 13.4%   │
-│ emotion_analyzer_v2     │ 207       │ 207       │ 0.1%    │
+│ simplified_features     │ 115,434   │ 57,717    │ 42.8%   │
+│ qwen-3-4b-fp8          │ 61,933    │ 57,716    │ 23.0%   │✅
+│ simplified_features_v2  │ 57,717    │ 57,717    │ 21.4%   │
+│ gemma-3-27b-it         │ 34,320    │ 34,320    │ 12.7%   │
+│ emotion_analyzer_v2     │ 242       │ 242       │ 0.1%    │
+└─────────────────────────┼───────────┼───────────┼─────────┤
+│ TOTAL                   │ 269,646   │ 57,716    │ 100%    │✅
 └─────────────────────────┴───────────┴───────────┴─────────┘
 
-Remaining for Qwen analysis: 13,627 tracks (23.6%)
+Analysis Status: COMPLETE ✅ (100% track coverage achieved)
+Performance: 8ms average processing time, 76.3% confidence
 ```
 
 ---
@@ -190,9 +194,28 @@ python scripts/db_browser.py                    # Interactive browser
 psql -h localhost -U rap_user -d rap_lyrics -p 5433  # Direct connection
 ```
 
-### Level 2: Analysis & Testing
+### Level 2: Kubernetes Operations
 ```bash
-# AI analysis pipeline
+# Deploy complete stack
+helm install rap-analyzer ./helm/rap-analyzer --create-namespace --namespace rap-analyzer
+
+# Check deployment status
+kubectl get pods -n rap-analyzer
+kubectl get svc -n rap-analyzer
+kubectl logs deployment/rap-analyzer -f -n rap-analyzer
+
+# Access applications
+kubectl port-forward svc/rap-analyzer-service 8000:8000 -n rap-analyzer
+kubectl port-forward svc/grafana-service 3000:3000 -n rap-analyzer
+
+# Monitoring URLs
+# API: http://localhost:8000/docs
+# Grafana: http://localhost:3000 (admin/admin123)
+```
+
+### Level 3: Legacy Analysis & Testing (Development Mode)
+```bash
+# AI analysis pipeline (for local development)
 python scripts/mass_qwen_analysis.py --test     # Test mode (10 tracks)
 python scripts/mass_qwen_analysis.py            # Full analysis
 python scripts/mass_qwen_analysis.py --batch 25 --max 100  # Custom params
@@ -356,25 +379,54 @@ docker stats rap-analyzer-postgres-vector      # Container resources
 
 ---
 
+## 🚀 KUBERNETES DEPLOYMENT CHECKLIST
+
+### Phase 1: Infrastructure Complete ✅
+- [x] **PostgreSQL StatefulSet** - pgvector enabled, persistent storage
+- [x] **FastAPI Deployment** - Auto-scaling (3-10 replicas), health probes
+- [x] **Monitoring Stack** - Prometheus metrics + Grafana dashboards
+- [x] **Helm Chart** - Complete package with 80+ configuration parameters
+- [x] **Documentation** - Installation guide and operational procedures
+
+### Phase 2: Advanced Features (In Progress)
+- [ ] **GitOps Integration** - ArgoCD for automated deployments
+- [ ] **Multi-region Setup** - Data replication and geographical distribution
+- [ ] **Advanced Monitoring** - Jaeger distributed tracing
+- [ ] **Security Hardening** - Pod Security Standards, RBAC refinement
+- [ ] **Backup Automation** - Scheduled database snapshots
+
+### Deployment Commands
+```bash
+# Quick deployment
+helm install rap-analyzer ./helm/rap-analyzer --create-namespace --namespace rap-analyzer
+
+# Verify deployment
+kubectl get all -n rap-analyzer
+
+# Access services
+kubectl port-forward svc/rap-analyzer-service 8000:8000 -n rap-analyzer
+kubectl port-forward svc/grafana-service 3000:3000 -n rap-analyzer
+```
+
 ## 🎯 AI AGENT RESPONSE TEMPLATE
 
 ```markdown
 ## 🔍 INVESTIGATION SUMMARY
+**Kubernetes Status**: [Pod health, service availability, resource usage]
 **Database Status**: [PostgreSQL connection, pool health, query performance]
-**Analysis Pipeline**: [Qwen API status, processing rate, error rate]
-**Concurrent Access**: [Multiple script compatibility, connection usage]
-**Data Integrity**: [Statistics verification, foreign key constraints]
+**Analysis Pipeline**: [API status, processing rate, error rate]
+**Monitoring**: [Metrics collection, alert status, dashboard availability]
 
 ## 📋 FINDINGS
 **Root Cause**: [Specific issue with code references]
 **Impact Assessment**: [Affected components, data integrity, performance]
-**Configuration Issues**: [.env problems, API keys, database settings]
+**Configuration Issues**: [Helm values, secrets, ingress settings]
 
 ## 🚀 SOLUTION PLAN
 1. **Immediate Actions**: [Commands to run right now]
    ```bash
-   python scripts/tools/database_diagnostics.py --quick
-   python scripts/mass_qwen_analysis.py --test
+   kubectl get pods -n rap-analyzer
+   helm status rap-analyzer -n rap-analyzer
    ```
 
 2. **Code/Configuration Changes**: [Specific file modifications]
@@ -407,24 +459,25 @@ python scripts/db_browser.py  # Interactive validation
 - SQL examples (comprehensive set included)
 
 ### Always Use These First:
-- `python scripts/tools/database_diagnostics.py --quick` - Primary diagnostic
+- `helm status rap-analyzer -n rap-analyzer` - Kubernetes deployment status
+- `kubectl get pods -n rap-analyzer` - Pod health check
+- `python scripts/tools/database_diagnostics.py --quick` - Database diagnostic
 - Ready SQL queries from this guide
-- Troubleshooting scenarios for common issues
-- Configuration validation steps
 
 ### Key Files Priority:
-1. `src/database/postgres_adapter.py` - Database layer (~200 lines)
-2. `scripts/mass_qwen_analysis.py` - Main analysis (~300 lines)  
-3. `scripts/tools/database_diagnostics.py` - Diagnostics (~150 lines)
-4. `.env` - PostgreSQL credentials
-5. `config.yaml` - System configuration
+1. `helm/rap-analyzer/values.yaml` - Kubernetes configuration (~400 lines)
+2. `k8s/api/fastapi-deployment.yaml` - API service deployment (~150 lines)
+3. `k8s/postgres/postgresql-deployment.yaml` - Database deployment (~200 lines)
+4. `INSTALLATION.md` - Deployment guide
+5. `src/database/postgres_adapter.py` - Database layer (~200 lines)
 
-### Success Indicators:
-- ✅ PostgreSQL connectivity < 100ms
-- ✅ Connection pool: 15+ available connections
-- ✅ Analysis success rate > 90%
-- ✅ No database lock errors in concurrent mode
-- ✅ Memory usage stable during batch processing
+### Production Success Indicators:
+- ✅ All pods Running status in `kubectl get pods -n rap-analyzer`
+- ✅ API accessible via port-forward on :8000
+- ✅ Grafana dashboards showing metrics on :3000
+- ✅ Database connections < 100ms latency
+- ✅ Auto-scaling working (3-10 replicas based on load)
+- ✅ No CrashLoopBackOff or ImagePullBackOff errors
 
 ---
 
@@ -432,10 +485,19 @@ python scripts/db_browser.py  # Interactive validation
 
 ```
 rap-scraper-project/
-├── src/database/postgres_adapter.py    # 🔧 PostgreSQL connection management
-├── scripts/mass_qwen_analysis.py       # 🤖 Main AI analysis script
+├── helm/rap-analyzer/                  # 📦 Helm chart for complete deployment
+│   ├── Chart.yaml                     # Chart metadata and dependencies
+│   ├── values.yaml                    # Configuration parameters (80+)
+│   └── templates/                     # Kubernetes manifest templates
+├── k8s/                               # 🚀 Kubernetes manifests
+│   ├── postgres/postgresql-deployment.yaml  # Database with pgvector
+│   ├── api/fastapi-deployment.yaml    # API service with auto-scaling
+│   ├── monitoring/                    # Prometheus + Grafana stack
+│   └── ingress.yaml                   # Load balancing & external access
+├── INSTALLATION.md                    # 📋 Complete deployment guide
+├── src/database/postgres_adapter.py   # 🔧 PostgreSQL connection management
+├── scripts/mass_qwen_analysis.py      # 🤖 Main AI analysis script (legacy)
 ├── scripts/tools/database_diagnostics.py # 📊 Primary diagnostic tool
-├── scripts/db_browser.py              # 🔍 Interactive database browser
 ├── main.py                            # 🕷️ Genius.com scraper entry point
 ├── config.yaml                        # ⚙️ System configuration
 ├── .env                              # 🔐 PostgreSQL + API credentials
