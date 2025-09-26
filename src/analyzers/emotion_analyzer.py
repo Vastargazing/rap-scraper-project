@@ -444,21 +444,22 @@ class EmotionAnalyzer(BaseAnalyzer):
                 # Tokenize and check length
                 tokens = self._classifier.tokenizer.encode(text, add_special_tokens=True)
                 
-                # If too long, truncate to max_length - special tokens
+                # If too long, truncate to max_length with buffer for special tokens
                 if len(tokens) > self.max_length:
-                    # Keep first part of text (usually contains hooks/main message)
-                    truncated_tokens = tokens[:self.max_length-1]  # -1 for end token
+                    # More aggressive truncation - leave room for special tokens
+                    target_length = self.max_length - 2  # Room for [CLS] and [SEP]
+                    truncated_tokens = tokens[:target_length]
                     text = self._classifier.tokenizer.decode(truncated_tokens, skip_special_tokens=True)
                     logger.debug(f"Text truncated from {len(tokens)} to {len(truncated_tokens)} tokens")
             except Exception as e:
                 logger.warning(f"Failed to use tokenizer for truncation: {e}")
-                # Fallback to character-based truncation
-                if len(text) > self.max_length * 3:  # Rough estimate: 3 chars per token
-                    text = text[:self.max_length * 3]
+                # More aggressive fallback truncation
+                if len(text) > self.max_length * 2.5:  # Reduced multiplier
+                    text = text[:int(self.max_length * 2.5)]
         else:
-            # Fallback truncation if tokenizer not available
-            if len(text) > self.max_length * 3:
-                text = text[:self.max_length * 3]
+            # More aggressive fallback truncation if tokenizer not available
+            if len(text) > self.max_length * 2.5:
+                text = text[:int(self.max_length * 2.5)]
         
         return text.strip()
     
@@ -816,7 +817,7 @@ class EmotionAnalyzer(BaseAnalyzer):
         
         try:
             # Get tracks that need analysis
-            tracks = self.db_manager.get_tracks_for_analysis(limit, analyzer_type)
+            tracks = await self.db_manager.get_tracks_for_analysis(limit, analyzer_type)
             
             if not tracks:
                 logger.info("No tracks found that need analysis")
@@ -857,9 +858,10 @@ class EmotionAnalyzer(BaseAnalyzer):
         
         try:
             # Prepare analysis data
+            analyzer_type = getattr(result, 'analyzer_type', None) or getattr(result, 'analysis_type', 'emotion_analyzer_v2')
             analysis_data = {
                 'track_id': track_id,
-                'analyzer_type': result.analyzer_type,
+                'analyzer_type': analyzer_type,
                 'sentiment': result.metadata.get('sentiment_score', 0.0),
                 'confidence': result.confidence,
                 'complexity_score': result.metadata.get('rap_metrics', {}).get('complexity_score', 0.0),
@@ -909,7 +911,7 @@ class EmotionAnalyzer(BaseAnalyzer):
                 logger.info(f"Processing batch {batch_num + 1}/{max_batches}")
                 
                 # Get batch of tracks
-                tracks = self.db_manager.get_tracks_for_analysis(batch_size, "emotion_analyzer_v2")
+                tracks = await self.db_manager.get_tracks_for_analysis(batch_size, "emotion_analyzer_v2")
                 
                 if not tracks:
                     logger.info("No more tracks to analyze")
@@ -918,9 +920,13 @@ class EmotionAnalyzer(BaseAnalyzer):
                 stats['batches_processed'] += 1
                 batch_results = []
                 
-                # Analyze batch
-                for track in tracks:
+                # Analyze batch with progress
+                for i, track in enumerate(tracks, 1):
                     try:
+                        # Progress indicator
+                        progress = f"[Batch {batch_num + 1}/{max_batches}] {i}/{len(tracks)}"
+                        print(f"\r🎵 {progress} Analyzing: {track['artist'][:20]}... ", end='', flush=True)
+                        
                         result = await self.analyze_song(
                             track['artist'],
                             track['title'],
@@ -946,7 +952,8 @@ class EmotionAnalyzer(BaseAnalyzer):
                 stats['total_saved'] += saved_count
                 stats['total_processed'] += len(tracks)
                 
-                logger.info(f"Batch {batch_num + 1}: {len(tracks)} processed, {saved_count} saved")
+                # Clear progress line and show batch summary
+                print(f"\r✅ Batch {batch_num + 1}: {len(tracks)} processed, {saved_count} saved" + " " * 20)
                 
                 # Small delay between batches
                 await asyncio.sleep(0.1)
@@ -1314,6 +1321,508 @@ async def test_batch_processing():
     
     await analyzer.cleanup()
 
+# Interactive menu functions
+async def create_interactive_menu():
+    """Создать интерактивное меню для выбора режима анализа"""
+    print("\n" + "=" * 70)
+    print("🎯 ENHANCED EMOTION ANALYZER V2.0 - ИНТЕРАКТИВНОЕ МЕНЮ")
+    print("=" * 70)
+    print("Выберите режим работы:")
+    print()
+    print("1. 🧪 Тест анализатора (5 тестовых треков)")
+    print("2. 🎵 Анализ одного трека из базы данных")
+    print("3. 🗄️ Массовый анализ всей базы данных")
+    print("4. 📊 Показать статистику базы данных")
+    print("5. ⚡ Batch-анализ (50 треков)")
+    print("6. 📝 Анализ произвольного текста")
+    print("7. 🔧 Тест PostgreSQL подключения")
+    print("0. ❌ Выход")
+    print("-" * 70)
+    
+    while True:
+        try:
+            choice = input("👉 Введите номер опции (0-7): ").strip()
+            
+            if choice == "0":
+                print("👋 До свидания!")
+                return
+            elif choice == "1":
+                await test_analyzer_comprehensive()
+                await pause_for_user()
+            elif choice == "2":
+                await analyze_single_track_interactive()
+                await pause_for_user()
+            elif choice == "3":
+                await analyze_all_database_interactive()
+                await pause_for_user()
+            elif choice == "4":
+                await show_database_stats()
+                await pause_for_user()
+            elif choice == "5":
+                await batch_analyze_interactive()
+                await pause_for_user()
+            elif choice == "6":
+                await analyze_custom_text_interactive()
+                await pause_for_user()
+            elif choice == "7":
+                await test_postgresql_integration()
+                await pause_for_user()
+            else:
+                print("❌ Некорректный выбор. Попробуйте снова.")
+                continue
+                
+        except KeyboardInterrupt:
+            print("\n👋 Анализ прерван пользователем")
+            return
+        except Exception as e:
+            print(f"❌ Ошибка: {e}")
+            await pause_for_user()
+
+async def pause_for_user():
+    """Пауза для просмотра результатов"""
+    print("\n" + "-" * 50)
+    input("📄 Нажмите Enter для продолжения...")
+    print()
+
+async def analyze_single_track_interactive():
+    """Интерактивный анализ одного трека"""
+    print("\n🎵 АНАЛИЗ ОДНОГО ТРЕКА")
+    print("-" * 40)
+    
+    # Инициализация анализатора
+    analyzer = EmotionAnalyzer({'postgres_enabled': True})
+    if not await analyzer.initialize():
+        print("❌ Не удалось инициализировать анализатор")
+        return
+    
+    if not analyzer.db_manager:
+        print("❌ PostgreSQL недоступен")
+        await analyzer.cleanup()
+        return
+    
+    try:
+        print("Выберите способ поиска трека:")
+        print("1. По ID трека")
+        print("2. Поиск по исполнителю")
+        print("3. Поиск по названию")
+        print("4. Случайный трек")
+        
+        search_type = input("👉 Введите номер (1-4): ").strip()
+        
+        track = None
+        
+        if search_type == "1":
+            track_id = input("Введите ID трека: ").strip()
+            try:
+                track_id = int(track_id)
+                track = await get_track_by_id(analyzer.db_manager, track_id)
+            except ValueError:
+                print("❌ ID должен быть числом")
+                return
+        
+        elif search_type == "2":
+            artist_name = input("Введите имя исполнителя (частично): ").strip()
+            tracks = await search_tracks_by_artist(analyzer.db_manager, artist_name)
+            track = await select_from_tracks_list(tracks, "исполнителю")
+        
+        elif search_type == "3":
+            song_title = input("Введите название песни (частично): ").strip()
+            tracks = await search_tracks_by_title(analyzer.db_manager, song_title)
+            track = await select_from_tracks_list(tracks, "названию")
+        
+        elif search_type == "4":
+            track = await get_random_track(analyzer.db_manager)
+        
+        else:
+            print("❌ Некорректный выбор")
+            return
+        
+        if not track:
+            print("❌ Трек не найден")
+            return
+        
+        # Анализ трека
+        print(f"\n📀 Анализируется: {track['artist']} - {track['title']}")
+        print("-" * 60)
+        
+        result = await analyzer.analyze_song(
+            track['artist'],
+            track['title'],
+            track['lyrics'] or "No lyrics available"
+        )
+        
+        # Отображение результатов
+        await display_analysis_result(result, track)
+        
+        # Сохранение в базу данных
+        if track.get('id'):
+            await analyzer._save_analysis_to_database(track['id'], result)
+            print("✅ Результат сохранен в базу данных")
+    
+    except Exception as e:
+        print(f"❌ Ошибка анализа: {e}")
+    
+    finally:
+        await analyzer.cleanup()
+
+async def analyze_all_database_interactive():
+    """Интерактивный массовый анализ базы данных"""
+    print("\n🗄️ МАССОВЫЙ АНАЛИЗ БАЗЫ ДАННЫХ")
+    print("-" * 50)
+    
+    analyzer = EmotionAnalyzer({'postgres_enabled': True})
+    if not await analyzer.initialize():
+        print("❌ Не удалось инициализировать анализатор")
+        return
+    
+    if not analyzer.db_manager:
+        print("❌ PostgreSQL недоступен")
+        await analyzer.cleanup()
+        return
+    
+    try:
+        # Получить статистику
+        stats = await get_unanalyzed_tracks_count(analyzer.db_manager)
+        total_tracks = stats.get('total_tracks', 0)
+        unanalyzed = stats.get('unanalyzed_tracks', 0)
+        
+        print(f"📊 Всего треков в базе: {total_tracks}")
+        print(f"🎯 Не проанализированных: {unanalyzed}")
+        
+        if unanalyzed == 0:
+            print("✅ Все треки уже проанализированы!")
+            return
+        
+        print(f"\n⚠️ Будет проанализировано {unanalyzed} треков")
+        print("Это может занять продолжительное время...")
+        
+        confirm = input("Продолжить? (y/N): ").strip().lower()
+        if confirm not in ['y', 'yes', 'да', 'д']:
+            print("❌ Анализ отменен")
+            return
+        
+        # Запуск массового анализа с progress bar
+        print(f"\n🚀 Начинаем массовый анализ...")
+        stats = await analyzer.batch_analyze_from_database(
+            batch_size=20,  # Уменьшенный batch size для более частых обновлений
+            max_batches=max(1, unanalyzed // 20 + 1)
+        )
+        
+        # Отображение результатов
+        print(f"\n📊 РЕЗУЛЬТАТЫ МАССОВОГО АНАЛИЗА:")
+        print(f"   Всего обработано: {stats.get('total_processed', 0)}")
+        print(f"   Успешно проанализировано: {stats.get('total_analyzed', 0)}")
+        print(f"   Сохранено в БД: {stats.get('total_saved', 0)}")
+        print(f"   Ошибок: {stats.get('errors', 0)}")
+        print(f"   Время выполнения: {stats.get('duration', 0):.1f} сек")
+        
+        if stats.get('total_analyzed', 0) > 0:
+            avg_time = stats.get('duration', 0) / stats.get('total_analyzed', 1)
+            print(f"   Среднее время на трек: {avg_time:.3f} сек")
+    
+    except Exception as e:
+        print(f"❌ Ошибка массового анализа: {e}")
+    
+    finally:
+        await analyzer.cleanup()
+
+async def batch_analyze_interactive():
+    """Интерактивный batch-анализ (ограниченное количество)"""
+    print("\n⚡ BATCH-АНАЛИЗ (ОГРАНИЧЕННЫЙ)")
+    print("-" * 40)
+    
+    try:
+        limit = input("Количество треков для анализа (по умолчанию 50): ").strip()
+        limit = int(limit) if limit.isdigit() else 50
+        
+        analyzer = EmotionAnalyzer({'postgres_enabled': True})
+        if not await analyzer.initialize():
+            print("❌ Не удалось инициализировать анализатор")
+            return
+        
+        if not analyzer.db_manager:
+            print("❌ PostgreSQL недоступен")
+            await analyzer.cleanup()
+            return
+        
+        print(f"🎯 Анализируем {limit} треков...")
+        results = await analyzer.analyze_from_database(limit=limit)
+        
+        print(f"✅ Проанализировано {len(results)} треков")
+        
+        # Показать несколько примеров результатов
+        if results:
+            print("\n📝 Примеры результатов:")
+            for i, result in enumerate(results[:3], 1):
+                print(f"   {i}. {result.artist} - {result.title}")
+                print(f"      Эмоция: {result.metadata.get('dominant_emotion', 'unknown')}")
+                print(f"      Уверенность: {result.confidence:.3f}")
+        
+        await analyzer.cleanup()
+    
+    except ValueError:
+        print("❌ Некорректное количество")
+    except Exception as e:
+        print(f"❌ Ошибка batch-анализа: {e}")
+
+async def analyze_custom_text_interactive():
+    """Интерактивный анализ произвольного текста"""
+    print("\n📝 АНАЛИЗ ПРОИЗВОЛЬНОГО ТЕКСТА")
+    print("-" * 40)
+    
+    analyzer = EmotionAnalyzer()
+    if not await analyzer.initialize():
+        print("❌ Не удалось инициализировать анализатор")
+        return
+    
+    try:
+        print("Введите текст для анализа (можно многострочный, закончите пустой строкой):")
+        lines = []
+        while True:
+            line = input()
+            if not line.strip():
+                break
+            lines.append(line)
+        
+        text = "\n".join(lines)
+        if not text.strip():
+            print("❌ Текст не введен")
+            return
+        
+        print(f"\n🔍 Анализируем текст ({len(text)} символов)...")
+        
+        result = await analyzer.analyze_song("Custom", "User Input", text)
+        
+        # Отображение результатов
+        print(f"\n📊 РЕЗУЛЬТАТЫ АНАЛИЗА:")
+        print(f"   📈 Настроение: {result.metadata.get('sentiment_score', 0):.3f} (0=негативное, 1=позитивное)")
+        print(f"   🎯 Уверенность: {result.confidence:.3f}")
+        print(f"   🎭 Доминирующая эмоция: {result.metadata.get('dominant_emotion', 'unknown')}")
+        print(f"   🎵 Предполагаемый жанр: {result.metadata.get('genre_prediction', 'unknown')}")
+        print(f"   ⚡ Интенсивность: {result.metadata.get('intensity', 0):.3f}")
+        
+        # Rap-specific метрики
+        rap_metrics = result.metadata.get('rap_metrics', {})
+        if rap_metrics:
+            print(f"\n🎤 RAP-СПЕЦИФИЧНЫЕ МЕТРИКИ:")
+            print(f"   🔥 Агрессивность: {rap_metrics.get('aggression_level', 0):.3f}")
+            print(f"   ⚡ Энергия: {rap_metrics.get('energy_level', 0):.3f}")
+            print(f"   💯 Аутентичность: {rap_metrics.get('authenticity_score', 0):.3f}")
+            print(f"   🧠 Сложность: {rap_metrics.get('complexity_score', 0):.3f}")
+        
+        # Детальные эмоции
+        emotion_scores = result.metadata.get('emotion_scores', {})
+        if emotion_scores:
+            print(f"\n🎭 ДЕТАЛЬНЫЙ АНАЛИЗ ЭМОЦИЙ:")
+            for emotion, score in sorted(emotion_scores.items(), key=lambda x: x[1], reverse=True):
+                print(f"   {emotion.capitalize()}: {score:.3f}")
+        
+        print(f"\n⏱️ Время анализа: {result.processing_time:.3f} сек")
+    
+    except Exception as e:
+        print(f"❌ Ошибка анализа текста: {e}")
+    
+    finally:
+        await analyzer.cleanup()
+
+async def show_database_stats():
+    """Показать статистику базы данных"""
+    print("\n📊 СТАТИСТИКА БАЗЫ ДАННЫХ")
+    print("-" * 40)
+    
+    analyzer = EmotionAnalyzer({'postgres_enabled': True})
+    if not await analyzer.initialize():
+        print("❌ Не удалось инициализировать анализатор")
+        return
+    
+    if not analyzer.db_manager:
+        print("❌ PostgreSQL недоступен")
+        await analyzer.cleanup()
+        return
+    
+    try:
+        # Основная статистика
+        stats = await analyzer.get_database_stats()
+        summary = await analyzer.get_analysis_summary()
+        
+        print("🗄️ ОСНОВНАЯ СТАТИСТИКА:")
+        if 'error' not in stats:
+            print(f"   Всего треков: {stats.get('total_tracks', 'N/A')}")
+            print(f"   Треков с текстами: {stats.get('tracks_with_lyrics', 'N/A')}")
+            print(f"   Всего анализов: {stats.get('total_analyses', 'N/A')}")
+        
+        # Статистика по анализаторам
+        analyzer_stats = await get_analyzer_stats(analyzer.db_manager)
+        if analyzer_stats:
+            print(f"\n🤖 СТАТИСТИКА ПО АНАЛИЗАТОРАМ:")
+            for analyzer_type, count in analyzer_stats.items():
+                print(f"   {analyzer_type}: {count} анализов")
+        
+        # Статистика неанализированных треков
+        unanalyzed_stats = await get_unanalyzed_tracks_count(analyzer.db_manager)
+        print(f"\n🎯 ПОТРЕБНОСТЬ В АНАЛИЗЕ:")
+        print(f"   Всего треков: {unanalyzed_stats.get('total_tracks', 0)}")
+        print(f"   Проанализировано emotion_analyzer_v2: {unanalyzed_stats.get('analyzed_tracks', 0)}")
+        print(f"   Требует анализа: {unanalyzed_stats.get('unanalyzed_tracks', 0)}")
+        
+        # Статистика сессии
+        session_stats = analyzer.get_session_stats()
+        print(f"\n📈 СТАТИСТИКА ТЕКУЩЕЙ СЕССИИ:")
+        for key, value in session_stats.items():
+            print(f"   {key}: {value}")
+    
+    except Exception as e:
+        print(f"❌ Ошибка получения статистики: {e}")
+    
+    finally:
+        await analyzer.cleanup()
+
+# Utility functions для работы с базой данных
+async def get_track_by_id(db_manager, track_id: int):
+    """Получить трек по ID"""
+    try:
+        query = "SELECT id, artist, title, lyrics FROM tracks WHERE id = %s"
+        result = await db_manager.execute_query(query, (track_id,))
+        if result:
+            return dict(result[0])
+        return None
+    except Exception as e:
+        print(f"Ошибка получения трека: {e}")
+        return None
+
+async def search_tracks_by_artist(db_manager, artist_name: str, limit: int = 10):
+    """Поиск треков по исполнителю"""
+    try:
+        query = """
+        SELECT id, artist, title, lyrics 
+        FROM tracks 
+        WHERE artist ILIKE %s AND lyrics IS NOT NULL
+        LIMIT %s
+        """
+        result = await db_manager.execute_query(query, (f'%{artist_name}%', limit))
+        return [dict(row) for row in result] if result else []
+    except Exception as e:
+        print(f"Ошибка поиска по исполнителю: {e}")
+        return []
+
+async def search_tracks_by_title(db_manager, title: str, limit: int = 10):
+    """Поиск треков по названию"""
+    try:
+        query = """
+        SELECT id, artist, title, lyrics 
+        FROM tracks 
+        WHERE title ILIKE %s AND lyrics IS NOT NULL
+        LIMIT %s
+        """
+        result = await db_manager.execute_query(query, (f'%{title}%', limit))
+        return [dict(row) for row in result] if result else []
+    except Exception as e:
+        print(f"Ошибка поиска по названию: {e}")
+        return []
+
+async def get_random_track(db_manager):
+    """Получить случайный трек"""
+    try:
+        query = """
+        SELECT id, artist, title, lyrics 
+        FROM tracks 
+        WHERE lyrics IS NOT NULL
+        ORDER BY RANDOM()
+        LIMIT 1
+        """
+        result = await db_manager.execute_query(query)
+        if result:
+            return dict(result[0])
+        return None
+    except Exception as e:
+        print(f"Ошибка получения случайного трека: {e}")
+        return None
+
+async def select_from_tracks_list(tracks, search_type: str):
+    """Выбрать трек из списка найденных"""
+    if not tracks:
+        print(f"❌ Треки по {search_type} не найдены")
+        return None
+    
+    if len(tracks) == 1:
+        return tracks[0]
+    
+    print(f"\n📋 Найдено {len(tracks)} треков по {search_type}:")
+    for i, track in enumerate(tracks, 1):
+        print(f"   {i}. {track['artist']} - {track['title']}")
+    
+    while True:
+        try:
+            choice = input(f"Выберите трек (1-{len(tracks)}): ").strip()
+            index = int(choice) - 1
+            if 0 <= index < len(tracks):
+                return tracks[index]
+            else:
+                print("❌ Некорректный номер")
+        except ValueError:
+            print("❌ Введите число")
+
+async def display_analysis_result(result, track):
+    """Отобразить результаты анализа"""
+    print(f"\n📊 РЕЗУЛЬТАТЫ АНАЛИЗА:")
+    print(f"   🎵 Трек: {track['artist']} - {track['title']}")
+    print(f"   📈 Настроение: {result.metadata.get('sentiment_score', 0):.3f}")
+    print(f"   🎯 Уверенность: {result.confidence:.3f}")
+    print(f"   🎭 Доминирующая эмоция: {result.metadata.get('dominant_emotion', 'unknown')}")
+    print(f"   🎵 Жанр: {result.metadata.get('genre_prediction', 'unknown')}")
+    print(f"   ⚡ Интенсивность: {result.metadata.get('intensity', 0):.3f}")
+    
+    # Rap-specific метрики
+    rap_metrics = result.metadata.get('rap_metrics', {})
+    if rap_metrics:
+        print(f"   🔥 Агрессивность: {rap_metrics.get('aggression_level', 0):.3f}")
+        print(f"   ⚡ Энергия: {rap_metrics.get('energy_level', 0):.3f}")
+        print(f"   💯 Аутентичность: {rap_metrics.get('authenticity_score', 0):.3f}")
+        print(f"   🧠 Сложность: {rap_metrics.get('complexity_score', 0):.3f}")
+    
+    print(f"   ⏱️ Время анализа: {result.processing_time:.3f} сек")
+
+async def get_unanalyzed_tracks_count(db_manager):
+    """Получить количество неанализированных треков"""
+    try:
+        # Всего треков с текстами
+        total_query = "SELECT COUNT(*) as count FROM tracks WHERE lyrics IS NOT NULL"
+        total_result = await db_manager.execute_query(total_query)
+        total_tracks = total_result[0]['count'] if total_result else 0
+        
+        # Проанализированные треков emotion_analyzer_v2
+        analyzed_query = """
+        SELECT COUNT(DISTINCT track_id) as count 
+        FROM analysis_results 
+        WHERE analyzer_type = 'emotion_analyzer_v2'
+        """
+        analyzed_result = await db_manager.execute_query(analyzed_query)
+        analyzed_tracks = analyzed_result[0]['count'] if analyzed_result else 0
+        
+        return {
+            'total_tracks': total_tracks,
+            'analyzed_tracks': analyzed_tracks,
+            'unanalyzed_tracks': total_tracks - analyzed_tracks
+        }
+    except Exception as e:
+        print(f"Ошибка получения статистики: {e}")
+        return {'total_tracks': 0, 'analyzed_tracks': 0, 'unanalyzed_tracks': 0}
+
+async def get_analyzer_stats(db_manager):
+    """Получить статистику по анализаторам"""
+    try:
+        query = """
+        SELECT analyzer_type, COUNT(*) as count 
+        FROM analysis_results 
+        GROUP BY analyzer_type 
+        ORDER BY count DESC
+        """
+        result = await db_manager.execute_query(query)
+        return {row['analyzer_type']: row['count'] for row in result} if result else {}
+    except Exception as e:
+        print(f"Ошибка получения статистики анализаторов: {e}")
+        return {}
+
 # Main execution
 if __name__ == "__main__":
     import sys
@@ -1337,12 +1846,18 @@ if __name__ == "__main__":
     parser.add_argument('--limit', type=int, default=100, help='Limit for database operations')
     parser.add_argument('--all', action='store_true', help='Analyze all unanalyzed tracks in database')
     parser.add_argument('--config', type=str, help='Path to config file')
+    parser.add_argument('--menu', action='store_true', help='Launch interactive menu')
     
     args = parser.parse_args()
     
     async def main():
         """Main execution function"""
-        if args.test or len(sys.argv) == 1:
+        # Если нет аргументов или указан --menu, запускаем интерактивное меню
+        if args.menu or (len(sys.argv) == 1):
+            await create_interactive_menu()
+            return
+            
+        if args.test:
             await test_analyzer_comprehensive()
             
         if args.batch:

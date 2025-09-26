@@ -271,7 +271,7 @@ class PostgreSQLDiagnostics:
             return
         
         # Основные таблицы для проверки
-        important_tables = ['tracks', 'analysis_results', 'tracks, 'ai_analysis', 'spotify_tracks', 'spotify_artists', 'spotify_audio_features']
+        important_tables = ['tracks', 'analysis_results', 'ai_analysis', 'spotify_tracks', 'spotify_artists']
         
         try:
             with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:

@@ -1,15 +1,15 @@
 {
-  "session_id": "session_20250911_170054",
-  "last_processed_id": 57718,
-  "total_processed": 14567,
+  "session_id": "session_20250926_094713",
+  "last_processed_id": 0,
+  "total_processed": 0,
   "total_errors": 0,
-  "session_start": "2025-09-11T17:00:54.328249",
-  "last_update": "2025-09-12T20:38:45.065120",
-  "processing_rate": 0.14644507980431662,
+  "session_start": "2025-09-26T09:47:13.955129",
+  "last_update": "2025-09-26T09:47:19.558657",
+  "processing_rate": 0.0,
   "estimated_completion": null,
   "error_details": [],
   "batch_statistics": {
-    "successful_batches": 292,
+    "successful_batches": 0,
     "failed_batches": 0
   }
 }

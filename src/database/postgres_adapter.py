@@ -522,7 +522,7 @@ class PostgreSQLManager:
             logger.error(f"Error getting table stats: {e}")
             return {'error': str(e)}
     
-    async def fetch_one(self, query: str, params: tuple = None) -> dict:
+    async def fetch_one(self, query: str, params: Optional[tuple] = None) -> Optional[dict]:
         """Выполнить запрос и вернуть одну запись"""
         try:
             async with self.connection_pool.acquire() as conn:
@@ -535,7 +535,7 @@ class PostgreSQLManager:
             logger.error(f"Error in fetch_one: {e}")
             return None
     
-    async def fetch_all(self, query: str, params: tuple = None) -> list:
+    async def fetch_all(self, query: str, params: Optional[tuple] = None) -> list:
         """Выполнить запрос и вернуть все записи"""
         try:
             async with self.connection_pool.acquire() as conn:
@@ -547,6 +547,69 @@ class PostgreSQLManager:
         except Exception as e:
             logger.error(f"Error in fetch_all: {e}")
             return []
+    
+    async def execute_query(self, query: str, params: Optional[tuple] = None) -> list:
+        """Execute query and return all results (alias for fetch_all for compatibility)"""
+        return await self.fetch_all(query, params)
+    
+    async def get_tracks_for_analysis(self, limit: int, analyzer_type: str) -> List[Dict]:
+        """Get tracks that need analysis for specific analyzer type"""
+        try:
+            query = """
+            SELECT t.id, t.artist, t.title, t.lyrics
+            FROM tracks t
+            LEFT JOIN analysis_results ar ON t.id = ar.track_id 
+                AND ar.analyzer_type = $1
+            WHERE ar.id IS NULL 
+                AND t.lyrics IS NOT NULL 
+                AND t.lyrics != ''
+            ORDER BY t.id
+            LIMIT $2
+            """
+            
+            results = await self.fetch_all(query, (analyzer_type, limit))
+            return results
+            
+        except Exception as e:
+            logger.error(f"Error getting tracks for analysis: {e}")
+            return []
+    
+    async def save_analysis_result(self, analysis_data: Dict[str, Any]) -> Optional[int]:
+        """Save analysis result to database"""
+        if not self.connection_pool:
+            logger.error("Connection pool not initialized")
+            return None
+            
+        try:
+            query = """
+            INSERT INTO analysis_results (
+                track_id, analyzer_type, sentiment, confidence, 
+                complexity_score, themes, analysis_data, 
+                processing_time_ms, model_version, created_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            RETURNING id
+            """
+            
+            values = (
+                analysis_data.get('track_id'),
+                analysis_data.get('analyzer_type'),
+                analysis_data.get('sentiment'),
+                analysis_data.get('confidence'),
+                analysis_data.get('complexity_score'),
+                analysis_data.get('themes'),
+                json.dumps(analysis_data.get('analysis_data', {})),
+                analysis_data.get('processing_time_ms'),
+                analysis_data.get('model_version'),
+                datetime.now()
+            )
+            
+            async with self.connection_pool.acquire() as conn:
+                result = await conn.fetchrow(query, *values)
+                return result['id'] if result else None
+                
+        except Exception as e:
+            logger.error(f"Error saving analysis result: {e}")
+            return None
     
     async def close(self):
         """Close connection pool"""

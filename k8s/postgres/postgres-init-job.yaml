@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-scripts
+  namespace: rap-analyzer
+  labels:
+    app: postgres
+data:
+  01-init-schema.sql: |
+    -- Создание расширения pgvector
+    CREATE EXTENSION IF NOT EXISTS vector;
+    
+    -- Создание таблицы tracks
+    CREATE TABLE IF NOT EXISTS tracks (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR NOT NULL,
+        artist VARCHAR NOT NULL,
+        lyrics TEXT,
+        url TEXT,
+        genius_id INTEGER,
+        scraped_date TIMESTAMP,
+        word_count INTEGER,
+        genre VARCHAR,
+        release_date DATE,
+        album VARCHAR,
+        language VARCHAR,
+        explicit BOOLEAN,
+        song_art_url TEXT,
+        popularity_score INTEGER,
+        lyrics_quality_score REAL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        spotify_data JSONB,
+        lyrics_embedding vector(1536)  -- OpenAI embeddings dimension
+    );
+    
+    -- Создание таблицы analysis_results
+    CREATE TABLE IF NOT EXISTS analysis_results (
+        id SERIAL PRIMARY KEY,
+        track_id INTEGER REFERENCES tracks(id),
+        analyzer_type VARCHAR(50),
+        sentiment VARCHAR,
+        confidence NUMERIC,
+        themes TEXT,
+        analysis_data JSONB,
+        created_at TIMESTAMP DEFAULT NOW(),
+        complexity_score NUMERIC,
+        processing_time_ms INTEGER,
+        model_version VARCHAR,
+        embedding vector(1536)  -- Analysis results embeddings
+    );
+    
+    -- Создание индексов
+    CREATE INDEX IF NOT EXISTS idx_tracks_artist ON tracks(artist);
+    CREATE INDEX IF NOT EXISTS idx_tracks_title ON tracks(title);
+    CREATE INDEX IF NOT EXISTS idx_tracks_lyrics_not_null ON tracks(id) WHERE lyrics IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_tracks_spotify_data ON tracks USING GIN(spotify_data);
+    CREATE INDEX IF NOT EXISTS idx_analysis_track_id ON analysis_results(track_id);
+    CREATE INDEX IF NOT EXISTS idx_analysis_analyzer_type ON analysis_results(analyzer_type);
+    CREATE INDEX IF NOT EXISTS idx_analysis_created_at ON analysis_results(created_at);
+    
+    -- Векторные индексы для семантического поиска
+    CREATE INDEX IF NOT EXISTS idx_tracks_lyrics_embedding ON tracks USING ivfflat (lyrics_embedding vector_cosine_ops) WITH (lists = 100);
+    CREATE INDEX IF NOT EXISTS idx_analysis_embedding ON analysis_results USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+    
+    -- Создание пользователя для приложения (если не существует)
+    DO $$
+    BEGIN
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'rap_user') THEN
+            CREATE ROLE rap_user WITH LOGIN PASSWORD 'securepassword123';
+        END IF;
+    END
+    $$;
+    
+    -- Права доступа
+    GRANT ALL PRIVILEGES ON DATABASE rap_lyrics TO rap_user;
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO rap_user;
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO rap_user;
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-init-job
+  namespace: rap-analyzer
+  labels:
+    app: postgres-init
+spec:
+  template:
+    metadata:
+      labels:
+        app: postgres-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: postgres-init
+        image: postgres:15-alpine
+        command:
+        - /bin/bash
+        - -c
+        - |
+          echo "Waiting for PostgreSQL to be ready..."
+          until pg_isready -h postgres-service -p 5432 -U rap_user; do
+            echo "PostgreSQL is not ready yet..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready! Running initialization scripts..."
+          psql -h postgres-service -U rap_user -d rap_lyrics -f /scripts/01-init-schema.sql
+          echo "Database initialization completed!"
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: init-scripts
+          mountPath: /scripts
+      volumes:
+      - name: init-scripts
+        configMap:
+          name: postgres-init-scripts

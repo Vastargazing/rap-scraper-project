@@ -13,10 +13,10 @@ database:
   # PostgreSQL configuration (replaces SQLite)
   type: "postgresql"
   host: "localhost"
-  port: 5433
+  port: 5432
   name: "rap_lyrics"
   username: "rap_user"
-  password: "secure_password_2024"
+  password: "securepassword123"
   pool_size: 20
   min_pool_size: 5
   timeout: 30

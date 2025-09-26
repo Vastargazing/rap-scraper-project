@@ -1810,11 +1810,11 @@ async def demo_advanced_analysis():
         result = analyzer.analyze_song("Demo Artist", "Advanced Analysis Demo", sample_lyrics)
         
         print(f"\n📊 РЕЗУЛЬТАТЫ АНАЛИЗА:")
-        print(f"🎯 Уверенность: {result.confidence:.3f}")
-        print(f"⚡ Время обработки: {result.processing_time:.3f}s")
+        print(f"🎯 Уверенность: {result['confidence']:.3f}")
+        print(f"⚡ Время обработки: {result['processing_time']:.3f}s")
         
         # Рифмы и звучание
-        rhyme_analysis = result.raw_output.get('rhyme_analysis', {})
+        rhyme_analysis = result['raw_output'].get('rhyme_analysis', {})
         print(f"\n🎵 РИФМЫ И ЗВУЧАНИЕ:")
         print(f"  Схема рифмовки: {rhyme_analysis.get('rhyme_scheme', 'N/A')}")
         print(f"  Плотность рифм: {rhyme_analysis.get('rhyme_density', 0):.3f}")
@@ -1822,21 +1822,21 @@ async def demo_advanced_analysis():
         print(f"  Внутренние рифмы: {rhyme_analysis.get('internal_rhymes', 0)}")
         
         # Flow анализ
-        flow_analysis = result.raw_output.get('flow_analysis', {})
+        flow_analysis = result['raw_output'].get('flow_analysis', {})
         print(f"\n🌊 FLOW И РИТМ:")
         print(f"  Консистентность слогов: {flow_analysis.get('syllable_consistency', 0):.3f}")
         print(f"  Ср. слогов на строку: {flow_analysis.get('average_syllables_per_line', 0):.1f}")
         print(f"  Ритмическая плотность: {flow_analysis.get('rhythmic_density', 0):.3f}")
         
         # Читабельность
-        readability = result.raw_output.get('readability_metrics', {})
+        readability = result['raw_output'].get('readability_metrics', {})
         print(f"\n📚 ЧИТАБЕЛЬНОСТЬ:")
         print(f"  Flesch Reading Ease: {readability.get('flesch_reading_ease', 0):.1f}")
         print(f"  SMOG Index: {readability.get('smog_index', 0):.1f}")
         print(f"  Консенсус: {readability.get('readability_consensus', 'N/A')}")
         
         # Композитные оценки
-        composite = result.raw_output.get('composite_scores', {})
+        composite = result['raw_output'].get('composite_scores', {})
         print(f"\n🏆 КОМПОЗИТНЫЕ ОЦЕНКИ:")
         print(f"  Техническое мастерство: {composite.get('technical_mastery', 0):.3f}")
         print(f"  Артистическая утончённость: {composite.get('artistic_sophistication', 0):.3f}")
@@ -2021,9 +2021,9 @@ class PostgreSQLAnalyzer:
                                 'song_id': song['id'],
                                 'artist': song['artist'], 
                                 'title': song['title'],
-                                'analysis': result.raw_output,
-                                'confidence': result.confidence,
-                                'processing_time': result.processing_time
+                                'analysis': result['raw_output'],
+                                'confidence': result['confidence'],
+                                'processing_time': result['processing_time']
                             })
                             
                             processed += 1
@@ -2094,9 +2094,9 @@ class PostgreSQLAnalyzer:
                     'song_id': song['id'],
                     'artist': song['artist'],
                     'title': song['title'],
-                    'analysis': result.raw_output,
-                    'confidence': result.confidence,
-                    'processing_time': result.processing_time
+                    'analysis': result['raw_output'],
+                    'confidence': result['confidence'],
+                    'processing_time': result['processing_time']
                 }
                 
             finally:
@@ -2133,14 +2133,14 @@ class PostgreSQLAnalyzer:
             'total_results': len(results)
         }
     
-    def _print_analysis_results(self, result: 'AnalysisResult'):
+    def _print_analysis_results(self, result: Dict[str, Any]):
         """Красивый вывод результатов анализа"""
         print(f"\n📊 РЕЗУЛЬТАТЫ АНАЛИЗА:")
-        print(f"🎯 Уверенность: {result.confidence:.3f}")
-        print(f"⚡ Время обработки: {result.processing_time:.3f}s")
+        print(f"🎯 Уверенность: {result['confidence']:.3f}")
+        print(f"⚡ Время обработки: {result['processing_time']:.3f}s")
         
         # Рифмы и звучание
-        rhyme_analysis = result.raw_output.get('rhyme_analysis', {})
+        rhyme_analysis = result['raw_output'].get('rhyme_analysis', {})
         if rhyme_analysis:
             print(f"\n🎵 РИФМЫ И ЗВУЧАНИЕ:")
             print(f"  Схема рифмовки: {rhyme_analysis.get('rhyme_scheme', 'N/A')}")
@@ -2149,7 +2149,7 @@ class PostgreSQLAnalyzer:
             print(f"  Внутренние рифмы: {rhyme_analysis.get('internal_rhymes', 0)}")
         
         # Flow анализ
-        flow_analysis = result.raw_output.get('flow_analysis', {})
+        flow_analysis = result['raw_output'].get('flow_analysis', {})
         if flow_analysis:
             print(f"\n🌊 FLOW И РИТМ:")
             print(f"  Консистентность слогов: {flow_analysis.get('syllable_consistency', 0):.3f}")
@@ -2157,7 +2157,7 @@ class PostgreSQLAnalyzer:
             print(f"  Ритмическая плотность: {flow_analysis.get('rhythmic_density', 0):.3f}")
         
         # Композитные оценки
-        composite = result.raw_output.get('composite_scores', {})
+        composite = result['raw_output'].get('composite_scores', {})
         if composite:
             print(f"\n🏆 КОМПОЗИТНЫЕ ОЦЕНКИ:")
             print(f"  Техническое мастерство: {composite.get('technical_mastery', 0):.3f}")
