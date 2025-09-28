@@ -1,0 +1,53 @@
+{
+  "models": {
+    "conditional_generation": {
+      "retrain_frequency": "weekly",
+      "min_data_threshold": 1000,
+      "performance_threshold": 0.7,
+      "auto_deploy": false,
+      "validation_split": 0.2,
+      "max_training_time": 120,
+      "backup_models": 3
+    },
+    "style_transfer": {
+      "retrain_frequency": "weekly",
+      "min_data_threshold": 500,
+      "performance_threshold": 0.6,
+      "auto_deploy": false,
+      "validation_split": 0.2,
+      "max_training_time": 90,
+      "backup_models": 2
+    },
+    "quality_prediction": {
+      "retrain_frequency": "daily",
+      "min_data_threshold": 200,
+      "performance_threshold": 0.8,
+      "auto_deploy": true,
+      "validation_split": 0.25,
+      "max_training_time": 30,
+      "backup_models": 5
+    },
+    "trend_analysis": {
+      "retrain_frequency": "daily",
+      "min_data_threshold": 100,
+      "performance_threshold": 0.75,
+      "auto_deploy": true,
+      "validation_split": 0.2,
+      "max_training_time": 45,
+      "backup_models": 3
+    }
+  },
+  "monitoring": {
+    "alert_threshold": 0.05,
+    "max_failed_jobs": 3,
+    "notification_email": "ml-ops@rap-analyzer.com",
+    "slack_webhook": null,
+    "metrics_retention_days": 90
+  },
+  "deployment": {
+    "staging_tests": true,
+    "canary_percentage": 10,
+    "rollback_on_failure": true,
+    "health_check_timeout": 300
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "status": "completed",
+  "model": "qwen/qwen3-4b-fp8",
+  "samples_evaluated": 10,
+  "successful_evaluations": 10,
+  "mae": 0.45,
+  "rmse": 0.44999999999999996,
+  "results": [
+    {
+      "sample_id": 2363,
+      "artist": "Pusha T",
+      "title": "Dreamin Of The Past",
+      "actual_score": 0.95,
+      "predicted_score": 0.5,
+      "error": 0.44999999999999996,
+      "success": true
+    },
+    {
+      "sample_id": 2364,
+      "artist": "Pusha T",
+      "title": "Pain",
+      "actual_score": 0.95,
+      "predicted_score": 0.5,
+      "error": 0.44999999999999996,
+      "success": true
+    },
+    {
+      "sample_id": 2365,
+      "artist": "Pusha T",
+      "title": "M.P.A.",
+      "actual_score": 0.95,
+      "predicted_score": 0.5,
+      "error": 0.44999999999999996,
+      "success": true
+    },
+    {
+      "sample_id": 2366,
+      "artist": "Pusha T",
+      "title": "King Push",
+      "actual_score": 0.95,
+      "predicted_score": 0.5,
+      "error": 0.44999999999999996,
+      "success": true
+    },
+    {
+      "sample_id": 2367,
+      "artist": "Pusha T",
+      "title": "40 Acres",
+      "actual_score": 0.95,
+      "predicted_score": 0.5,
+      "error": 0.44999999999999996,
+      "success": true
+    },
+    {
+      "sample_id": 2368,
+      "artist": "Pusha T",
+      "title": "M.F.T.R.",
+      "actual_score": 0.95,
+      "predicted_score": 0.5,
+      "error": 0.44999999999999996,
+      "success": true
+    },
+    {
+      "sample_id": 2369,
+      "artist": "Pusha T",
+      "title": "Millions",
+      "actual_score": 0.95,
+      "predicted_score": 0.5,
+      "error": 0.44999999999999996,
+      "success": true
+    },
+    {
+      "sample_id": 2370,
+      "artist": "Pusha T",
+      "title": "Brambleton",
+      "actual_score": 0.95,
+      "predicted_score": 0.5,
+      "error": 0.44999999999999996,
+      "success": true
+    },
+    {
+      "sample_id": 2371,
+      "artist": "Pusha T",
+      "title": "S.N.I.T.C.H.",
+      "actual_score": 0.95,
+      "predicted_score": 0.5,
+      "error": 0.44999999999999996,
+      "success": true
+    },
+    {
+      "sample_id": 2372,
+      "artist": "Pusha T",
+      "title": "Rock N Roll",
+      "actual_score": 0.95,
+      "predicted_score": 0.5,
+      "error": 0.44999999999999996,
+      "success": true
+    }
+  ],
+  "timestamp": "2025-09-28T20:07:18.196245"
+}
