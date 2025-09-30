@@ -1,0 +1,110 @@
+# Python runtime
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments (создаются внутри образа)
+env/
+venv/
+.venv/
+.poetry/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+tests/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Environment files (НЕ копируй секреты!)
+.env
+.env.*
+!.env.example
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Data files (большие файлы НЕ в образ)
+data/
+logs/
+cache/
+results/
+analysis_results/
+enhanced_data/
+langchain_results/
+*.csv
+*.json
+*.jsonl
+*.log
+*.db
+*.sqlite
+
+# Docker (НЕ копируй другие Dockerfile'ы)
+docker-compose*.yml
+Dockerfile.dev
+Dockerfile.k8s
+.dockerignore
+
+# Archive and backup
+archive/
+backups/
+*.backup
+*.bak
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Monitoring configs (только для dev)
+monitoring/
+
+# Infrastructure as Code (не нужно в образе)
+k8s/
+helm/
+gitops/
+multi-region/
+terraform/
+.terraform/
+
+# Scripts (tool scripts не нужны в проде)
+scripts/tools/
+scripts/experiments/
+scripts/benchmarks/
+
+# Jupyter notebooks (не нужны в проде)
+*.ipynb
+.ipynb_checkpoints/
+
+# ML artifacts (модели грузятся отдельно)
+models/*.pt
+models/*.pth
+models/*.onnx
+*.h5
+*.pkl
+*.pickle
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/

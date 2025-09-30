@@ -1,0 +1,52 @@
+# Development Dockerfile for Rap Analyzer ML Platform
+FROM python:3.10-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
+    git \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry
+ENV POETRY_HOME="/opt/poetry"
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="$POETRY_HOME/bin:$PATH"
+
+# Poetry config
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
+
+WORKDIR /app
+
+# Copy dependency files
+COPY pyproject.toml poetry.lock ./
+
+# Install dependencies AS ROOT (for cache mount)
+RUN --mount=type=cache,target=$POETRY_CACHE_DIR \
+    poetry install --with dev,analysis
+
+# Copy source (will be overridden by volume)
+COPY . .
+
+# Create dev user and fix permissions
+RUN groupadd -r devuser && \
+    useradd -r -g devuser -u 1000 -m devuser && \
+    chown -R devuser:devuser /app
+
+# Switch to non-root
+USER devuser
+
+# Update PATH for user
+ENV PATH="/app/.venv/bin:$PATH"
+
+EXPOSE 8000
+
+# Hot reload server
+CMD ["poetry", "run", "uvicorn", "src.models.ml_api_service:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8000", \
+     "--reload", \
+     "--log-level", "debug"]

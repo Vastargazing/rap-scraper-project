@@ -2,118 +2,67 @@
 version: '3.8'
 
 services:
-  # Main API service
   rap-analyzer-api:
-    build: .
-    image: rap-analyzer:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    image: rap-analyzer:${VERSION:-latest}
     container_name: rap-analyzer-api
     environment:
-      - RAP_ANALYZER_ENV=production
-      - PYTHONPATH=/app
-      - DATABASE_PATH=/app/data/rap_lyrics.db
-    volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
-      - ./results:/app/results
-      - ./config.yaml:/app/config.yaml:ro
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - NOVITA_API_KEY=${NOVITA_API_KEY}
     ports:
-      - "8000:8000"
+      - "${API_PORT:-8000}:8000"
     restart: unless-stopped
-    depends_on:
-      - ollama
-      - redis
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs', timeout=5)"]
       interval: 30s
       timeout: 10s
       retries: 3
     networks:
       - rap-analyzer-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
-  # Redis for caching
+  postgres:
+    image: ankane/pgvector:latest
+    container_name: rap-analyzer-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-rap_lyrics}
+      POSTGRES_USER: ${POSTGRES_USER:-rap_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rap_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rap-analyzer-network
+    restart: unless-stopped
+
   redis:
     image: redis:7-alpine
     container_name: rap-analyzer-redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
-    restart: unless-stopped
     command: redis-server --appendonly yes
     networks:
       - rap-analyzer-network
-
-  # Ollama for local AI
-  ollama:
-    image: ollama/ollama:latest
-    container_name: rap-analyzer-ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    environment:
-      - OLLAMA_HOST=0.0.0.0
     restart: unless-stopped
-    networks:
-      - rap-analyzer-network
-
-  # Nginx reverse proxy
-  nginx:
-    image: nginx:alpine
-    container_name: rap-analyzer-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
-    depends_on:
-      - rap-analyzer-api
-    restart: unless-stopped
-    networks:
-      - rap-analyzer-network
-
-  # Monitoring with Prometheus
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: rap-analyzer-prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-    restart: unless-stopped
-    networks:
-      - rap-analyzer-network
-
-  # Grafana for visualization
-  grafana:
-    image: grafana/grafana:latest
-    container_name: rap-analyzer-grafana
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_SECURITY_ADMIN_USER=admin
-    volumes:
-      - grafana_data:/var/lib/grafana
-    depends_on:
-      - prometheus
-    restart: unless-stopped
-    networks:
-      - rap-analyzer-network
 
 volumes:
+  postgres_data:
   redis_data:
-  ollama_data:
-  prometheus_data:
-  grafana_data:
 
 networks:
   rap-analyzer-network:

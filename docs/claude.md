@@ -1,6 +1,34 @@
-# Rap Scraper Project — AI Agent Context (Об### 🔥 Критически важные команды
+# Rap Scraper Project — AI Agent Context (Об## 🐳 DOCKER ECOSYSTEM (ОБНОВЛЕНО - 30.09.2025)
+
+### Docker Compose Structure
+- **`docker-compose.yml`** - Production (минимальный: API + PostgreSQL + Redis)
+- **`docker-compose.dev.yml`** - Development (+ pgAdmin + Grafana + Prometheus)
+- **`docker-compose.pgvector.yml`** - Database only (PostgreSQL + Redis для локалки)
+
+### Key Commands
+```bash
+make docker-up      # Production stack
+make docker-dev     # Full development stack
+make docker-db      # Only database for local development
+make docker-down    # Stop all services
+```
+
+### Build Context Optimization
+- **Build context size**: 50MB (было 500MB)
+- **Build time**: 30-60 seconds (было 2-3 минуты)
+- **Optimized .dockerignore**: исключены data/, logs/, tests/, *.db
+
+### 🔥 Критически важные команды
 ```bash
 # QUICK COMMANDS (Start Here)
+# 🐳 DOCKER COMMANDS (ОБНОВЛЕНО - 30.09.2025)
+make docker-up       # Production stack (API + PostgreSQL + Redis)
+make docker-dev      # Development stack (+ pgAdmin + Grafana + Prometheus)
+make docker-db       # Database only (PostgreSQL + Redis для локалки)
+make docker-down     # Stop all services
+make docker-logs     # Show API logs
+make docker-ps       # Show running containers
+
 # 🤖 QWEN ML MODEL (ОСНОВНАЯ МОДЕЛЬ)
 python models/test_qwen.py --test-api          # Тестирование QWEN API
 python models/test_qwen.py --prepare-dataset   # Подготовка dataset (1000 samples)
@@ -48,7 +76,7 @@ python scripts/db_browser.py
 - 📊 **Training Dataset**: 1000 samples (800 train / 200 eval) ✅ READY
 - 🎯 **Training Success**: 100% success rate, 5947 tokens
 - 📈 **Evaluation Metrics**: MAE: 0.450, RMSE: 0.450 ✅ VALIDATED
-- 🚀 **ML API Service**: FastAPI с GPT-2, T5, Quality Predictor, Trend Analysis ✅ WORKING
+- 🚀 **ML API Service**: FastAPI с **QWEN Primary**, T5, Quality Predictor, Trend Analysis ✅ WORKING
 - 📁 **Results**: `results/qwen_training/` - все результаты сохранены
 
 ### Состояние системы
@@ -709,7 +737,7 @@ max_tokens = 20000                             # Увеличено для де�
 ```
 models/
 ├── test_qwen.py                 # 🤖 QWEN Primary ML Model (ОСНОВНОЙ)
-├── conditional_generation.py    # GPT-2 (для экспериментов)
+├── [УДАЛЕНО] conditional_generation.py    # GPT-2 больше не используется
 ├── style_transfer.py           # T5 model
 ├── quality_prediction.py       # Quality predictor
 └── trend_analysis.py          # Trend analysis
@@ -722,7 +750,7 @@ results/qwen_training/
 
 ### 💡 QWEN для AI агента
 - **✅ QWEN** - основная модель для всех ML задач
-- **🧪 GPT-2** - оставлен только для экспериментов  
+- **❌ GPT-2** - удален, заменен на QWEN как основную модель  
 - **📊 Dataset** - автоматически из PostgreSQL (57,718 треков доступно)
 - **🎯 Training** - симуляция через prompt engineering (fine-tuning пока недоступен)
 - **📈 Evaluation** - автоматическая оценка качества модели

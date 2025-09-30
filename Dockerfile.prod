@@ -1,0 +1,104 @@
+# Multi-stage Dockerfile for Production ML Platform
+# Best practices from Sbermarket ML Platform team
+
+# ============================================================================
+# Stage 1: Dependencies builder
+# ============================================================================
+# syntax=docker/dockerfile:1
+# Use DOCKER_BUILDKIT=1 environment variable when building
+FROM python:3.11-slim-bookworm AS deps-builder
+
+    # System dependencies for compilation
+    RUN apt-get update && apt-get install -y \
+        --no-install-recommends \
+        --fix-missing \
+        build-essential \
+        curl \
+        && rm -rf /var/lib/apt/lists/* \
+        && apt-get clean# Install Poetry
+ENV POETRY_HOME="/opt/poetry" \
+    POETRY_VERSION=1.8.3
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry
+
+# Poetry configuration for production
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
+
+WORKDIR /build
+
+# Copy ONLY dependency files (better caching)
+COPY pyproject.toml poetry.lock ./
+
+# Install dependencies (cached layer if pyproject.toml unchanged)
+RUN --mount=type=cache,target=$POETRY_CACHE_DIR \
+    poetry install --only main --no-root --no-directory
+
+# ============================================================================
+# Stage 2: Wheel builder
+# ============================================================================
+FROM deps-builder AS wheel-builder
+
+WORKDIR /build
+
+# Copy source code (separate layer - changes often)
+COPY src ./src
+COPY README.md ./
+COPY pyproject.toml poetry.lock ./
+
+# Build wheel package
+RUN poetry build -f wheel
+
+# ============================================================================
+# Stage 3: Production runtime (minimal)
+# ============================================================================
+FROM python:3.10-slim AS runtime
+
+# Metadata
+LABEL maintainer="vastargazing@example.com"
+LABEL description="Rap Analyzer ML Platform - Production"
+LABEL version="1.0.0"
+
+# Install only essential runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+WORKDIR /app
+
+# Create non-root user with explicit group
+RUN groupadd -r appuser && \
+    useradd -r -g appuser -u 1000 -m -d /app appuser && \
+    chown -R appuser:appuser /app
+
+# Install wheel as appuser (better security)
+USER appuser
+
+# Copy and install wheel from builder
+COPY --from=wheel-builder --chown=appuser:appuser /build/dist/*.whl /tmp/
+RUN pip install --user --no-cache-dir /tmp/*.whl && \
+    rm -rf /tmp/*.whl ~/.cache/pip
+
+# Update PATH for user-installed packages
+ENV PATH="/app/.local/bin:$PATH"
+
+# Copy only necessary config files (NO .env!)
+COPY --chown=appuser:appuser config.yaml ./
+
+# Health check using /health endpoint
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)" || exit 1
+
+# Expose API port
+EXPOSE 8000
+
+# Production command with proper settings
+CMD ["python", "-m", "uvicorn", "src.models.ml_api_service:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8000", \
+     "--workers", "2", \
+     "--log-level", "info", \
+     "--no-access-log"]
