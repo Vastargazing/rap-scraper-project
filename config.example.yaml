@@ -1,6 +1,7 @@
-# 🎯 Rap Scraper Project Configuration
-# Production-Ready Configuration with Security Best Practices
-# Version: 2.0.0 - Updated: 2025-10-01
+# 🎯 Rap Scraper Project Configuration - EXAMPLE
+# ⚠️ DO NOT commit this file with real credentials!
+# Copy this to config.yaml and fill in your actual values
+# Version: 2.0.0
 
 # Application settings
 application:
@@ -12,56 +13,55 @@ application:
   
 # Database configuration
 database:
-  # PostgreSQL configuration (replaces SQLite)
+  # PostgreSQL configuration
   type: "postgresql"
-  host_env: "DB_HOST"  # Read from environment variable
+  host_env: "DB_HOST"  # e.g., localhost or db container name
   port: 5432
-  name_env: "DB_NAME"
-  username_env: "DB_USERNAME"
-  password_env: "DB_PASSWORD"  # ✅ SECURE: Never hardcode passwords!
+  name_env: "DB_NAME"  # e.g., rap_lyrics
+  username_env: "DB_USERNAME"  # e.g., rap_user
+  password_env: "DB_PASSWORD"  # ⚠️ SET IN .env FILE!
   pool_size: 20
   min_pool_size: 5
   max_overflow: 10
   timeout: 30
   backup_enabled: true
-  backup_interval: 3600  # seconds
+  backup_interval: 3600
   
-  # Connection pool advanced settings
-  pool_recycle: 3600  # Recycle connections after 1 hour
-  pool_pre_ping: true  # Test connections before using
-  echo: false  # SQL logging (true for debugging)
+  # Connection pool settings
+  pool_recycle: 3600
+  pool_pre_ping: true
+  echo: false
   
-  # Legacy SQLite configuration (для совместимости)
+  # Legacy SQLite (for compatibility)
   sqlite:
     path: "data/rap_lyrics.db"
     enabled: false
 
-# PgVector configuration for embeddings
+# PgVector configuration
 vector_search:
   enabled: true
   embedding_model: "text-embedding-3-small"
   dimension: 1536
-  distance_metric: "cosine"  # cosine, l2, inner_product
+  distance_metric: "cosine"
   index_type: "ivfflat"
   lists: 100
   probes: 10
   
-  # Embedding cache settings
   cache_enabled: true
-  cache_ttl: 86400  # 24 hours
+  cache_ttl: 86400
   batch_size: 100
-  
-# Logging configuration
+
+# Logging
 logging:
   level: "INFO"
   format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   file_path: "logs/app.log"
-  max_file_size: 10485760  # 10MB
+  max_file_size: 10485760
   backup_count: 5
   encoding: "utf-8"
   console_output: true
 
-# Analyzer configurations
+# Analyzers
 analyzers:
   algorithmic_basic:
     enabled: true
@@ -77,18 +77,18 @@ analyzers:
     config:
       model_name: "qwen/qwen3-4b-fp8"
       base_url: "https://api.novita.ai/openai/v1"
-      api_key_env: "NOVITA_API_KEY"  # ✅ SECURE: Read from ENV
+      api_key_env: "NOVITA_API_KEY"  # ⚠️ SET IN .env FILE!
       temperature: 0.1
       max_tokens: 1500
       timeout: 30
       retry_attempts: 3
-      validate_api_key: true  # Check if API key is set
+      validate_api_key: true
       
   ollama:
     enabled: true
     config:
       model: "llama3.1:8b"
-      base_url_env: "OLLAMA_BASE_URL"  # Default: http://localhost:11434
+      base_url_env: "OLLAMA_BASE_URL"  # e.g., http://localhost:11434
       timeout: 60
       temperature: 0.3
       max_tokens: 1000
@@ -106,7 +106,7 @@ analyzers:
     enabled: true
     config:
       model_name: "j-hartmann/emotion-english-distilroberta-base"
-      device: "auto"  # auto, cpu, cuda
+      device: "auto"
       max_length: 512
       batch_size: 16
       cache_enabled: true
@@ -134,14 +134,14 @@ cli:
     timestamp_format: "%Y-%m-%d %H:%M:%S"
     encoding: "utf-8"
 
-# Performance settings
+# Performance
 performance:
   async_concurrency: 10
   request_timeout: 30
   retry_attempts: 3
   retry_delay: 1.0
   
-# Security settings
+# Security
 security:
   api_key_validation: true
   rate_limiting:
@@ -156,10 +156,9 @@ api:
   host: "0.0.0.0"
   port: 8000
   workers: 4
-  reload: false  # true only for development
+  reload: false
   log_level: "info"
   
-  # CORS settings
   cors:
     enabled: true
     origins:
@@ -169,13 +168,11 @@ api:
     allow_methods: ["*"]
     allow_headers: ["*"]
   
-  # Rate limiting
   rate_limit:
     enabled: true
     requests_per_minute: 100
     burst_size: 20
   
-  # API documentation
   docs:
     enabled: true
     swagger_url: "/docs"
@@ -186,38 +183,34 @@ api:
 # Redis Configuration
 redis:
   enabled: true
-  host_env: "REDIS_HOST"
+  host_env: "REDIS_HOST"  # e.g., localhost or redis container
   port: 6379
-  password_env: "REDIS_PASSWORD"  # Optional
+  password_env: "REDIS_PASSWORD"  # Optional, set if needed
   db: 0
   max_connections: 50
   socket_timeout: 5
   socket_connect_timeout: 5
   
-  # Cache TTL settings
   cache:
-    artist_ttl: 3600  # 1 hour
-    lyrics_ttl: 86400  # 24 hours
-    analysis_ttl: 604800  # 7 days
-    embedding_ttl: 2592000  # 30 days
+    artist_ttl: 3600
+    lyrics_ttl: 86400
+    analysis_ttl: 604800
+    embedding_ttl: 2592000
 
 # Monitoring Configuration
 monitoring:
-  # Prometheus metrics
   prometheus:
     enabled: true
     port: 9090
     path: "/metrics"
     include_default_metrics: true
     
-  # Grafana dashboards
   grafana:
     enabled: true
     port: 3000
-    admin_password_env: "GRAFANA_ADMIN_PASSWORD"
+    admin_password_env: "GRAFANA_ADMIN_PASSWORD"  # ⚠️ SET IN .env FILE!
     datasource_url_env: "PROMETHEUS_URL"
     
-  # Application metrics
   metrics:
     collect_request_duration: true
     collect_request_count: true
@@ -225,11 +218,10 @@ monitoring:
     collect_db_pool_metrics: true
     collect_cache_metrics: true
     
-  # Health checks
   health:
     enabled: true
     endpoint: "/health"
-    check_interval: 60  # seconds
+    check_interval: 60
     components:
       - database
       - redis
@@ -238,27 +230,23 @@ monitoring:
 
 # CI/CD Configuration
 ci_cd:
-  # GitHub Actions
   github_actions:
     enabled: true
     test_on_push: true
     test_on_pr: true
     auto_deploy: false
     
-  # Testing
   testing:
     required_coverage: 80
     run_integration_tests: true
     run_performance_tests: false
     parallel_execution: true
     
-  # Deployment
   deployment:
     environments: ["dev", "staging", "prod"]
     auto_rollback: true
     health_check_timeout: 300
     
-  # Quality gates
   quality:
     max_complexity: 10
     max_function_length: 50
@@ -267,20 +255,17 @@ ci_cd:
 
 # Caching Strategy
 caching:
-  # Application-level cache
   app_cache:
     enabled: true
-    backend: "redis"  # redis, memory
+    backend: "redis"
     default_ttl: 3600
     max_size: 10000
     
-  # Query result cache
   query_cache:
     enabled: true
     ttl: 1800
     max_entries: 5000
     
-  # Model prediction cache
   model_cache:
     enabled: true
     ttl: 86400
@@ -301,13 +286,11 @@ production:
   health_check_interval: 300
   auto_scaling: false
   
-  # Performance tuning
   performance:
     enable_query_caching: true
     enable_connection_pooling: true
     enable_request_batching: true
     
-  # Security hardening
   security:
     enable_https_only: true
     enable_api_key_rotation: true
@@ -319,7 +302,7 @@ external_services:
   google_ai:
     endpoint: "https://generativelanguage.googleapis.com"
     version: "v1beta"
-    api_key_env: "GOOGLE_AI_API_KEY"
+    api_key_env: "GOOGLE_AI_API_KEY"  # ⚠️ SET IN .env FILE!
     
   ollama:
     endpoint_env: "OLLAMA_BASE_URL"
@@ -329,13 +312,13 @@ external_services:
   genius_api:
     endpoint: "https://api.genius.com"
     version: "v1"
-    api_key_env: "GENIUS_API_KEY"
+    api_key_env: "GENIUS_API_KEY"  # ⚠️ SET IN .env FILE!
     
   spotify_api:
     endpoint: "https://api.spotify.com"
     version: "v1"
-    client_id_env: "SPOTIFY_CLIENT_ID"
-    client_secret_env: "SPOTIFY_CLIENT_SECRET"
+    client_id_env: "SPOTIFY_CLIENT_ID"  # ⚠️ SET IN .env FILE!
+    client_secret_env: "SPOTIFY_CLIENT_SECRET"  # ⚠️ SET IN .env FILE!
 
 # Environment-specific overrides
 environments:

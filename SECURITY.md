@@ -1,15 +1,71 @@
-# Kubernetes & GitOps Security Guidelines
+# Security Guidelines
 
-## Files Already Committed (Safe)
+## 🔐 Configuration Security
 
-The following files contain only **development/example** credentials and are safe for public repositories:
+### Files Already Committed (Safe)
 
-### ✅ Safe Files (Example/Development Credentials):
+✅ **Safe Files (Templates without secrets):**
+- `config.example.yaml` - Configuration template without real credentials
+- `.env.example` - Environment variables template with placeholders
+- `helm/rap-analyzer/values.yaml` - Helm values with example secrets
 - `gitops/argocd/argocd-install.yaml` - Contains `admin123` (example password)
 - `gitops/argocd/argocd-configmaps.yaml` - Contains public SSH keys
-- `helm/rap-analyzer/values.yaml` - Contains example secrets
 
-### 🔒 Production Security
+### 🚨 Files NEVER Committed (Protected by .gitignore)
+
+❌ **Protected Files (Contain real secrets):**
+- `.env` - Actual environment variables with API keys
+- `.env.local`, `.env.*.local` - Environment-specific secrets
+- `config.yaml` - Configuration with real credentials via ENV variables
+- `*.production.yaml` - Production-specific overrides
+- `*.secret.yaml`, `*-secret.yaml` - Kubernetes secrets
+
+### Configuration Security Model
+
+```yaml
+# ✅ SAFE: config.example.yaml (committed to git)
+database:
+  password_env: "DB_PASSWORD"  # References ENV variable, no actual password
+
+# ✅ SAFE: .env.example (committed to git)
+DB_PASSWORD=your_secure_password_here  # Placeholder, not real password
+
+# ❌ SECRET: .env (NEVER commit!)
+DB_PASSWORD=actual_real_password_123456  # Real password, in .gitignore
+
+# ❌ SECRET: config.yaml (NEVER commit!)
+# Contains same structure but loaded with real ENV variables
+```
+
+## 🛡️ Production Security Checklist
+
+### Application Configuration
+
+- [ ] **Copy Templates**: `cp config.example.yaml config.yaml` and `cp .env.example .env`
+- [ ] **Fill Real Credentials**: Edit `.env` with actual API keys and passwords
+- [ ] **Strong Passwords**: Minimum 16 characters, mixed case, numbers, symbols
+- [ ] **API Key Rotation**: Rotate keys every 90 days
+- [ ] **Environment Isolation**: Different credentials for dev/staging/prod
+- [ ] **2FA Enabled**: On all external services (GitHub, cloud providers)
+
+### Required Environment Variables (See .env.example)
+
+**Critical (Production Required):**
+```bash
+DB_PASSWORD=<strong-database-password>
+NOVITA_API_KEY=<your-qwen-api-key>
+```
+
+**Recommended:**
+```bash
+REDIS_PASSWORD=<redis-password-if-enabled>
+GRAFANA_ADMIN_PASSWORD=<strong-grafana-password>
+GENIUS_TOKEN=<genius-api-token>
+SPOTIFY_CLIENT_ID=<spotify-client-id>
+SPOTIFY_CLIENT_SECRET=<spotify-client-secret>
+```
+
+## 🔒 Kubernetes & GitOps Security
 
 For **production deployments**, create these files locally (NOT committed to Git):
 
