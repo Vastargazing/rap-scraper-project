@@ -18,7 +18,7 @@ from typing import Dict, List, Optional, Any
 from openai import OpenAI
 import time
 
-from src.config.loader import get_config
+from src.config.config_loader import get_config
 from src.cache.redis_client import redis_cache
 
 logger = logging.getLogger(__name__)
