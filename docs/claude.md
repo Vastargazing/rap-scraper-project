@@ -1,4 +1,8 @@
-# Rap Scraper Project — AI Agent Context (Об## 🐳 DOCKER ECOSYSTEM (ОБНОВЛЕНО - 30.09.2025)
+# Rap Scraper Project — AI Agent Context (Обновлено 01.10.2025)
+
+> **Kubernetes-native enterprise ML-pipeline** для анализа рэп-текстов с **PostgreSQL + pgvector**, **Pydantic Config System**, Redis cache, Kubernetes container orchestration, и comprehensive monitoring stack
+
+## 🐳 DOCKER ECOSYSTEM (ОБНОВЛЕНО - 30.09.2025)
 
 ### Docker Compose Structure
 - **`docker-compose.yml`** - Production (минимальный: API + PostgreSQL + Redis)
@@ -18,9 +22,17 @@ make docker-down    # Stop all services
 - **Build time**: 30-60 seconds (было 2-3 минуты)
 - **Optimized .dockerignore**: исключены data/, logs/, tests/, *.db
 
-### 🔥 Критически важные команды
+## 🔥 Критически важные команды
+
 ```bash
 # QUICK COMMANDS (Start Here)
+
+# ⚙️ CONFIGURATION (НОВОЕ - 2025-10-01)
+python src/config/test_loader.py       # Full config test (works without real ENV)
+python src/config/config_loader.py     # Quick config check (needs real ENV)
+cp .env.example .env                   # Setup environment variables
+cp config.example.yaml config.yaml     # Setup main config
+
 # 🐳 DOCKER COMMANDS (ОБНОВЛЕНО - 30.09.2025)
 make docker-up       # Production stack (API + PostgreSQL + Redis)
 make docker-dev      # Development stack (+ pgAdmin + Grafana + Prometheus)
@@ -57,9 +69,9 @@ helm status rap-analyzer -n rap-analyzer       # Helm status
 python scripts/tools/database_diagnostics.py --quick
 python scripts/mass_qwen_analysis.py --test
 python scripts/db_browser.py
-```01-19)
+```
 
-> **Kubernetes-native enterprise ML-pipeline** для анализа рэп-текстов с **PostgreSQL + pgvector**,## 📊 ТЕКУЩИЙ СТАТУС ПРОЕКТА
+## 📊 ТЕКУЩИЙ СТАТУС ПРОЕКТА
 
 ### Актуальные метрики (2025-09-28)
 - 🎵 **Треки**: 57,718 (PostgreSQL)
@@ -91,11 +103,11 @@ python scripts/db_browser.py
 - ☸️ **Production Infrastructure**: Helm chart, monitoring, auto-scaling
 - 🌍 **Multi-Region Architecture**: Global deployment (US-East-1, US-West-2, EU-West-1)
 - 🚀 **GitOps Workflow**: ArgoCD, automated deployments, self-healing
-- 🎯 **Current**: Phase 5 - Advanced AI Integration с QWEN как основной модельюcontainer orchestration, и comprehensive monitoring stack
+- 🎯 **Current**: Phase 5 - Advanced AI Integration с QWEN как основной моделью
 
 ## 🎯 ПРИОРИТЕТЫ ДЛЯ AI АГЕНТА
 
-### � **ПРАВИЛА РАБОТЫ С ХРОНОЛОГИЧЕСКИМИ ФАЙЛАМИ**
+### 📝 **ПРАВИЛА РАБОТЫ С ХРОНОЛОГИЧЕСКИМИ ФАЙЛАМИ**
 ⚠️ **ВАЖНО:** При обновлении файлов с хронологией (PROGRESS.md, changelog, история):
 - ✅ **НОВЫЕ записи ВСЕГДА добавляются В ВЕРХ файла** (после заголовка)
 - ❌ **НЕ добавляй в конец файла** - это тратит токены на поиск места
@@ -380,10 +392,15 @@ LIMIT 20;
 
 ## 🤖 AI АГЕНТ WORKFLOW
 
-### 1. Исследование проблем (ОБНОВЛЕННЫЙ ПРОТОКОЛ)
+### 1. Исследование проблем (ОБНОВЛЕННЫЙ ПРОТОКОЛ 2025-10-01)
 ```python
 def investigate_issue(problem_description):
-    # ШАГ 1: БАЗА ДАННЫХ (ВСЕГДА ПЕРВЫЙ)
+    # ШАГ 0: КОНФИГУРАЦИЯ (НОВЫЙ - ВСЕГДА ПЕРВЫЙ!)
+    run_command("python src/config/test_loader.py")  # Full config test
+    # ИЛИ
+    run_command("python src/config/config_loader.py")  # Quick check
+    
+    # ШАГ 1: БАЗА ДАННЫХ (ВСЕГДА ВТОРОЙ)
     run_command("python scripts/tools/database_diagnostics.py --quick")
     
     # ШАГ 2: СПЕЦИФИЧЕСКАЯ ДИАГНОСТИКА
@@ -394,9 +411,10 @@ def investigate_issue(problem_description):
     elif "concurrent" in problem_description.lower():
         run_command("python scripts/db_browser.py") # тест интерактивного доступа
     
-    # ШАГ 3: КОНФИГУРАЦИЯ
+    # ШАГ 3: КОНФИГУРАЦИЯ (если проблема не найдена)
     check_file(".env")  # PostgreSQL credentials
     check_file("config.yaml")  # система конфигурации
+    check_file("src/config/config_loader.py")  # Pydantic models
     
     # ШАГ 4: КОД АНАЛИЗ (если нужен)
     if requires_code_investigation():
@@ -489,6 +507,39 @@ python scripts/mass_qwen_analysis.py --test
 
 ## 🔧 КОМАНДЫ ДЛЯ AI АГЕНТА
 
+### Уровень 0: Конфигурация (НОВОЕ - ВСЕГДА ПЕРВЫМ!)
+```bash
+# ПРОВЕРКА КОНФИГУРАЦИИ (делать ПЕРЕД любой работой)
+python src/config/test_loader.py       # Full test (200+ lines, works without real ENV)
+python src/config/config_loader.py     # Quick check (10 lines, needs real ENV)
+
+# SETUP КОНФИГУРАЦИИ (если файлы отсутствуют)
+cp .env.example .env                   # Add secrets: DB_PASSWORD, NOVITA_API_KEY
+cp config.example.yaml config.yaml     # Main configuration file
+
+# ВАЛИДАЦИЯ КОНКРЕТНЫХ СЕКЦИЙ
+python -c "
+from src.config import get_config
+config = get_config()
+print('Database:', config.database.connection_string)
+print('API Port:', config.api.port)
+print('Redis:', config.redis.host, config.redis.port)
+print('QWEN API Key:', config.analyzers.get_qwen().api_key[:10] + '...')
+"
+
+# ИСПОЛЬЗОВАНИЕ В КОДЕ
+python -c "
+from src.config import get_config
+
+# Type-safe configuration access
+config = get_config()
+db_url = config.database.connection_string      # str, validated
+pool_size = config.database.pool_size           # int, validated
+qwen_key = config.analyzers.get_qwen().api_key  # from NOVITA_API_KEY ENV
+redis_ttl = config.redis.cache.artist_ttl       # 3600 seconds
+"
+```
+
 ### Уровень 1: Диагностика (ПЕРВОЕ, что нужно запускать)
 ```bash
 # ОСНОВНАЯ диагностика PostgreSQL
@@ -553,9 +604,41 @@ python scripts/migrate_to_postgresql.py
 
 ## 🎯 КОНКРЕТНЫЕ СЦЕНАРИИ ДЛЯ AI АГЕНТА
 
+### Сценарий 0: "Проверка конфигурации" (НОВЫЙ - ВСЕГДА ПЕРВЫМ!)
+```bash
+# Быстрая проверка (needs real ENV variables)
+python src/config/config_loader.py
+
+# Полный тест (works without real ENV - has defaults)
+python src/config/test_loader.py
+
+# Проверка конкретной секции
+python -c "
+from src.config import get_config
+config = get_config()
+print('DB:', config.database.connection_string)
+print('API:', config.api.port)
+print('Redis:', config.redis.enabled)
+print('QWEN:', config.analyzers.get_qwen().model_name)
+"
+
+# Если ошибка "Environment variable DB_PASSWORD not set!"
+# Option 1: Set real ENV
+export DB_PASSWORD="your_password"
+export NOVITA_API_KEY="your_api_key"
+
+# Option 2: Use test_loader.py (has defaults)
+python src/config/test_loader.py
+
+# Option 3: Copy from examples
+cp .env.example .env              # Edit and add secrets
+cp config.example.yaml config.yaml
+```
+
 ### Сценарий 1: "Не работает анализ"
 ```bash
 # Диагностика по шагам
+python src/config/config_loader.py  # Check config first!
 python scripts/tools/database_diagnostics.py --quick
 python scripts/mass_qwen_analysis.py --test
 cat .env | grep NOVITA  # проверить API ключ
@@ -642,15 +725,19 @@ print('PostgreSQL adapter:', PostgreSQLManager.__file__)
 
 ## 📁 СТРУКТУРА ФАЙЛОВ (приоритеты для AI агента)
 
+## 📁 СТРУКТУРА ФАЙЛОВ (приоритеты для AI агента)
+
 ### 🔥 Критически важные файлы
-1. **`models/test_qwen.py`** - 🤖 **QWEN Primary ML Model** (НОВЫЙ 2025-09-28)
-2. `src/database/postgres_adapter.py` - PostgreSQL connection management
-3. `scripts/mass_qwen_analysis.py` - основной анализ скрипт  
-4. `scripts/tools/database_diagnostics.py` - главный diagnostic tool
-5. **`src/models/ml_api_service.py`** - 🚀 **ML API Service** (Production ML API)
-6. **`test_ml_api.py`** - 🧪 **ML API Testing** (Test suite для ML endpoints)
-7. `.env` - PostgreSQL credentials и API keys
-8. `config.yaml` - система конфигурации
+1. **`src/config/config_loader.py`** - ⚙️ **Pydantic Config System** (НОВЫЙ 2025-10-01)
+2. **`src/config/test_loader.py`** - 🧪 **Config Testing** (НОВЫЙ 2025-10-01)
+3. **`config.yaml`** - ⚙️ **Main Configuration** (Type-safe settings)
+4. **`.env`** - 🔑 **Environment Variables** (Secrets, credentials)
+5. **`models/test_qwen.py`** - 🤖 **QWEN Primary ML Model** (2025-09-28)
+6. `src/database/postgres_adapter.py` - PostgreSQL connection management
+7. `scripts/mass_qwen_analysis.py` - основной анализ скрипт  
+8. `scripts/tools/database_diagnostics.py` - главный diagnostic tool
+9. **`src/models/ml_api_service.py`** - 🚀 **ML API Service** (Production ML API)
+10. **`test_ml_api.py`** - 🧪 **ML API Testing** (Test suite для ML endpoints)
 
 ### 📊 Диагностические файлы
 6. `scripts/db_browser.py` - интерактивный браузер БД
@@ -807,18 +894,21 @@ performance:
 ## ✅ CHECKLIST ДЛЯ AI АГЕНТА
 
 ### Перед началом работы
+- [ ] ⚙️ **НОВОЕ:** Проверить конфигурацию: `python src/config/test_loader.py`
 - [ ] Запустить `python scripts/tools/database_diagnostics.py --quick`
-- [ ] Проверить наличие `.env` с PostgreSQL credentials
+- [ ] Проверить наличие `.env` с PostgreSQL credentials и API keys
 - [ ] Убедиться в наличии `config.yaml`
 - [ ] Проверить `requirements.txt` установлены
 
 ### При диагностике проблем
-- [ ] Всегда начинать с database diagnostics
+- [ ] ⚙️ **НОВОЕ:** Начинать с проверки конфигурации (config validation)
+- [ ] Всегда запускать database diagnostics
 - [ ] Проверять PostgreSQL vs SQLite совместимость в коде
 - [ ] Тестировать concurrent доступ при необходимости
 - [ ] Проверять API ключи для внешних сервисов
 
 ### После изменений
+- [ ] ⚙️ **НОВОЕ:** Валидировать конфигурацию: `python src/config/config_loader.py`
 - [ ] Запустить тесты: `python scripts/mass_qwen_analysis.py --test`
 - [ ] Проверить connection pool: `database_diagnostics.py --connections`
 - [ ] Протестировать concurrent access если применимо
@@ -855,18 +945,28 @@ performance:
 - ❌ Статистику БД (актуальная выше)
 - ❌ Список колонок (см. CREATE TABLE выше)
 - ❌ Типы анализаторов (см. таблицу покрытия)
+- ❌ ⚙️ **НОВОЕ:** Структуру конфигурации (она задокументирована выше)
 
 ### НУЖНО использовать готовые:
 - ✅ SQL-запросы из раздела "ВАЖНЫЕ SQL-ЗАПРОСЫ"
 - ✅ Commands из раздела "КОМАНДЫ ДЛЯ AI АГЕНТА"
 - ✅ Troubleshooting scenarios
-- ✅ Database diagnostics как первый шаг
+- ✅ ⚙️ **НОВОЕ:** Type-safe config access через `get_config()`
+- ✅ ⚙️ **НОВОЕ:** Config validation перед началом работы
 - ✅ **ХРОНОЛОГИЧЕСКИЕ ФАЙЛЫ:** Добавлять записи В ВЕРХ (PROGRESS.md, changelog)
 
 ### ПЕРВЫЕ КОМАНДЫ при любой проблеме:
+0. ⚙️ **НОВОЕ:** `python src/config/test_loader.py` (config validation)
 1. `python scripts/tools/database_diagnostics.py --quick`
 2. `python scripts/mass_qwen_analysis.py --test` (для анализа)
 3. `python scripts/db_browser.py` (для интерактивной проверки)
+
+### ⚙️ НОВОЕ: Правила работы с конфигурацией
+- ✅ **ВСЕГДА** использовать `from src.config import get_config`
+- ✅ **НЕ** читать ENV variables напрямую через `os.getenv()`
+- ✅ **ПРОВЕРЯТЬ** конфигурацию перед началом любой работы
+- ✅ **ВАЛИДИРОВАТЬ** изменения конфигурации через Pydantic
+- ✅ **ИСПОЛЬЗОВАТЬ** type hints для IDE autocomplete
 
 ---
 
@@ -910,4 +1010,10 @@ kubectl port-forward svc/grafana-service 3000:3000 -n rap-analyzer
 
 ---
 
-**REMEMBER**: Этот проект использует Kubernetes-native архитектуру с PostgreSQL + pgvector для production deployment. Для development - используй Docker Compose. ВСЕГДА используй готовую схему БД из этого документа вместо запросов к базе! Все актуальные метрики уже указаны выше.
+**REMEMBER**: Этот проект использует:
+- ⚙️ **Type-safe Pydantic Config System** (src/config/) - ВСЕГДА проверять первым!
+- Kubernetes-native архитектуру с PostgreSQL + pgvector для production deployment
+- Для development - используй Docker Compose
+- ВСЕГДА используй готовую схему БД из этого документа вместо запросов к базе!
+- Все актуальные метрики уже указаны выше
+- ⚙️ Config validation - обязательный первый шаг при любой работе!

@@ -18,3 +18,8 @@
 АВТОР: AI Assistant
 ДАТА: Сентябрь 2025
 """
+
+# Easy imports for configuration
+from src.config.config_loader import get_config, Config
+
+__all__ = ["get_config", "Config"]
