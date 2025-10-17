@@ -1,12 +1,12 @@
 # 🔥 Rap Scraper & Analyzer - Production ML Platform
 
-> **Production ML Platform processing 57K+ rap tracks with QWEN-powered analysis. PostgreSQL + pgvector semantic search (<500ms), Redis caching (85% hit rate), Kubernetes deployment with Prometheus monitoring. Built to demonstrate ML Platform Engineer expertise.**
+> **Production ML Platform processing 57K+ rap tracks with QWEN-powered analysis. PostgreSQL + pgvector semantic search (<500ms), Redis caching (85% hit rate), Unified ML API v3.0.0, Kubernetes deployment with Prometheus monitoring. Built to demonstrate ML Platform Engineer expertise.**
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue?style=flat-square&logo=python)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/docker-24.0+-blue?style=flat-square&logo=docker)](https://www.docker.com/)
 [![PostgreSQL](https://img.shields.io/badge/postgresql-15-blue?style=flat-square&logo=postgresql)](https://postgresql.org)
 [![Redis](https://img.shields.io/badge/redis-7-red?style=flat-square&logo=redis)](https://redis.io)
-[![FastAPI](https://img.shields.io/badge/fastapi-0.104+-green?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![FastAPI](https://img.shields.io/badge/fastapi-3.0+-green?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Kubernetes](https://img.shields.io/badge/kubernetes-1.28+-blue?style=flat-square&logo=kubernetes)](https://kubernetes.io)
 
 ## 📑 Table of Contents
@@ -16,6 +16,7 @@
 - [Project Stats](#-current-project-stats)
 - [Architecture](#-production-architecture)
 - [QWEN ML System](#-qwen-ml-model-system)
+- [Unified API v3.0](#-unified-ml-api-v300)
 - [Quick Start](#-quick-start---full-production-stack)
 - [Key Learnings](#-key-learnings-technical-growth)
 - [Design Decisions](#-design-decisions--trade-offs)
@@ -38,20 +39,29 @@ curl http://localhost:8000/health
 # ✅ PostgreSQL: 57,718 tracks ready
 # ✅ Redis: 85% cache hit rate  
 # ✅ QWEN API: operational
+# ✅ 4 ML models loaded
 
-# 3. Run semantic search (instant)
-curl -X POST http://localhost:8000/search \
+# 3. Analyze lyrics with QWEN (interactive web UI)
+open http://localhost:8000
+# Beautiful interface for testing:
+# - QWEN lyrics analysis
+# - Text generation with prompt engineering
+# - Style transfer between artists
+# - Quality prediction & trend analysis
+
+# 4. Programmatic API access
+curl -X POST http://localhost:8000/analyze \
   -H "Content-Type: application/json" \
-  -d '{"query": "aggressive battle rap with complex wordplay", "limit": 10}'
-# Returns: Top 10 similar tracks in <500ms via pgvector
+  -d '{"lyrics": "Your rap lyrics here..."}'
+# Returns: Detailed QWEN analysis in ~50s
 
-# 4. View monitoring dashboards
+# 5. View monitoring dashboards
 open http://localhost:3000      # Grafana (admin/admin123) - 25+ metrics
 open http://localhost:9090      # Prometheus raw metrics
-open http://localhost:8000      # FastAPI + Web Interface
+open http://localhost:8000/docs # Swagger API documentation
 ```
 
-**Result:** Full production ML platform running locally in <1 minute. 5 Docker containers, 57K tracks, semantic search, real-time monitoring.
+**Result:** Full production ML platform running locally in <1 minute. 5 Docker containers, 57K tracks, 4 ML models, interactive web UI, comprehensive monitoring.
 
 ---
 
@@ -160,13 +170,87 @@ graph TB
 | Component | Purpose | Technology | Key Links |
 |-----------|---------|------------|-----------|
 | ⚙️ **Config System** | Type-safe configuration | Pydantic + YAML + ENV | [Guide](src/config/README.md) |
+| 🚀 **Unified ML API v3.0** | Production-ready API | FastAPI + 4 ML models | [src/api/main.py](src/api/main.py) |
 | 🤖 **QWEN ML Model** | Primary ML model for training | qwen/qwen3-4b-fp8 via Novita AI | [Code](models/test_qwen.py) |
-| 🚀 **ML API Service** | Production ML endpoints | FastAPI + QWEN + T5 | [Service](src/models/ml_api_service.py) |
-| 🐘 **PostgreSQL + pgvector** | Database + vector search | PostgreSQL 15 + pgvector | [Setup](docs/postgresql_setup.md) |
+|  **PostgreSQL + pgvector** | Database + vector search | PostgreSQL 15 + pgvector | [Setup](docs/postgresql_setup.md) |
 | 🚀 **Redis Cache** | Intelligent caching | Redis 7 Alpine | [Architecture](docs/redis_architecture.md) |
 | 📊 **Prometheus + Grafana** | Metrics + monitoring | Prometheus + Grafana | [Config](monitoring/prometheus.yml) |
-| 🌐 **FastAPI** | REST API + web interface | FastAPI + Uvicorn | Production |
+| 🌐 **Web Interface** | Interactive testing UI | HTML + JavaScript | http://localhost:8000 |
 | ☸️ **Kubernetes** | Container orchestration | Helm + ArgoCD | [Charts](helm/rap-analyzer/) |
+
+---
+
+## 🚀 Unified ML API v3.0.0
+
+**Single production-ready API combining all ML capabilities**
+
+### Key Features
+
+- ✅ **4 ML Models Integrated**:
+  - 🧠 QWEN Primary (lyrics analysis & generation)
+  - 🎭 T5 Style Transfer (artist-to-artist conversion)
+  - 📊 Quality Predictor (commercial potential scoring)
+  - 📈 Trend Analyzer (temporal pattern analysis)
+
+- ✅ **Modern FastAPI Patterns**:
+  - Type-safe Pydantic configuration
+  - Dependency injection (`Depends()`)
+  - Lifespan context manager
+  - Comprehensive error handling
+
+- ✅ **10+ Production Endpoints**:
+  ```python
+  /                    # Interactive Web UI
+  /health              # System health check
+  /analyze             # QWEN lyrics analysis
+  /generate            # Text generation
+  /style-transfer      # Artist style transfer
+  /predict-quality     # Quality metrics
+  /analyze-trends      # Trend analysis
+  /batch               # Batch processing
+  /config/info         # Configuration info
+  /models/info         # Model status
+  /cache/stats         # Cache statistics
+  ```
+
+- ✅ **Beautiful Web Interface**: 
+  - Interactive testing UI at http://localhost:8000
+  - Gradient design with modern UX
+  - Real-time analysis feedback
+
+### Quick Start
+
+```bash
+# Run unified API (production)
+python src/api/main.py
+# → Starts on http://0.0.0.0:8000 with 4 workers
+
+# Development mode (hot reload)
+uvicorn src.api.main:app --reload
+# → Auto-restarts on code changes
+
+# Docker deployment
+docker build -f Dockerfile -t rap-analyzer:latest .
+docker run -p 8000:8000 rap-analyzer:latest
+
+# Kubernetes (production-ready)
+kubectl apply -f k8s/api/fastapi-deployment.yaml
+```
+
+### Architecture Migration
+
+**Before (3 competing APIs):**
+- ❌ `api.py` - Legacy with hardcoded config
+- ❌ `src/models/ml_api_service.py` - 4 models, no type safety
+- ❌ `src/api/ml_api_service_v2.py` - Type-safe but only QWEN
+
+**After (1 unified API):**
+- ✅ `src/api/main.py` - Single source of truth
+- ✅ Best features from all 3 versions
+- ✅ Production-ready deployment
+- ✅ Comprehensive documentation
+
+**Legacy files safely archived**: `archive/legacy_api/`
 
 ---
 
@@ -177,6 +261,7 @@ graph TB
 ### Current Status
 
 - ✅ **Production-Ready**: Baseline model operational (100% API reliability)
+- ✅ **Integrated**: Unified ML API v3.0.0 with QWEN analyzer
 - 📊 **Evaluation Dataset**: 1000 samples prepared from 57,718 tracks
 - 🔄 **ML Pipeline**: Complete evaluation and testing infrastructure
 - 💰 **Cost Efficiency**: $2/1K requests (15x cheaper than GPT-4)
@@ -586,7 +671,24 @@ poetry run python scripts/spotify_enhancement.py   # Spotify enrichment
 
 # Testing and linting
 poetry run pytest tests/ -v                        # Tests
-poetry run black src/                              # Formatting
+python lint.py check                               # Quick lint check
+python lint.py fix                                 # Auto-fix issues
+python lint.py all --log                           # Full pipeline with logs
+```
+
+**Modern Python Linting (`lint.py`):**
+- ✅ **Cross-platform** (Windows/Linux/Mac)
+- ✅ **No encoding issues** (handles emoji/Unicode)
+- ✅ **File logging** (`--log` flag for CI/CD)
+- ✅ **Auto-detects** venv tools (`.venv/Scripts/ruff.exe`)
+
+```bash
+# Development commands
+python lint.py check          # Fast dev loop (checks only)
+python lint.py fix            # Auto-fix + format
+python lint.py all            # Full pipeline (check + format + mypy)
+python lint.py all --log      # With history logging
+python lint.py watch          # Watch mode (requires: pip install watchdog)
 poetry run flake8 src/                            # Linting
 ```
 
@@ -597,6 +699,10 @@ poetry run flake8 src/                            # Linting
 ### Configuration & Setup
 - **[src/config/README.md](src/config/README.md)** - Complete Configuration Guide (Type-safe Pydantic)
 - **[AI_ONBOARDING_CHECKLIST.md](AI_ONBOARDING_CHECKLIST.md)** - Quick start guide
+
+### Development Tools
+- **[lint.py](lint.py)** - 🐍 Modern Python linting tool (cross-platform, UTF-8 support)
+- **[docs/LINTER_QUICK_START.md](docs/LINTER_QUICK_START.md)** - Linting setup guide
 
 ### ML & AI Documentation
 - **[models/test_qwen.py](models/test_qwen.py)** - QWEN Primary ML Model (MAIN MODEL)

@@ -16,12 +16,16 @@ temp_*.db
 
 # Log files
 *.log
+# Exception: Keep latest lint log for quick status check
+!logs/lint/lint_latest.log
 
 # Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+.mypy_cache/
+.ruff_cache/
 
 # Virtual environment
 venv/
