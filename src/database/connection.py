@@ -13,6 +13,7 @@ Version: 2.0.0
 """
 
 import logging
+import sys
 from collections.abc import Generator
 
 from sqlalchemy import create_engine, pool
@@ -38,7 +39,7 @@ def get_engine():
     Returns:
         Engine: Configured SQLAlchemy engine with connection pooling
     """
-    global _engine
+    global _engine  # noqa: PLW0603
 
     if _engine is None:
         config = get_config()
@@ -71,7 +72,7 @@ def get_session_local():
     Returns:
         sessionmaker: Configured session factory
     """
-    global _SessionLocal
+    global _SessionLocal  # noqa: PLW0603
 
     if _SessionLocal is None:
         engine = get_engine()
@@ -95,8 +96,8 @@ def get_db() -> Generator[Session, None, None]:
     Yields:
         Session: Database session
     """
-    SessionLocal = get_session_local()
-    db = SessionLocal()
+    session_local = get_session_local()
+    db = session_local()
     try:
         yield db
     finally:
@@ -113,7 +114,7 @@ def test_connection() -> bool:
     try:
         engine = get_engine()
         with engine.connect() as conn:
-            result = conn.execute("SELECT 1")
+            conn.execute("SELECT 1")
             logger.info("✅ Database connection test successful!")
             return True
     except Exception as e:
@@ -169,7 +170,7 @@ class DatabaseConnection:
             self.session.close()
             self.session = None
 
-    def execute(self, query: str, params: dict = None):
+    def execute(self, query: str, params: dict | None = None):
         """Execute raw SQL query"""
         with self.engine.connect() as conn:
             if params:
@@ -215,4 +216,4 @@ if __name__ == "__main__":
         print(f"   Total: {pool_status['total_connections']}")
     else:
         print("❌ Connection failed!")
-        exit(1)
+        sys.exit(1)
