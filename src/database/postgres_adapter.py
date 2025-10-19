@@ -6,21 +6,19 @@ Concurrent-safe database operations with vector embeddings for ML training
 РЕЗУЛЬТАТ: Production-ready база для обучения генеративных моделей
 """
 
-import asyncio
+import hashlib
+import json
 import logging
 import os
-from typing import List, Dict, Optional, Any, AsyncGenerator, Tuple
-from dataclasses import dataclass
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-import json
-from datetime import datetime, date
-import hashlib
-import numpy as np
+from dataclasses import dataclass
+from datetime import date, datetime, timezone
+from typing import Any
 
 try:
     import asyncpg
     import psycopg2
-    from psycopg2.extras import RealDictCursor
     POSTGRES_AVAILABLE = True
 except ImportError:
     POSTGRES_AVAILABLE = False
@@ -40,7 +38,7 @@ class DatabaseConfig:
     max_connections: int = 20
     min_connections: int = 5
     enable_pgvector: bool = True  # NEW: Vector support flag
-    
+
     @classmethod
     def from_env(cls) -> 'DatabaseConfig':
         """Create config from environment variables"""
@@ -54,12 +52,12 @@ class DatabaseConfig:
             min_connections=int(os.getenv('POSTGRES_MIN_CONNECTIONS', '5')),
             enable_pgvector=os.getenv('ENABLE_PGVECTOR', 'true').lower() == 'true'
         )
-    
+
     @property
     def sync_url(self) -> str:
         """Synchronous connection URL"""
         return f"postgresql://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}"
-    
+
     @property
     def async_url(self) -> str:
         """Asynchronous connection URL"""
@@ -67,16 +65,16 @@ class DatabaseConfig:
 
 class PostgreSQLManager:
     """PostgreSQL database manager with ML vector support"""
-    
-    def __init__(self, config: Optional[DatabaseConfig] = None):
+
+    def __init__(self, config: DatabaseConfig | None = None):
         if not POSTGRES_AVAILABLE:
             raise ImportError("PostgreSQL dependencies not installed. Run: pip install psycopg2-binary asyncpg")
-        
+
         self.config = config or DatabaseConfig.from_env()
-        self.connection_pool: Optional[asyncpg.Pool] = None
+        self.connection_pool: asyncpg.Pool | None = None
         self._initialized = False
         self._vector_enabled = False
-    
+
     async def initialize(self) -> bool:
         """Initialize connection pool and ML extensions"""
         try:
@@ -88,16 +86,16 @@ class PostgreSQLManager:
             )
             self._initialized = True
             logger.info(f"PostgreSQL pool initialized: {self.config.max_connections} connections")
-            
+
             # Setup ML extensions if enabled
             if self.config.enable_pgvector:
                 await self.setup_ml_extensions()
-            
+
             return True
         except Exception as e:
             logger.error(f"Failed to initialize PostgreSQL pool: {e}")
             return False
-    
+
     async def setup_ml_extensions(self) -> bool:
         """Setup pgvector and ML-related schema"""
         try:
@@ -105,7 +103,7 @@ class PostgreSQLManager:
                 # Enable pgvector extension
                 await conn.execute('CREATE EXTENSION IF NOT EXISTS vector')
                 logger.info("pgvector extension enabled")
-                
+
                 # Add vector columns to tracks table
                 await conn.execute('''
                     ALTER TABLE tracks 
@@ -114,7 +112,7 @@ class PostgreSQLManager:
                     ADD COLUMN IF NOT EXISTS embedding_model VARCHAR(100),
                     ADD COLUMN IF NOT EXISTS embedding_timestamp TIMESTAMP
                 ''')
-                
+
                 # Create ML features table for normalized metrics
                 await conn.execute('''
                     CREATE TABLE IF NOT EXISTS ml_features (
@@ -136,14 +134,14 @@ class PostgreSQLManager:
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                 ''')
-                
+
                 # Create index for vector similarity search
                 await conn.execute('''
                     CREATE INDEX IF NOT EXISTS lyrics_embedding_idx 
                     ON tracks USING ivfflat (lyrics_embedding vector_cosine_ops)
                     WITH (lists = 100)
                 ''')
-                
+
                 # Create dataset versions table for ML reproducibility
                 await conn.execute('''
                     CREATE TABLE IF NOT EXISTS dataset_versions (
@@ -157,34 +155,34 @@ class PostgreSQLManager:
                         metadata JSONB
                     )
                 ''')
-                
+
                 self._vector_enabled = True
                 logger.info("ML schema setup complete")
                 return True
-                
+
         except Exception as e:
             logger.warning(f"ML extensions setup failed (non-critical): {e}")
             self._vector_enabled = False
             return False
-    
+
     @asynccontextmanager
     async def get_connection(self) -> AsyncGenerator[asyncpg.Connection, None]:
         """Get async connection from pool"""
         if not self._initialized:
             await self.initialize()
-        
+
         if not self.connection_pool:
             raise RuntimeError("Connection pool not initialized")
-        
+
         async with self.connection_pool.acquire() as connection:
             try:
                 yield connection
             except Exception as e:
                 logger.error(f"Database connection error: {e}")
                 raise
-    
+
     # NEW: Vector embedding methods
-    async def store_embeddings_batch(self, embeddings_data: List[Tuple[int, List[float], str]]) -> int:
+    async def store_embeddings_batch(self, embeddings_data: list[tuple[int, list[float], str]]) -> int:
         """
         Store embeddings in batch
         Args:
@@ -195,14 +193,14 @@ class PostgreSQLManager:
         if not self._vector_enabled:
             logger.warning("Vector support not enabled")
             return 0
-        
+
         stored = 0
         async with self.get_connection() as conn:
             for track_id, embedding, model_name in embeddings_data:
                 try:
                     # Convert to PostgreSQL vector format
                     embedding_str = f'[{",".join(map(str, embedding))}]'
-                    
+
                     await conn.execute('''
                         UPDATE tracks 
                         SET lyrics_embedding = $1::vector,
@@ -213,15 +211,15 @@ class PostgreSQLManager:
                     stored += 1
                 except Exception as e:
                     logger.error(f"Failed to store embedding for track {track_id}: {e}")
-        
+
         logger.info(f"Stored {stored}/{len(embeddings_data)} embeddings")
         return stored
-    
-    async def find_similar_tracks(self, track_id: int, limit: int = 10) -> List[Dict]:
+
+    async def find_similar_tracks(self, track_id: int, limit: int = 10) -> list[dict]:
         """Find similar tracks using vector similarity"""
         if not self._vector_enabled:
             return []
-        
+
         async with self.get_connection() as conn:
             results = await conn.fetch('''
                 SELECT 
@@ -234,10 +232,10 @@ class PostgreSQLManager:
                 ORDER BY t1.lyrics_embedding <=> t2.lyrics_embedding
                 LIMIT $2
             ''', track_id, limit)
-            
+
             return [dict(r) for r in results]
-    
-    async def store_ml_features(self, features: Dict[str, Any]) -> bool:
+
+    async def store_ml_features(self, features: dict[str, Any]) -> bool:
         """Store normalized ML features for a track"""
         query = '''
             INSERT INTO ml_features (
@@ -262,7 +260,7 @@ class PostgreSQLManager:
                 feature_version = EXCLUDED.feature_version,
                 updated_at = CURRENT_TIMESTAMP
         '''
-        
+
         try:
             async with self.get_connection() as conn:
                 await conn.execute(
@@ -285,18 +283,18 @@ class PostgreSQLManager:
         except Exception as e:
             logger.error(f"Failed to store ML features: {e}")
             return False
-    
+
     async def create_dataset_version(self, version_tag: str, description: str = "") -> str:
         """Create a versioned snapshot of the dataset for ML reproducibility"""
         async with self.get_connection() as conn:
             # Get current dataset stats
             track_count = await conn.fetchval("SELECT COUNT(*) FROM tracks WHERE lyrics IS NOT NULL")
-            
+
             # Generate dataset hash for reproducibility
             track_ids = await conn.fetch("SELECT id FROM tracks ORDER BY id")
             ids_str = ','.join(str(r['id']) for r in track_ids)
             dataset_hash = hashlib.sha256(ids_str.encode()).hexdigest()
-            
+
             # Get feature schema
             feature_cols = await conn.fetch('''
                 SELECT column_name, data_type 
@@ -304,7 +302,7 @@ class PostgreSQLManager:
                 WHERE table_name = 'ml_features'
             ''')
             feature_schema = {r['column_name']: r['data_type'] for r in feature_cols}
-            
+
             # Store version
             await conn.execute('''
                 INSERT INTO dataset_versions (
@@ -314,11 +312,11 @@ class PostgreSQLManager:
                 ON CONFLICT (version_tag) DO NOTHING
             ''', version_tag, description, track_count, 
                 json.dumps(feature_schema), dataset_hash)
-            
+
             logger.info(f"Created dataset version: {version_tag} (hash: {dataset_hash[:8]}...)")
             return dataset_hash
-    
-    async def get_unembedded_tracks(self, limit: int = 100) -> List[Dict]:
+
+    async def get_unembedded_tracks(self, limit: int = 100) -> list[dict]:
         """Get tracks without embeddings for processing"""
         async with self.get_connection() as conn:
             results = await conn.fetch('''
@@ -329,8 +327,8 @@ class PostgreSQLManager:
                 LIMIT $1
             ''', limit)
             return [dict(r) for r in results]
-    
-    async def export_ml_dataset(self, version_tag: str = None) -> Dict[str, Any]:
+
+    async def export_ml_dataset(self, version_tag: str | None = None) -> dict[str, Any]:
         """Export dataset in ML-ready format"""
         async with self.get_connection() as conn:
             # Get all tracks with features
@@ -346,17 +344,17 @@ class PostgreSQLManager:
                 LEFT JOIN ml_features f ON t.id = f.track_id
                 WHERE t.lyrics IS NOT NULL
             '''
-            
+
             results = await conn.fetch(query)
-            
+
             # Convert to ML-ready format
             dataset = {
-                'version': version_tag or datetime.now().strftime('%Y%m%d_%H%M%S'),
+                'version': version_tag or datetime.now(tz=timezone.utc).strftime('%Y%m%d_%H%M%S'),
                 'tracks': [],
                 'features': [],
                 'embeddings': []
             }
-            
+
             for row in results:
                 track_data = {
                     'id': row['id'],
@@ -365,7 +363,7 @@ class PostgreSQLManager:
                     'title': row['title']
                 }
                 dataset['tracks'].append(track_data)
-                
+
                 if row['rhyme_density'] is not None:
                     features = [
                         row['rhyme_density'], row['flow_complexity'],
@@ -375,15 +373,15 @@ class PostgreSQLManager:
                         row['semantic_coherence'], row['vocabulary_richness']
                     ]
                     dataset['features'].append(features)
-                
+
                 if row['lyrics_embedding']:
                     dataset['embeddings'].append(row['lyrics_embedding'])
-            
+
             logger.info(f"Exported {len(dataset['tracks'])} tracks for ML training")
             return dataset
-    
+
     # Keep existing methods...
-    async def insert_track(self, track_data: Dict[str, Any]) -> Optional[int]:
+    async def insert_track(self, track_data: dict[str, Any]) -> int | None:
         """Insert single track with SQLite schema mapping"""
         query = """
             INSERT INTO tracks (
@@ -394,7 +392,7 @@ class PostgreSQLManager:
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
             ) RETURNING id
         """
-        
+
         try:
             async with self.get_connection() as conn:
                 track_id = await conn.fetchval(
@@ -419,8 +417,8 @@ class PostgreSQLManager:
         except Exception as e:
             logger.error(f"Error inserting track: {e}")
             return None
-    
-    async def get_ml_statistics(self) -> Dict[str, Any]:
+
+    async def get_ml_statistics(self) -> dict[str, Any]:
         """Get ML-related database statistics"""
         stats = {}
         async with self.get_connection() as conn:
@@ -436,34 +434,34 @@ class PostgreSQLManager:
             stats['dataset_versions'] = await conn.fetchval(
                 "SELECT COUNT(*) FROM dataset_versions"
             )
-            
+
             # Get embedding models used
             models = await conn.fetch(
                 "SELECT DISTINCT embedding_model, COUNT(*) as count FROM tracks WHERE embedding_model IS NOT NULL GROUP BY embedding_model"
             )
             stats['embedding_models'] = {r['embedding_model']: r['count'] for r in models}
-            
+
         return stats
-    
-    def _parse_date(self, date_str: Any) -> Optional[date]:
+
+    def _parse_date(self, date_str: Any) -> date | None:
         """Parse date string to date object"""
         if not date_str:
             return None
-        
+
         if isinstance(date_str, date):
             return date_str
-        
+
         if isinstance(date_str, str):
             try:
-                return datetime.strptime(date_str, '%Y-%m-%d').date()
+                return datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=timezone.utc).date()
             except ValueError:
                 try:
-                    return datetime.strptime(date_str, '%Y').date()
+                    return datetime.strptime(date_str, '%Y').replace(tzinfo=timezone.utc).date()
                 except ValueError:
                     return None
-        
+
         return None
-    
+
     # Дополнительные методы для совместимости с emotion_analyzer
     async def get_track_count(self) -> int:
         """Получить общее количество треков"""
@@ -474,12 +472,12 @@ class PostgreSQLManager:
         except Exception as e:
             logger.error(f"Error getting track count: {e}")
             return 0
-    
+
     async def get_table_stats(self) -> dict:
         """Получить статистику таблиц"""
         try:
             stats = {}
-            
+
             async with self.connection_pool.acquire() as conn:
                 # Статистика треков
                 tracks_result = await conn.fetchrow("""
@@ -491,7 +489,7 @@ class PostgreSQLManager:
                 """)
                 if tracks_result:
                     stats['tracks'] = dict(tracks_result)
-                
+
                 # Статистика анализов
                 analysis_result = await conn.fetchrow("""
                     SELECT 
@@ -502,7 +500,7 @@ class PostgreSQLManager:
                 """)
                 if analysis_result:
                     stats['analyses'] = dict(analysis_result)
-                
+
                 # Статистика по типам анализа
                 types_results = await conn.fetch("""
                     SELECT 
@@ -515,14 +513,14 @@ class PostgreSQLManager:
                 """)
                 if types_results:
                     stats['analysis_types'] = [dict(row) for row in types_results]
-            
+
             return stats
-            
+
         except Exception as e:
             logger.error(f"Error getting table stats: {e}")
             return {'error': str(e)}
-    
-    async def fetch_one(self, query: str, params: Optional[tuple] = None) -> Optional[dict]:
+
+    async def fetch_one(self, query: str, params: tuple | None = None) -> dict | None:
         """Выполнить запрос и вернуть одну запись"""
         try:
             async with self.connection_pool.acquire() as conn:
@@ -534,8 +532,8 @@ class PostgreSQLManager:
         except Exception as e:
             logger.error(f"Error in fetch_one: {e}")
             return None
-    
-    async def fetch_all(self, query: str, params: Optional[tuple] = None) -> list:
+
+    async def fetch_all(self, query: str, params: tuple | None = None) -> list:
         """Выполнить запрос и вернуть все записи"""
         try:
             async with self.connection_pool.acquire() as conn:
@@ -547,12 +545,12 @@ class PostgreSQLManager:
         except Exception as e:
             logger.error(f"Error in fetch_all: {e}")
             return []
-    
-    async def execute_query(self, query: str, params: Optional[tuple] = None) -> list:
+
+    async def execute_query(self, query: str, params: tuple | None = None) -> list:
         """Execute query and return all results (alias for fetch_all for compatibility)"""
         return await self.fetch_all(query, params)
-    
-    async def get_tracks_for_analysis(self, limit: int, analyzer_type: str) -> List[Dict]:
+
+    async def get_tracks_for_analysis(self, limit: int, analyzer_type: str) -> list[dict]:
         """Get tracks that need analysis for specific analyzer type"""
         try:
             query = """
@@ -566,20 +564,20 @@ class PostgreSQLManager:
             ORDER BY t.id
             LIMIT $2
             """
-            
+
             results = await self.fetch_all(query, (analyzer_type, limit))
             return results
-            
+
         except Exception as e:
             logger.error(f"Error getting tracks for analysis: {e}")
             return []
-    
-    async def save_analysis_result(self, analysis_data: Dict[str, Any]) -> Optional[int]:
+
+    async def save_analysis_result(self, analysis_data: dict[str, Any]) -> int | None:
         """Save analysis result to database"""
         if not self.connection_pool:
             logger.error("Connection pool not initialized")
             return None
-            
+
         try:
             query = """
             INSERT INTO analysis_results (
@@ -589,7 +587,7 @@ class PostgreSQLManager:
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING id
             """
-            
+
             values = (
                 analysis_data.get('track_id'),
                 analysis_data.get('analyzer_type'),
@@ -600,17 +598,17 @@ class PostgreSQLManager:
                 json.dumps(analysis_data.get('analysis_data', {})),
                 analysis_data.get('processing_time_ms'),
                 analysis_data.get('model_version'),
-                datetime.now()
+                datetime.now(tz=timezone.utc)
             )
-            
+
             async with self.connection_pool.acquire() as conn:
                 result = await conn.fetchrow(query, *values)
                 return result['id'] if result else None
-                
+
         except Exception as e:
             logger.error(f"Error saving analysis result: {e}")
             return None
-    
+
     async def close(self):
         """Close connection pool"""
         if self.connection_pool:
@@ -618,6 +616,6 @@ class PostgreSQLManager:
             logger.info("PostgreSQL connection pool closed")
 
 # Factory function
-def create_postgres_manager(config: Optional[DatabaseConfig] = None) -> PostgreSQLManager:
+def create_postgres_manager(config: DatabaseConfig | None = None) -> PostgreSQLManager:
     """Create PostgreSQL manager instance"""
     return PostgreSQLManager(config)
