@@ -3,7 +3,7 @@ Analyzers module for the rap scraper project.
 
 Содержит реализации различных анализаторов текста песен:
 - Алгоритмические анализаторы
-- AI-анализаторы 
+- AI-анализаторы
 - Гибридные анализаторы
 
 New config-integrated analyzers (v2.0.0):
@@ -11,10 +11,11 @@ New config-integrated analyzers (v2.0.0):
 """
 
 from .algorithmic_analyzer import AdvancedAlgorithmicAnalyzer
-from .mass_qwen_analysis import UnifiedQwenMassAnalyzer
-from .ollama_analyzer import OllamaAnalyzer
+
 # from .hybrid_analyzer import HybridAnalyzer  # Временно отключен
 from .emotion_analyzer import EmotionAnalyzer
+from .mass_qwen_analysis import UnifiedQwenMassAnalyzer
+from .ollama_analyzer import OllamaAnalyzer
 
 # New config-integrated analyzers
 from .qwen_analyzer import QwenAnalyzer  # v2.0.0 with config integration
@@ -24,9 +25,9 @@ from .qwen_analyzer import QwenAnalyzer  # v2.0.0 with config integration
 
 __all__ = [
     "AdvancedAlgorithmicAnalyzer",
-    "UnifiedQwenMassAnalyzer", 
+    "UnifiedQwenMassAnalyzer",
     "OllamaAnalyzer",
     # "HybridAnalyzer",  # Временно отключен
     "EmotionAnalyzer",
-    "QwenAnalyzer"  # New v2.0.0
+    "QwenAnalyzer",  # New v2.0.0
 ]

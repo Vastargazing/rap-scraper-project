@@ -20,6 +20,6 @@
 """
 
 # Easy imports for configuration
-from src.config.config_loader import get_config, Config
+from src.config.config_loader import Config, get_config
 
-__all__ = ["get_config", "Config"]
+__all__ = ["Config", "get_config"]

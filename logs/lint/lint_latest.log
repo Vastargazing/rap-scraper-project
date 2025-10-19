@@ -1,0 +1,18 @@
+
+============================================================
+🔥 RAP SCRAPER LINT RUN
+============================================================
+Timestamp: 2025-10-19 11:39:02
+Python: 3.12.3
+Platform: linux
+============================================================
+
+[Ruff Check] Running: .venv/bin/ruff check .
+❌ ERROR: [Errno 32] Broken pipe
+[Ruff Format] Running: .venv/bin/ruff format .
+86 files reformatted, 8 files left unchanged
+error: Failed to parse src/scrapers/rap_scraper_postgres.py:595:50: missing closing quote in string literal
+
+❌ FAILED: Ruff Format
+[Mypy Check] Running: mypy .
+❌ ERROR: Command not found: mypy

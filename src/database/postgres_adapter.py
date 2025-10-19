@@ -19,6 +19,7 @@ from typing import Any
 try:
     import asyncpg
     import psycopg2
+
     POSTGRES_AVAILABLE = True
 except ImportError:
     POSTGRES_AVAILABLE = False
@@ -27,9 +28,11 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class DatabaseConfig:
     """PostgreSQL connection configuration with ML extensions"""
+
     host: str = "localhost"
     port: int = 5432
     database: str = "rap_lyrics"
@@ -40,17 +43,17 @@ class DatabaseConfig:
     enable_pgvector: bool = True  # NEW: Vector support flag
 
     @classmethod
-    def from_env(cls) -> 'DatabaseConfig':
+    def from_env(cls) -> "DatabaseConfig":
         """Create config from environment variables"""
         return cls(
-            host=os.getenv('POSTGRES_HOST', 'localhost'),
-            port=int(os.getenv('POSTGRES_PORT', '5432')),
-            database=os.getenv('POSTGRES_DATABASE', 'rap_lyrics'),
-            username=os.getenv('POSTGRES_USERNAME', 'rap_user'),
-            password=os.getenv('POSTGRES_PASSWORD', 'securepassword123'),
-            max_connections=int(os.getenv('POSTGRES_MAX_CONNECTIONS', '20')),
-            min_connections=int(os.getenv('POSTGRES_MIN_CONNECTIONS', '5')),
-            enable_pgvector=os.getenv('ENABLE_PGVECTOR', 'true').lower() == 'true'
+            host=os.getenv("POSTGRES_HOST", "localhost"),
+            port=int(os.getenv("POSTGRES_PORT", "5432")),
+            database=os.getenv("POSTGRES_DATABASE", "rap_lyrics"),
+            username=os.getenv("POSTGRES_USERNAME", "rap_user"),
+            password=os.getenv("POSTGRES_PASSWORD", "securepassword123"),
+            max_connections=int(os.getenv("POSTGRES_MAX_CONNECTIONS", "20")),
+            min_connections=int(os.getenv("POSTGRES_MIN_CONNECTIONS", "5")),
+            enable_pgvector=os.getenv("ENABLE_PGVECTOR", "true").lower() == "true",
         )
 
     @property
@@ -63,12 +66,15 @@ class DatabaseConfig:
         """Asynchronous connection URL"""
         return f"postgresql://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}"
 
+
 class PostgreSQLManager:
     """PostgreSQL database manager with ML vector support"""
 
     def __init__(self, config: DatabaseConfig | None = None):
         if not POSTGRES_AVAILABLE:
-            raise ImportError("PostgreSQL dependencies not installed. Run: pip install psycopg2-binary asyncpg")
+            raise ImportError(
+                "PostgreSQL dependencies not installed. Run: pip install psycopg2-binary asyncpg"
+            )
 
         self.config = config or DatabaseConfig.from_env()
         self.connection_pool: asyncpg.Pool | None = None
@@ -82,10 +88,12 @@ class PostgreSQLManager:
                 self.config.async_url,
                 min_size=self.config.min_connections,
                 max_size=self.config.max_connections,
-                command_timeout=30
+                command_timeout=30,
             )
             self._initialized = True
-            logger.info(f"PostgreSQL pool initialized: {self.config.max_connections} connections")
+            logger.info(
+                f"PostgreSQL pool initialized: {self.config.max_connections} connections"
+            )
 
             # Setup ML extensions if enabled
             if self.config.enable_pgvector:
@@ -101,20 +109,20 @@ class PostgreSQLManager:
         try:
             async with self.get_connection() as conn:
                 # Enable pgvector extension
-                await conn.execute('CREATE EXTENSION IF NOT EXISTS vector')
+                await conn.execute("CREATE EXTENSION IF NOT EXISTS vector")
                 logger.info("pgvector extension enabled")
 
                 # Add vector columns to tracks table
-                await conn.execute('''
+                await conn.execute("""
                     ALTER TABLE tracks 
                     ADD COLUMN IF NOT EXISTS lyrics_embedding vector(768),
                     ADD COLUMN IF NOT EXISTS flow_embedding vector(384),
                     ADD COLUMN IF NOT EXISTS embedding_model VARCHAR(100),
                     ADD COLUMN IF NOT EXISTS embedding_timestamp TIMESTAMP
-                ''')
+                """)
 
                 # Create ML features table for normalized metrics
-                await conn.execute('''
+                await conn.execute("""
                     CREATE TABLE IF NOT EXISTS ml_features (
                         id SERIAL PRIMARY KEY,
                         track_id INTEGER REFERENCES tracks(id) UNIQUE,
@@ -133,17 +141,17 @@ class PostgreSQLManager:
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
-                ''')
+                """)
 
                 # Create index for vector similarity search
-                await conn.execute('''
+                await conn.execute("""
                     CREATE INDEX IF NOT EXISTS lyrics_embedding_idx 
                     ON tracks USING ivfflat (lyrics_embedding vector_cosine_ops)
                     WITH (lists = 100)
-                ''')
+                """)
 
                 # Create dataset versions table for ML reproducibility
-                await conn.execute('''
+                await conn.execute("""
                     CREATE TABLE IF NOT EXISTS dataset_versions (
                         id SERIAL PRIMARY KEY,
                         version_tag VARCHAR(50) UNIQUE,
@@ -154,7 +162,7 @@ class PostgreSQLManager:
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         metadata JSONB
                     )
-                ''')
+                """)
 
                 self._vector_enabled = True
                 logger.info("ML schema setup complete")
@@ -182,7 +190,9 @@ class PostgreSQLManager:
                 raise
 
     # NEW: Vector embedding methods
-    async def store_embeddings_batch(self, embeddings_data: list[tuple[int, list[float], str]]) -> int:
+    async def store_embeddings_batch(
+        self, embeddings_data: list[tuple[int, list[float], str]]
+    ) -> int:
         """
         Store embeddings in batch
         Args:
@@ -199,15 +209,20 @@ class PostgreSQLManager:
             for track_id, embedding, model_name in embeddings_data:
                 try:
                     # Convert to PostgreSQL vector format
-                    embedding_str = f'[{",".join(map(str, embedding))}]'
+                    embedding_str = f"[{','.join(map(str, embedding))}]"
 
-                    await conn.execute('''
+                    await conn.execute(
+                        """
                         UPDATE tracks 
                         SET lyrics_embedding = $1::vector,
                             embedding_model = $2,
                             embedding_timestamp = CURRENT_TIMESTAMP
                         WHERE id = $3
-                    ''', embedding_str, model_name, track_id)
+                    """,
+                        embedding_str,
+                        model_name,
+                        track_id,
+                    )
                     stored += 1
                 except Exception as e:
                     logger.error(f"Failed to store embedding for track {track_id}: {e}")
@@ -221,7 +236,8 @@ class PostgreSQLManager:
             return []
 
         async with self.get_connection() as conn:
-            results = await conn.fetch('''
+            results = await conn.fetch(
+                """
                 SELECT 
                     t2.id, t2.title, t2.artist,
                     1 - (t1.lyrics_embedding <=> t2.lyrics_embedding) as similarity
@@ -231,13 +247,16 @@ class PostgreSQLManager:
                     AND t2.lyrics_embedding IS NOT NULL
                 ORDER BY t1.lyrics_embedding <=> t2.lyrics_embedding
                 LIMIT $2
-            ''', track_id, limit)
+            """,
+                track_id,
+                limit,
+            )
 
             return [dict(r) for r in results]
 
     async def store_ml_features(self, features: dict[str, Any]) -> bool:
         """Store normalized ML features for a track"""
-        query = '''
+        query = """
             INSERT INTO ml_features (
                 track_id, rhyme_density, flow_complexity,
                 emotion_joy, emotion_anger, emotion_fear,
@@ -259,80 +278,95 @@ class PostgreSQLManager:
                 metaphor_density = EXCLUDED.metaphor_density,
                 feature_version = EXCLUDED.feature_version,
                 updated_at = CURRENT_TIMESTAMP
-        '''
+        """
 
         try:
             async with self.get_connection() as conn:
                 await conn.execute(
                     query,
-                    features['track_id'],
-                    features.get('rhyme_density', 0.0),
-                    features.get('flow_complexity', 0.0),
-                    features.get('emotion_joy', 0.0),
-                    features.get('emotion_anger', 0.0),
-                    features.get('emotion_fear', 0.0),
-                    features.get('emotion_sadness', 0.0),
-                    features.get('emotion_surprise', 0.0),
-                    features.get('emotion_love', 0.0),
-                    features.get('semantic_coherence', 0.0),
-                    features.get('vocabulary_richness', 0.0),
-                    features.get('metaphor_density', 0.0),
-                    features.get('feature_version', 'v1.0')
+                    features["track_id"],
+                    features.get("rhyme_density", 0.0),
+                    features.get("flow_complexity", 0.0),
+                    features.get("emotion_joy", 0.0),
+                    features.get("emotion_anger", 0.0),
+                    features.get("emotion_fear", 0.0),
+                    features.get("emotion_sadness", 0.0),
+                    features.get("emotion_surprise", 0.0),
+                    features.get("emotion_love", 0.0),
+                    features.get("semantic_coherence", 0.0),
+                    features.get("vocabulary_richness", 0.0),
+                    features.get("metaphor_density", 0.0),
+                    features.get("feature_version", "v1.0"),
                 )
                 return True
         except Exception as e:
             logger.error(f"Failed to store ML features: {e}")
             return False
 
-    async def create_dataset_version(self, version_tag: str, description: str = "") -> str:
+    async def create_dataset_version(
+        self, version_tag: str, description: str = ""
+    ) -> str:
         """Create a versioned snapshot of the dataset for ML reproducibility"""
         async with self.get_connection() as conn:
             # Get current dataset stats
-            track_count = await conn.fetchval("SELECT COUNT(*) FROM tracks WHERE lyrics IS NOT NULL")
+            track_count = await conn.fetchval(
+                "SELECT COUNT(*) FROM tracks WHERE lyrics IS NOT NULL"
+            )
 
             # Generate dataset hash for reproducibility
             track_ids = await conn.fetch("SELECT id FROM tracks ORDER BY id")
-            ids_str = ','.join(str(r['id']) for r in track_ids)
+            ids_str = ",".join(str(r["id"]) for r in track_ids)
             dataset_hash = hashlib.sha256(ids_str.encode()).hexdigest()
 
             # Get feature schema
-            feature_cols = await conn.fetch('''
+            feature_cols = await conn.fetch("""
                 SELECT column_name, data_type 
                 FROM information_schema.columns 
                 WHERE table_name = 'ml_features'
-            ''')
-            feature_schema = {r['column_name']: r['data_type'] for r in feature_cols}
+            """)
+            feature_schema = {r["column_name"]: r["data_type"] for r in feature_cols}
 
             # Store version
-            await conn.execute('''
+            await conn.execute(
+                """
                 INSERT INTO dataset_versions (
                     version_tag, description, track_count, 
                     feature_schema, dataset_hash
                 ) VALUES ($1, $2, $3, $4, $5)
                 ON CONFLICT (version_tag) DO NOTHING
-            ''', version_tag, description, track_count, 
-                json.dumps(feature_schema), dataset_hash)
+            """,
+                version_tag,
+                description,
+                track_count,
+                json.dumps(feature_schema),
+                dataset_hash,
+            )
 
-            logger.info(f"Created dataset version: {version_tag} (hash: {dataset_hash[:8]}...)")
+            logger.info(
+                f"Created dataset version: {version_tag} (hash: {dataset_hash[:8]}...)"
+            )
             return dataset_hash
 
     async def get_unembedded_tracks(self, limit: int = 100) -> list[dict]:
         """Get tracks without embeddings for processing"""
         async with self.get_connection() as conn:
-            results = await conn.fetch('''
+            results = await conn.fetch(
+                """
                 SELECT id, title, artist, lyrics
                 FROM tracks
                 WHERE lyrics IS NOT NULL 
                     AND lyrics_embedding IS NULL
                 LIMIT $1
-            ''', limit)
+            """,
+                limit,
+            )
             return [dict(r) for r in results]
 
     async def export_ml_dataset(self, version_tag: str | None = None) -> dict[str, Any]:
         """Export dataset in ML-ready format"""
         async with self.get_connection() as conn:
             # Get all tracks with features
-            query = '''
+            query = """
                 SELECT 
                     t.id, t.title, t.artist, t.lyrics,
                     t.lyrics_embedding, t.flow_embedding,
@@ -343,39 +377,45 @@ class PostgreSQLManager:
                 FROM tracks t
                 LEFT JOIN ml_features f ON t.id = f.track_id
                 WHERE t.lyrics IS NOT NULL
-            '''
+            """
 
             results = await conn.fetch(query)
 
             # Convert to ML-ready format
             dataset = {
-                'version': version_tag or datetime.now(tz=timezone.utc).strftime('%Y%m%d_%H%M%S'),
-                'tracks': [],
-                'features': [],
-                'embeddings': []
+                "version": version_tag
+                or datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S"),
+                "tracks": [],
+                "features": [],
+                "embeddings": [],
             }
 
             for row in results:
                 track_data = {
-                    'id': row['id'],
-                    'text': row['lyrics'][:1024],  # Truncate for training
-                    'artist': row['artist'],
-                    'title': row['title']
+                    "id": row["id"],
+                    "text": row["lyrics"][:1024],  # Truncate for training
+                    "artist": row["artist"],
+                    "title": row["title"],
                 }
-                dataset['tracks'].append(track_data)
+                dataset["tracks"].append(track_data)
 
-                if row['rhyme_density'] is not None:
+                if row["rhyme_density"] is not None:
                     features = [
-                        row['rhyme_density'], row['flow_complexity'],
-                        row['emotion_joy'], row['emotion_anger'], 
-                        row['emotion_fear'], row['emotion_sadness'],
-                        row['emotion_surprise'], row['emotion_love'],
-                        row['semantic_coherence'], row['vocabulary_richness']
+                        row["rhyme_density"],
+                        row["flow_complexity"],
+                        row["emotion_joy"],
+                        row["emotion_anger"],
+                        row["emotion_fear"],
+                        row["emotion_sadness"],
+                        row["emotion_surprise"],
+                        row["emotion_love"],
+                        row["semantic_coherence"],
+                        row["vocabulary_richness"],
                     ]
-                    dataset['features'].append(features)
+                    dataset["features"].append(features)
 
-                if row['lyrics_embedding']:
-                    dataset['embeddings'].append(row['lyrics_embedding'])
+                if row["lyrics_embedding"]:
+                    dataset["embeddings"].append(row["lyrics_embedding"])
 
             logger.info(f"Exported {len(dataset['tracks'])} tracks for ML training")
             return dataset
@@ -397,21 +437,21 @@ class PostgreSQLManager:
             async with self.get_connection() as conn:
                 track_id = await conn.fetchval(
                     query,
-                    track_data.get('title', ''),
-                    track_data.get('artist', ''),
-                    track_data.get('lyrics'),
-                    track_data.get('url'),
-                    track_data.get('genius_id'),
-                    track_data.get('scraped_date'),
-                    track_data.get('word_count'),
-                    track_data.get('genre'),
-                    self._parse_date(track_data.get('release_date')),
-                    track_data.get('album'),
-                    track_data.get('language'),
-                    track_data.get('explicit'),
-                    track_data.get('song_art_url'),
-                    track_data.get('popularity_score'),
-                    track_data.get('lyrics_quality_score')
+                    track_data.get("title", ""),
+                    track_data.get("artist", ""),
+                    track_data.get("lyrics"),
+                    track_data.get("url"),
+                    track_data.get("genius_id"),
+                    track_data.get("scraped_date"),
+                    track_data.get("word_count"),
+                    track_data.get("genre"),
+                    self._parse_date(track_data.get("release_date")),
+                    track_data.get("album"),
+                    track_data.get("language"),
+                    track_data.get("explicit"),
+                    track_data.get("song_art_url"),
+                    track_data.get("popularity_score"),
+                    track_data.get("lyrics_quality_score"),
                 )
                 return track_id
         except Exception as e:
@@ -422,16 +462,16 @@ class PostgreSQLManager:
         """Get ML-related database statistics"""
         stats = {}
         async with self.get_connection() as conn:
-            stats['total_tracks'] = await conn.fetchval(
+            stats["total_tracks"] = await conn.fetchval(
                 "SELECT COUNT(*) FROM tracks WHERE lyrics IS NOT NULL"
             )
-            stats['tracks_with_embeddings'] = await conn.fetchval(
+            stats["tracks_with_embeddings"] = await conn.fetchval(
                 "SELECT COUNT(*) FROM tracks WHERE lyrics_embedding IS NOT NULL"
             )
-            stats['tracks_with_features'] = await conn.fetchval(
+            stats["tracks_with_features"] = await conn.fetchval(
                 "SELECT COUNT(*) FROM ml_features"
             )
-            stats['dataset_versions'] = await conn.fetchval(
+            stats["dataset_versions"] = await conn.fetchval(
                 "SELECT COUNT(*) FROM dataset_versions"
             )
 
@@ -439,7 +479,9 @@ class PostgreSQLManager:
             models = await conn.fetch(
                 "SELECT DISTINCT embedding_model, COUNT(*) as count FROM tracks WHERE embedding_model IS NOT NULL GROUP BY embedding_model"
             )
-            stats['embedding_models'] = {r['embedding_model']: r['count'] for r in models}
+            stats["embedding_models"] = {
+                r["embedding_model"]: r["count"] for r in models
+            }
 
         return stats
 
@@ -453,10 +495,18 @@ class PostgreSQLManager:
 
         if isinstance(date_str, str):
             try:
-                return datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=timezone.utc).date()
+                return (
+                    datetime.strptime(date_str, "%Y-%m-%d")
+                    .replace(tzinfo=timezone.utc)
+                    .date()
+                )
             except ValueError:
                 try:
-                    return datetime.strptime(date_str, '%Y').replace(tzinfo=timezone.utc).date()
+                    return (
+                        datetime.strptime(date_str, "%Y")
+                        .replace(tzinfo=timezone.utc)
+                        .date()
+                    )
                 except ValueError:
                     return None
 
@@ -468,7 +518,7 @@ class PostgreSQLManager:
         try:
             async with self.connection_pool.acquire() as conn:
                 result = await conn.fetchrow("SELECT COUNT(*) as count FROM tracks")
-                return result['count'] if result else 0
+                return result["count"] if result else 0
         except Exception as e:
             logger.error(f"Error getting track count: {e}")
             return 0
@@ -488,7 +538,7 @@ class PostgreSQLManager:
                     FROM tracks
                 """)
                 if tracks_result:
-                    stats['tracks'] = dict(tracks_result)
+                    stats["tracks"] = dict(tracks_result)
 
                 # Статистика анализов
                 analysis_result = await conn.fetchrow("""
@@ -499,7 +549,7 @@ class PostgreSQLManager:
                     FROM analysis_results
                 """)
                 if analysis_result:
-                    stats['analyses'] = dict(analysis_result)
+                    stats["analyses"] = dict(analysis_result)
 
                 # Статистика по типам анализа
                 types_results = await conn.fetch("""
@@ -512,13 +562,13 @@ class PostgreSQLManager:
                     ORDER BY count DESC
                 """)
                 if types_results:
-                    stats['analysis_types'] = [dict(row) for row in types_results]
+                    stats["analysis_types"] = [dict(row) for row in types_results]
 
             return stats
 
         except Exception as e:
             logger.error(f"Error getting table stats: {e}")
-            return {'error': str(e)}
+            return {"error": str(e)}
 
     async def fetch_one(self, query: str, params: tuple | None = None) -> dict | None:
         """Выполнить запрос и вернуть одну запись"""
@@ -550,7 +600,9 @@ class PostgreSQLManager:
         """Execute query and return all results (alias for fetch_all for compatibility)"""
         return await self.fetch_all(query, params)
 
-    async def get_tracks_for_analysis(self, limit: int, analyzer_type: str) -> list[dict]:
+    async def get_tracks_for_analysis(
+        self, limit: int, analyzer_type: str
+    ) -> list[dict]:
         """Get tracks that need analysis for specific analyzer type"""
         try:
             query = """
@@ -589,21 +641,21 @@ class PostgreSQLManager:
             """
 
             values = (
-                analysis_data.get('track_id'),
-                analysis_data.get('analyzer_type'),
-                analysis_data.get('sentiment'),
-                analysis_data.get('confidence'),
-                analysis_data.get('complexity_score'),
-                analysis_data.get('themes'),
-                json.dumps(analysis_data.get('analysis_data', {})),
-                analysis_data.get('processing_time_ms'),
-                analysis_data.get('model_version'),
-                datetime.now(tz=timezone.utc)
+                analysis_data.get("track_id"),
+                analysis_data.get("analyzer_type"),
+                analysis_data.get("sentiment"),
+                analysis_data.get("confidence"),
+                analysis_data.get("complexity_score"),
+                analysis_data.get("themes"),
+                json.dumps(analysis_data.get("analysis_data", {})),
+                analysis_data.get("processing_time_ms"),
+                analysis_data.get("model_version"),
+                datetime.now(tz=timezone.utc),
             )
 
             async with self.connection_pool.acquire() as conn:
                 result = await conn.fetchrow(query, *values)
-                return result['id'] if result else None
+                return result["id"] if result else None
 
         except Exception as e:
             logger.error(f"Error saving analysis result: {e}")
@@ -614,6 +666,7 @@ class PostgreSQLManager:
         if self.connection_pool:
             await self.connection_pool.close()
             logger.info("PostgreSQL connection pool closed")
+
 
 # Factory function
 def create_postgres_manager(config: DatabaseConfig | None = None) -> PostgreSQLManager:

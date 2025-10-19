@@ -6,16 +6,16 @@ that ensure consistent APIs across different implementations.
 """
 
 from .analyzer_interface import (
-    BaseAnalyzer,
     AnalysisResult,
     AnalyzerFactory,
-    register_analyzer
+    BaseAnalyzer,
+    register_analyzer,
 )
 
 __all__ = [
     # Analyzer interfaces
     "BaseAnalyzer",
-    "AnalysisResult", 
+    "AnalysisResult",
     "AnalyzerFactory",
-    "register_analyzer"
+    "register_analyzer",
 ]

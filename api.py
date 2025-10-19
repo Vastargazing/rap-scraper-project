@@ -1,29 +1,27 @@
+import os
+import sys
 
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from typing import List, Optional
-import asyncio
-import uvicorn
-import sys
-import os
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.models.config_models import AppConfig
-from src.models.analysis_models import AnalysisResult
-from src.cli.text_analyzer import TextAnalyzer
 from src.cli.batch_processor import BatchProcessor
 from src.cli.performance_monitor import PerformanceMonitor
+from src.cli.text_analyzer import TextAnalyzer
+from src.models.analysis_models import AnalysisResult
+from src.models.config_models import AppConfig
 
 app = FastAPI(
     title="Rap Lyrics Analyzer API",
     description="Enterprise-ready microservices API for rap lyrics analysis",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # CORS middleware for web interface
@@ -72,20 +70,24 @@ GET /status                          # Статус системы
 batch_processor = BatchProcessor(config)
 performance_monitor = PerformanceMonitor(config)
 
+
 # Request/Response models
 class AnalysisRequest(BaseModel):
     text: str
     analyzer: str = "algorithmic_basic"
 
+
 class BatchRequest(BaseModel):
-    texts: List[str]
+    texts: list[str]
     analyzer: str = "algorithmic_basic"
+
 
 class SystemStatus(BaseModel):
     status: str
-    analyzers_available: List[str]
+    analyzers_available: list[str]
     database_records: int
     version: str
+
 
 @app.get("/", response_class=HTMLResponse)
 async def web_interface():
@@ -177,6 +179,7 @@ async def web_interface():
     </html>
     """
 
+
 @app.get("/status", response_model=SystemStatus)
 async def get_system_status():
     """Get system status and health information"""
@@ -186,10 +189,13 @@ async def get_system_status():
             status="healthy",
             analyzers_available=analyzers,
             database_records=54568,  # This would be dynamic in real implementation
-            version="1.0.0"
+            version="1.0.0",
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"System status check failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"System status check failed: {e!s}"
+        )
+
 
 @app.post("/analyze", response_model=AnalysisResult)
 async def analyze_text(request: AnalysisRequest):
@@ -198,20 +204,22 @@ async def analyze_text(request: AnalysisRequest):
         result = await text_analyzer.analyze_text(request.text, request.analyzer)
         return result
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Analysis failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Analysis failed: {e!s}")
 
-@app.post("/batch", response_model=List[AnalysisResult])
+
+@app.post("/batch", response_model=list[AnalysisResult])
 async def batch_analyze(request: BatchRequest):
     """Analyze multiple texts in batch"""
     try:
         results = await batch_processor.process_batch(
             texts=request.texts,
             analyzer_type=request.analyzer,
-            output_file=None  # Return results directly
+            output_file=None,  # Return results directly
         )
         return results
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Batch analysis failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Batch analysis failed: {e!s}")
+
 
 @app.get("/benchmark")
 async def performance_benchmark():
@@ -220,37 +228,33 @@ async def performance_benchmark():
         test_texts = [
             "Amazing rap with incredible flow and lyrical content",
             "Deep metaphors and philosophical thoughts in music",
-            "High energy track with powerful beats and rhymes"
+            "High energy track with powerful beats and rhymes",
         ]
-        
+
         results = await performance_monitor.compare_analyzers(
             analyzer_types=["algorithmic_basic", "hybrid"],
             test_texts=test_texts,
-            output_file=None
+            output_file=None,
         )
-        
+
         return {
             "benchmark_completed": True,
             "test_texts_count": len(test_texts),
-            "results": results
+            "results": results,
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Benchmark failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Benchmark failed: {e!s}")
+
 
 @app.get("/health")
 async def health_check():
     """Simple health check endpoint"""
     return {"status": "healthy", "timestamp": "2025-08-29"}
 
+
 if __name__ == "__main__":
     print("🚀 Starting Rap Lyrics Analyzer API...")
     print("📖 API Documentation: http://localhost:8000/docs")
     print("🌐 Web Interface: http://localhost:8000/")
-    
-    uvicorn.run(
-        "api:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
+
+    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True, log_level="info")

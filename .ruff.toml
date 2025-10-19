@@ -1,0 +1,131 @@
+target-version = "py310"
+line-length = 88
+indent-width = 4
+
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "migrations",
+    "pgvector",
+    "archive",
+    ".specify",
+    "dist",
+    "build",
+]
+
+[lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "N",
+    "UP",
+    "B",
+    "C4",
+    "DTZ",
+    "T10",
+    "EM",
+    "ISC",
+    "ICN",
+    "G",
+    "PIE",
+    "PT",
+    "RET",
+    "SIM",
+    "TCH",
+    "ARG",
+    "PTH",
+    "ERA",
+    "PL",
+    "TRY",
+    "PERF",
+    "RUF",
+]
+
+ignore = [
+    "E501",    # Line too long (handled by formatter)
+    "PLR0913", # Too many arguments
+    "TRY003",  # Long exception messages
+    "G004",    # Logging f-string
+    "W291",    # Trailing whitespace
+
+    # Cyrillic warnings (Russian project - valid use case!)
+    "RUF001", # Cyrillic in strings
+    "RUF002", # Cyrillic in docstrings
+    "RUF003", # Cyrillic in comments
+
+    # Style preferences (not bugs)
+    "TRY400",  # logging.error vs logging.exception
+    "EM101",   # String literals in exceptions (fine for small project)
+    "PLR2004", # Magic values (readable in context)
+    "PLC0415", # Lazy loading imports (pattern for optional/heavy dependencies)
+]
+
+fixable = ["ALL"]
+unfixable = []
+
+[lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",    # Assert statements OK в тестах
+    "ARG",     # Unused arguments в фикстурах
+    "PLR2004", # Magic values в тестовых данных
+    "PLR0913", # Много параметров в тестовых функциях
+]
+"__init__.py" = [
+    "F401",    # Unused imports (re-exports)
+]
+
+# API endpoints - сложная бизнес логика
+"src/api/**/*.py" = [
+    "PLR0913", # Many arguments (FastAPI Depends, Request models)
+    "PLR0915", # Many statements (эндпоинты могут быть большими)
+    "PLC0415", # Lazy imports (опциональные зависимости)
+    "B008",    # Function call defaults (FastAPI Depends pattern)
+]
+# ML Models - тяжелые библиотеки
+"src/models/**/*.py" = [
+    "PLR0913", # Many arguments (конструкторы моделей)
+    "PLR0915", # Many statements (сложные алгоритмы)
+    "PLC0415", # Lazy imports (torch, transformers)
+]
+
+# Config - много параметров это норма
+"src/config/**/*.py" = [
+    "PLR0913", # Many arguments (конфигурация)
+]
+
+# Main entry point
+"main.py" = [
+    "PLR0913", # Many arguments
+    "PLR0915", # Many statements  
+    "PLC0415", # Lazy imports
+]
+
+# Scrapers - могут быть сложными
+"src/scrapers/**/*.py" = [
+    "PLR0912", # Too many branches (парсинг может быть сложным)
+    "PLR0915", # Too many statements
+]
+
+# Postgres
+"src/database/**/*.py" = [
+    "RET504",  # Unnecessary assignment before return
+    "TRY300",  # Move to else block
+    "PERF203", # Try-except in loop (нужно для batch operations)
+]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[lint.isort]
+known-first-party = ["src"]
+combine-as-imports = true
+split-on-trailing-comma = true

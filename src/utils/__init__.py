@@ -10,19 +10,24 @@
 Создано для устранения дублирования кода между компонентами.
 """
 
-from .logging_utils import setup_logging, get_logger
-from .validation_utils import validate_text, clean_text, validate_artist_name, validate_track_title
-from .file_utils import ensure_directory, safe_json_load, safe_json_save, get_file_size
+from .file_utils import ensure_directory, get_file_size, safe_json_load, safe_json_save
+from .logging_utils import get_logger, setup_logging
+from .validation_utils import (
+    clean_text,
+    validate_artist_name,
+    validate_text,
+    validate_track_title,
+)
 
 __all__ = [
-    "setup_logging",
-    "get_logger", 
-    "validate_text",
     "clean_text",
-    "validate_artist_name",
-    "validate_track_title", 
     "ensure_directory",
-    "safe_json_load", 
+    "get_file_size",
+    "get_logger",
+    "safe_json_load",
     "safe_json_save",
-    "get_file_size"
+    "setup_logging",
+    "validate_artist_name",
+    "validate_text",
+    "validate_track_title",
 ]

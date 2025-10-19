@@ -15,21 +15,21 @@ Version: 2.0.0
 """
 
 import os
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Literal
 from functools import lru_cache
+from pathlib import Path
+from typing import Any, Literal
 
 import yaml
-from pydantic import BaseModel, Field, field_validator, model_validator
-from pydantic_settings import BaseSettings
-
+from pydantic import BaseModel, field_validator
 
 # ============================================================================
 # Application Settings
 # ============================================================================
 
+
 class ApplicationConfig(BaseModel):
     """Application metadata and environment settings"""
+
     name: str
     version: str
     description: str
@@ -41,14 +41,17 @@ class ApplicationConfig(BaseModel):
 # Database Configuration
 # ============================================================================
 
+
 class SQLiteConfig(BaseModel):
     """SQLite configuration (legacy support)"""
+
     path: str = "data/rap_lyrics.db"
     enabled: bool = False
 
 
 class DatabaseConfig(BaseModel):
     """PostgreSQL database configuration with connection pooling"""
+
     type: str = "postgresql"
     host_env: str = "DB_HOST"
     port: int = 5432
@@ -64,7 +67,7 @@ class DatabaseConfig(BaseModel):
     pool_recycle: int = 3600
     pool_pre_ping: bool = True
     echo: bool = False
-    sqlite: Optional[SQLiteConfig] = None
+    sqlite: SQLiteConfig | None = None
 
     @property
     def host(self) -> str:
@@ -102,8 +105,10 @@ class DatabaseConfig(BaseModel):
 # Vector Search Configuration
 # ============================================================================
 
+
 class VectorSearchConfig(BaseModel):
     """pgvector configuration for embeddings"""
+
     enabled: bool = True
     embedding_model: str = "text-embedding-3-small"
     dimension: int = 1536
@@ -129,8 +134,10 @@ class VectorSearchConfig(BaseModel):
 # Logging Configuration
 # ============================================================================
 
+
 class LoggingConfig(BaseModel):
     """Logging configuration"""
+
     level: str = "INFO"
     format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     file_path: str = "logs/app.log"
@@ -153,18 +160,21 @@ class LoggingConfig(BaseModel):
 # Analyzer Configurations
 # ============================================================================
 
+
 class AlgorithmicBasicConfig(BaseModel):
     """Algorithmic basic analyzer configuration"""
+
     sentiment_threshold: float = 0.5
-    complexity_weights: Dict[str, float] = {
+    complexity_weights: dict[str, float] = {
         "vocabulary": 0.3,
         "structure": 0.3,
-        "themes": 0.4
+        "themes": 0.4,
     }
 
 
 class QwenAnalyzerConfig(BaseModel):
     """Qwen LLM analyzer configuration"""
+
     model_name: str = "qwen/qwen3-4b-fp8"
     base_url: str = "https://api.novita.ai/openai/v1"
     api_key_env: str = "NOVITA_API_KEY"
@@ -185,6 +195,7 @@ class QwenAnalyzerConfig(BaseModel):
 
 class OllamaAnalyzerConfig(BaseModel):
     """Ollama local LLM analyzer configuration"""
+
     model: str = "llama3.1:8b"
     base_url_env: str = "OLLAMA_BASE_URL"
     timeout: int = 60
@@ -199,13 +210,15 @@ class OllamaAnalyzerConfig(BaseModel):
 
 class HybridAnalyzerConfig(BaseModel):
     """Hybrid analyzer configuration"""
-    algorithms: List[str] = ["algorithmic_basic", "qwen"]
+
+    algorithms: list[str] = ["algorithmic_basic", "qwen"]
     consensus_threshold: float = 0.7
     fallback_analyzer: str = "algorithmic_basic"
 
 
 class EmotionAnalyzerConfig(BaseModel):
     """Emotion analyzer configuration"""
+
     model_name: str = "j-hartmann/emotion-english-distilroberta-base"
     device: Literal["auto", "cpu", "cuda"] = "auto"
     max_length: int = 512
@@ -218,11 +231,12 @@ class EmotionAnalyzerConfig(BaseModel):
 
 class AnalyzersConfig(BaseModel):
     """All analyzers configuration"""
-    algorithmic_basic: Dict[str, Any]
-    qwen: Dict[str, Any]
-    ollama: Dict[str, Any]
-    hybrid: Dict[str, Any]
-    emotion_analyzer: Dict[str, Any]
+
+    algorithmic_basic: dict[str, Any]
+    qwen: dict[str, Any]
+    ollama: dict[str, Any]
+    hybrid: dict[str, Any]
+    emotion_analyzer: dict[str, Any]
 
     def get_algorithmic_basic(self) -> AlgorithmicBasicConfig:
         return AlgorithmicBasicConfig(**self.algorithmic_basic.get("config", {}))
@@ -244,17 +258,20 @@ class AnalyzersConfig(BaseModel):
 # API Configuration
 # ============================================================================
 
+
 class CORSConfig(BaseModel):
     """CORS configuration"""
+
     enabled: bool = True
-    origins: List[str] = ["http://localhost:3000"]
+    origins: list[str] = ["http://localhost:3000"]
     allow_credentials: bool = True
-    allow_methods: List[str] = ["*"]
-    allow_headers: List[str] = ["*"]
+    allow_methods: list[str] = ["*"]
+    allow_headers: list[str] = ["*"]
 
 
 class RateLimitConfig(BaseModel):
     """Rate limiting configuration"""
+
     enabled: bool = True
     requests_per_minute: int = 100
     burst_size: int = 20
@@ -262,6 +279,7 @@ class RateLimitConfig(BaseModel):
 
 class APIDocsConfig(BaseModel):
     """API documentation configuration"""
+
     enabled: bool = True
     swagger_url: str = "/docs"
     redoc_url: str = "/redoc"
@@ -271,6 +289,7 @@ class APIDocsConfig(BaseModel):
 
 class APIConfig(BaseModel):
     """FastAPI configuration"""
+
     host: str = "0.0.0.0"
     port: int = 8000
     workers: int = 4
@@ -285,8 +304,10 @@ class APIConfig(BaseModel):
 # Redis Configuration
 # ============================================================================
 
+
 class RedisCacheConfig(BaseModel):
     """Redis cache TTL settings"""
+
     artist_ttl: int = 3600
     lyrics_ttl: int = 86400
     analysis_ttl: int = 604800
@@ -295,6 +316,7 @@ class RedisCacheConfig(BaseModel):
 
 class RedisConfig(BaseModel):
     """Redis configuration"""
+
     enabled: bool = True
     host_env: str = "REDIS_HOST"
     port: int = 6379
@@ -311,7 +333,7 @@ class RedisConfig(BaseModel):
         return os.getenv(self.host_env, "localhost")
 
     @property
-    def password(self) -> Optional[str]:
+    def password(self) -> str | None:
         """Get Redis password from environment"""
         return os.getenv(self.password_env)
 
@@ -320,8 +342,10 @@ class RedisConfig(BaseModel):
 # Monitoring Configuration
 # ============================================================================
 
+
 class PrometheusConfig(BaseModel):
     """Prometheus metrics configuration"""
+
     enabled: bool = True
     port: int = 9090
     path: str = "/metrics"
@@ -330,6 +354,7 @@ class PrometheusConfig(BaseModel):
 
 class GrafanaConfig(BaseModel):
     """Grafana dashboard configuration"""
+
     enabled: bool = True
     port: int = 3000
     admin_password_env: str = "GRAFANA_ADMIN_PASSWORD"
@@ -344,6 +369,7 @@ class GrafanaConfig(BaseModel):
 
 class MetricsConfig(BaseModel):
     """Metrics collection configuration"""
+
     collect_request_duration: bool = True
     collect_request_count: bool = True
     collect_error_rate: bool = True
@@ -353,14 +379,16 @@ class MetricsConfig(BaseModel):
 
 class HealthCheckConfig(BaseModel):
     """Health check configuration"""
+
     enabled: bool = True
     endpoint: str = "/health"
     check_interval: int = 60
-    components: List[str] = ["database", "redis", "ollama", "qwen_api"]
+    components: list[str] = ["database", "redis", "ollama", "qwen_api"]
 
 
 class MonitoringConfig(BaseModel):
     """Monitoring configuration"""
+
     prometheus: PrometheusConfig
     grafana: GrafanaConfig
     metrics: MetricsConfig
@@ -371,8 +399,10 @@ class MonitoringConfig(BaseModel):
 # CI/CD Configuration
 # ============================================================================
 
+
 class GitHubActionsConfig(BaseModel):
     """GitHub Actions CI/CD configuration"""
+
     enabled: bool = True
     test_on_push: bool = True
     test_on_pr: bool = True
@@ -381,6 +411,7 @@ class GitHubActionsConfig(BaseModel):
 
 class TestingConfig(BaseModel):
     """Testing configuration"""
+
     required_coverage: int = 80
     run_integration_tests: bool = True
     run_performance_tests: bool = False
@@ -389,13 +420,15 @@ class TestingConfig(BaseModel):
 
 class DeploymentConfig(BaseModel):
     """Deployment configuration"""
-    environments: List[str] = ["dev", "staging", "prod"]
+
+    environments: list[str] = ["dev", "staging", "prod"]
     auto_rollback: bool = True
     health_check_timeout: int = 300
 
 
 class QualityConfig(BaseModel):
     """Code quality configuration"""
+
     max_complexity: int = 10
     max_function_length: int = 50
     max_file_length: int = 500
@@ -404,6 +437,7 @@ class QualityConfig(BaseModel):
 
 class CICDConfig(BaseModel):
     """CI/CD configuration"""
+
     github_actions: GitHubActionsConfig
     testing: TestingConfig
     deployment: DeploymentConfig
@@ -414,8 +448,10 @@ class CICDConfig(BaseModel):
 # Main Configuration
 # ============================================================================
 
+
 class Config(BaseModel):
     """Main configuration class with all settings"""
+
     application: ApplicationConfig
     database: DatabaseConfig
     vector_search: VectorSearchConfig
@@ -430,19 +466,19 @@ class Config(BaseModel):
     def from_yaml(cls, config_path: str = "config.yaml") -> "Config":
         """Load configuration from YAML file"""
         config_file = Path(config_path)
-        
+
         if not config_file.exists():
             raise FileNotFoundError(f"Configuration file not found: {config_path}")
-        
-        with open(config_file, "r", encoding="utf-8") as f:
+
+        with open(config_file, encoding="utf-8") as f:
             config_data = yaml.safe_load(f)
-        
+
         # Apply environment-specific overrides
         environment = os.getenv("APP_ENVIRONMENT", "production")
         if "environments" in config_data and environment in config_data["environments"]:
             env_overrides = config_data["environments"][environment]
             cls._deep_merge(config_data, env_overrides)
-        
+
         return cls(**config_data)
 
     @staticmethod
@@ -461,13 +497,13 @@ class Config(BaseModel):
             _ = self.database.connection_string
         except ValueError as e:
             raise ValueError(f"Database configuration error: {e}")
-        
+
         # Validate API keys if needed
         if self.analyzers.qwen.get("enabled", True):
             qwen_config = self.analyzers.get_qwen()
             if qwen_config.validate_api_key:
                 _ = qwen_config.api_key
-        
+
         print("✅ Configuration validation passed!")
 
 
@@ -475,14 +511,15 @@ class Config(BaseModel):
 # Global Config Singleton
 # ============================================================================
 
-@lru_cache()
+
+@lru_cache
 def get_config(config_path: str = "config.yaml") -> Config:
     """
     Get global configuration instance (cached)
-    
+
     Usage:
         from config_loader import get_config
-        
+
         config = get_config()
         db_string = config.database.connection_string
         api_port = config.api.port
@@ -496,14 +533,15 @@ def get_config(config_path: str = "config.yaml") -> Config:
 # Helper Functions
 # ============================================================================
 
+
 def load_config(config_path: str = "config.yaml", validate: bool = True) -> Config:
     """
     Load and optionally validate configuration
-    
+
     Args:
         config_path: Path to YAML config file
         validate: Whether to validate configuration
-        
+
     Returns:
         Config: Validated configuration object
     """
@@ -524,25 +562,29 @@ def get_environment() -> str:
 
 if __name__ == "__main__":
     import sys
-    
+
     print("⚡ Quick Config Check")
     print("=" * 50)
-    
+
     try:
         # Load configuration
         config_file = sys.argv[1] if len(sys.argv) > 1 else "config.yaml"
         print(f"📁 Loading: {config_file}")
-        
+
         config = load_config(config_file)
-        
+
         # Quick validation summary
-        print(f"\n✅ Config Valid!")
+        print("\n✅ Config Valid!")
         print(f"   • App: {config.application.name} v{config.application.version}")
         print(f"   • Env: {config.application.environment}")
-        print(f"   • DB: {config.database.type}://{config.database.host}:{config.database.port}/{config.database.database_name}")
+        print(
+            f"   • DB: {config.database.type}://{config.database.host}:{config.database.port}/{config.database.database_name}"
+        )
         print(f"   • API: http://{config.api.host}:{config.api.port}")
-        print(f"   • Redis: {config.redis.host}:{config.redis.port} (enabled: {config.redis.enabled})")
-        
+        print(
+            f"   • Redis: {config.redis.host}:{config.redis.port} (enabled: {config.redis.enabled})"
+        )
+
         # Component status
         components = []
         if config.vector_search.enabled:
@@ -551,23 +593,24 @@ if __name__ == "__main__":
             components.append("Prometheus")
         if config.monitoring.grafana.enabled:
             components.append("Grafana")
-        
+
         if components:
             print(f"   • Components: {', '.join(components)}")
-        
-        print(f"\n💡 For detailed testing run:")
-        print(f"   python src/config/test_loader.py")
-        
+
+        print("\n💡 For detailed testing run:")
+        print("   python src/config/test_loader.py")
+
     except FileNotFoundError as e:
         print(f"\n❌ File not found: {e}")
-        print(f"   Make sure config.yaml exists")
+        print("   Make sure config.yaml exists")
         sys.exit(1)
     except ValueError as e:
         print(f"\n❌ Validation Error: {e}")
-        print(f"   Check your .env file and config.yaml")
+        print("   Check your .env file and config.yaml")
         sys.exit(1)
     except Exception as e:
         print(f"\n❌ Error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
