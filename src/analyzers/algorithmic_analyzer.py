@@ -63,7 +63,7 @@ import re
 import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -106,7 +106,7 @@ except ImportError:
     if not PROJECT_IMPORT_SUCCESS:
         # Базовые классы заглушки для standalone работы
         class BaseAnalyzer:
-            def __init__(self, config: dict[str, Any] = None):
+            def __init__(self, config: dict[str, Any] | None = None):
                 self.config = config or {}
 
             def validate_input(self, artist: str, title: str, lyrics: str) -> bool:
@@ -126,7 +126,7 @@ except ImportError:
             processing_time: float
             timestamp: str
 
-        def register_analyzer(name: str):
+        def register_analyzer(name: str):  # noqa: ARG001
             def decorator(cls):
                 return cls
 
@@ -556,10 +556,8 @@ class FlowAnalyzer:
             prev_was_vowel = is_vowel
 
         # Исключения
-        if word.endswith("e") and syllable_count > 1:
-            # Убираем silent e
-            if not word.endswith(("le", "se", "me", "ne", "ve", "ze", "de", "ge")):
-                syllable_count -= 1
+        if word.endswith("e") and syllable_count > 1 and not word.endswith(("le", "se", "me", "ne", "ve", "ze", "de", "ge")):
+            syllable_count -= 1
 
         # Специальные окончания
         if word.endswith(("ed", "es", "er", "ly")):
@@ -616,8 +614,7 @@ class FlowAnalyzer:
         most_common = pattern_counts.most_common(1)
 
         if most_common:
-            regularity = most_common[0][1] / len(stress_patterns)
-            return regularity
+            return most_common[0][1] / len(stress_patterns)
 
         return 0.0
 
@@ -717,43 +714,35 @@ class RhymeAnalyzer:
 
     def _find_perfect_rhymes(self, endings: list[str]) -> list[tuple[int, int]]:
         """Поиск точных рифм"""
-        perfect_rhymes = []
-
-        for i in range(len(endings)):
-            for j in range(i + 1, len(endings)):
-                if self._is_perfect_rhyme(endings[i], endings[j]):
-                    perfect_rhymes.append((i, j))
-
-        return perfect_rhymes
+        return [
+            (i, j)
+            for i in range(len(endings))
+            for j in range(i + 1, len(endings))
+            if self._is_perfect_rhyme(endings[i], endings[j])
+        ]
 
     def _find_near_rhymes(self, endings: list[str]) -> list[tuple[int, int]]:
         """Поиск неточных рифм"""
-        near_rhymes = []
-
-        for i in range(len(endings)):
-            for j in range(i + 1, len(endings)):
-                if not self._is_perfect_rhyme(
-                    endings[i], endings[j]
-                ) and self._is_near_rhyme(endings[i], endings[j]):
-                    near_rhymes.append((i, j))
-
-        return near_rhymes
+        return [
+            (i, j)
+            for i in range(len(endings))
+            for j in range(i + 1, len(endings))
+            if not self._is_perfect_rhyme(endings[i], endings[j])
+            and self._is_near_rhyme(endings[i], endings[j])
+        ]
 
     def _find_internal_rhymes(self, lines: list[str]) -> list[tuple[int, str, str]]:
         """Поиск внутренних рифм"""
         internal_rhymes = []
-
         for line_idx, line in enumerate(lines):
             words = re.findall(r"\b[a-zA-Z]{3,}\b", line.lower())
-
-            # Ищем рифмы внутри строки
-            for i in range(len(words)):
-                for j in range(i + 1, len(words)):
-                    if self._is_perfect_rhyme(
-                        words[i], words[j]
-                    ) or self._is_near_rhyme(words[i], words[j]):
-                        internal_rhymes.append((line_idx, words[i], words[j]))
-
+            internal_rhymes.extend([
+                (line_idx, words[i], words[j])
+                for i in range(len(words))
+                for j in range(i + 1, len(words))
+                if self._is_perfect_rhyme(words[i], words[j])
+                or self._is_near_rhyme(words[i], words[j])
+            ])
         return internal_rhymes
 
     def _is_perfect_rhyme(self, word1: str, word2: str) -> bool:
@@ -796,10 +785,7 @@ class RhymeAnalyzer:
         consonants1 = [c for c in word1[-3:] if c not in "aeiou"]
         consonants2 = [c for c in word2[-3:] if c not in "aeiou"]
 
-        if len(set(consonants1) & set(consonants2)) >= 1:
-            return True
-
-        return False
+        return len(set(consonants1) & set(consonants2)) >= 1
 
     def _phonetic_rhyme_check(self, word1: str, word2: str) -> bool:
         """Фонетическая проверка рифмы"""
@@ -1144,8 +1130,7 @@ class ReadabilityAnalyzer:
             return 0.0
 
         # SMOG = 3 + √(complex_words * 30 / sentences)
-        smog = 3 + math.sqrt(complex_words * 30 / sentences)
-        return smog
+        return 3 + math.sqrt(complex_words * 30 / sentences)
 
     def _calculate_ari(self, sentences: int, words: int, text: str) -> float:
         """Автоматический индекс читабельности (ARI)"""
@@ -1167,10 +1152,10 @@ class ReadabilityAnalyzer:
 
         characters = len(re.sub(r"[^a-zA-Z]", "", text))
 
-        l = (characters / words) * 100  # Average letters per 100 words
-        s = (sentences / words) * 100  # Average sentences per 100 words
+        letters_per_100 = (characters / words) * 100  # Average letters per 100 words
+        sentences_per_100 = (sentences / words) * 100  # Average sentences per 100 words
 
-        cli = (0.0588 * l) - (0.296 * s) - 15.8
+        cli = (0.0588 * letters_per_100) - (0.296 * sentences_per_100) - 15.8
         return max(0, cli)
 
     def _calculate_consensus(self, flesch: float, fk_grade: float, smog: float) -> str:
@@ -1232,7 +1217,7 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
     - Кэширование для производительности
     """
 
-    def __init__(self, config: dict[str, Any] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         super().__init__(config)
 
         # Инициализация компонентов
@@ -1280,9 +1265,7 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
 
         # Основной анализ
         analysis_results = {
-            "advanced_sentiment": self._analyze_advanced_sentiment(
-                words, processed_lyrics
-            ),
+            "advanced_sentiment": self._analyze_advanced_sentiment(words),
             "rhyme_analysis": self.rhyme_analyzer.analyze_rhyme_structure(lines),
             "flow_analysis": self.flow_analyzer.analyze_flow_patterns(lines),
             "readability_metrics": self.readability_analyzer.analyze_readability(
@@ -1311,7 +1294,7 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         # Метаданные
         metadata = {
             "analyzer_version": "2.0.0",
-            "processing_date": datetime.now().isoformat(),
+            "processing_date": datetime.now(tz=timezone.utc).isoformat(),
             "lyrics_length": len(processed_lyrics),
             "word_count": len(words),
             "line_count": len(lines),
@@ -1328,7 +1311,7 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
             "processing_time": processing_time,
             "metadata": metadata,
             "raw_output": analysis_results,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(tz=timezone.utc).isoformat(),
             "artist": artist,
             "title": title,
         }
@@ -1356,17 +1339,15 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         lines = [line.strip() for line in lyrics.split("\n") if line.strip()]
 
         # Фильтрация метаданных
-        filtered_lines = []
-        for line in lines:
-            # Пропускаем строки с метаданными
+        return [
+            line
+            for line in lines
             if not re.match(
                 r"^\[.*\]$|^\(.*\)$|^(Verse|Chorus|Bridge|Outro|Intro)[\s\d]*:",
                 line,
                 re.IGNORECASE,
-            ):
-                filtered_lines.append(line)
-
-        return filtered_lines
+            )
+        ]
 
     def _extract_meaningful_words(self, lyrics: str) -> list[str]:
         """Извлечение значимых слов"""
@@ -1493,7 +1474,7 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         return [word for word in words if word not in stop_words and len(word) >= 3]
 
     def _analyze_advanced_sentiment(
-        self, words: list[str], full_text: str
+        self, words: list[str]
     ) -> dict[str, Any]:
         """Продвинутый анализ настроения с градацией"""
         if not words:
@@ -1934,12 +1915,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         for word in words:
             # Слова с необычными суффиксами или префиксами
             if len(word) > 6 and (
-                word.endswith("ness")
-                or word.endswith("tion")
-                or word.endswith("ism")
-                or word.startswith("un")
-                or word.startswith("pre")
-                or word.startswith("over")
+                word.endswith(("ness", "tion", "ism"))
+                or word.startswith(("un", "pre", "over"))
             ):
                 potential_neologisms.append(word)
 
@@ -1993,14 +1970,16 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         techniques_found = []
 
         # Двойные смыслы (упрощенно)
-        double_meanings = []
-        for word in set(words):
-            if len(word) > 4:
-                # Поиск слов, которые могут иметь двойной смысл
-                if any(
-                    other in word for other in words if other != word and len(other) > 2
-                ):
-                    double_meanings.append(word)
+        double_meanings = [
+            word
+            for word in set(words)
+            if len(word) > 4
+            and any(
+                other in word
+                for other in words
+                if other != word and len(other) > 2
+            )
+        ]
 
         if double_meanings:
             wordplay_score += len(double_meanings) * 0.1
