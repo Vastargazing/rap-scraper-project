@@ -1,23 +1,94 @@
 """
-#!/usr/bin/env python3
-🔍 Database Browser — просмотр данных PostgreSQL
+🔍 Database Browser — Interactive PostgreSQL Database Explorer
 
-НАЗНАЧЕНИЕ:
-- Быстрый просмотр треков и анализов из базы данных без GUI
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     RAP LYRICS DATABASE BROWSER                              ║
+║              Fast CLI tool for PostgreSQL data exploration                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 
-ИСПОЛЬЗОВАНИЕ:
-python scripts/db_browser.py
+📋 DESCRIPTION:
+    Interactive command-line interface for exploring rap lyrics database.
+    Provides fast access to tracks, analyses, and statistics without GUI.
 
-ЗАВИСИМОСТИ:
-- Python 3.8+
-- src/database/postgres_adapter.py
-- PostgreSQL база данных (rap_lyrics)
+    Perfect for:
+    • Quick data inspection during development
+    • Debugging database issues
+    • Testing concurrent access
+    • Viewing AI analysis results
+    • Finding specific tracks or artists
 
-РЕЗУЛЬТАТ:
-- Удобный текстовый интерфейс для базы данных
+🎯 FEATURES:
+    ✅ stats     - Database statistics (tracks, analyses, top artists)
+    ✅ search    - Full-text search across tracks (title, artist, lyrics)
+    ✅ track     - Detailed track view with all AI analyses
+    ✅ list      - Browse tracks by artist or recent additions
+    ✅ recent    - Latest AI analysis results
 
-АВТОР: AI Assistant
-ДАТА: Сентябрь 2025
+📊 CURRENT DATABASE STATUS:
+    • Tracks: 55,904 (PostgreSQL)
+    • Analyses: 260,498 total
+    • Analyzers: qwen-3-4b-fp8, gemma-3-27b-it, simplified_features
+    • Top Artists: Snoop Dogg, Chief Keef, Gucci Mane (400+ tracks each)
+
+💻 USAGE EXAMPLES:
+    # General statistics
+    python scripts/db_browser.py stats
+
+    # Search tracks
+    python scripts/db_browser.py search --query 'eminem' --limit 10
+    python scripts/db_browser.py search -q 'gangsta rap'
+
+    # View specific track with all analyses
+    python scripts/db_browser.py track --id 12561
+
+    # List tracks by artist
+    python scripts/db_browser.py list --artist 'drake' --limit 20
+    python scripts/db_browser.py list --limit 50  # Recent tracks
+
+    # Latest AI analyses
+    python scripts/db_browser.py recent --limit 15
+
+🔧 REQUIREMENTS:
+    • Python 3.10+
+    • asyncpg >= 0.30.0
+    • PostgreSQL 15+ with rap_lyrics database
+    • src/database/postgres_adapter.py (connection pool)
+    • Active .env with DB_PASSWORD and connection details
+
+📦 DEPENDENCIES:
+    from src.database.postgres_adapter import PostgreSQLManager
+    import asyncpg, asyncio, argparse, json
+
+🔗 RELATED TOOLS:
+    • scripts/tools/database_diagnostics.py - DB health checks
+    • scripts/mass_qwen_analysis.py - AI analysis pipeline
+    • src/config/test_loader.py - Configuration validation
+
+⚡ PERFORMANCE:
+    • Async operations via asyncpg
+    • Connection pooling (20 max connections)
+    • Concurrent-safe (multiple instances can run simultaneously)
+    • Fast queries with indexed searches
+
+📝 NOTES:
+    - Uses async/await for non-blocking operations
+    - Automatically handles JSON parsing in analysis_data
+    - Safe for concurrent use alongside other scripts
+    - Graceful error handling and cleanup
+
+🐛 TROUBLESHOOTING:
+    If connection fails:
+    1. Check .env file has DB_PASSWORD
+    2. Verify PostgreSQL is running (port 5433)
+    3. Test: python scripts/tools/database_diagnostics.py --quick
+
+    If asyncpg missing:
+    pip install asyncpg
+
+👨‍💻 AUTHOR: AI Assistant
+📅 CREATED: September 2025
+🔄 UPDATED: October 2025
+📌 VERSION: 2.0.0 (PostgreSQL + Async)
 """
 
 import argparse
@@ -54,18 +125,18 @@ class DatabaseBrowser:
 
             # Статистика по артистам
             artist_stats = await conn.fetch("""
-                SELECT artist, COUNT(*) as track_count 
-                FROM tracks 
-                GROUP BY artist 
-                ORDER BY track_count DESC 
+                SELECT artist, COUNT(*) as track_count
+                FROM tracks
+                GROUP BY artist
+                ORDER BY track_count DESC
                 LIMIT 10
             """)
 
             # Статистика по анализаторам
             analyzer_stats = await conn.fetch("""
-                SELECT analyzer_type, COUNT(*) as analysis_count 
-                FROM analysis_results 
-                GROUP BY analyzer_type 
+                SELECT analyzer_type, COUNT(*) as analysis_count
+                FROM analysis_results
+                GROUP BY analyzer_type
                 ORDER BY analysis_count DESC
             """)
 
@@ -90,10 +161,10 @@ class DatabaseBrowser:
             tracks = await conn.fetch(
                 """
                 SELECT id, title, artist, album, release_date, LENGTH(lyrics) as lyrics_length
-                FROM tracks 
+                FROM tracks
                 WHERE title ILIKE $1 OR artist ILIKE $1 OR lyrics ILIKE $1
-                ORDER BY 
-                    CASE 
+                ORDER BY
+                    CASE
                         WHEN title ILIKE $1 THEN 1
                         WHEN artist ILIKE $1 THEN 2
                         ELSE 3
@@ -130,8 +201,8 @@ class DatabaseBrowser:
             # Анализы трека
             analyses = await conn.fetch(
                 """
-                SELECT * FROM analysis_results 
-                WHERE track_id = $1 
+                SELECT * FROM analysis_results
+                WHERE track_id = $1
                 ORDER BY created_at DESC
             """,
                 track_id,
@@ -186,8 +257,8 @@ class DatabaseBrowser:
             if artist:
                 tracks = await conn.fetch(
                     """
-                    SELECT id, title, artist, album, release_date 
-                    FROM tracks 
+                    SELECT id, title, artist, album, release_date
+                    FROM tracks
                     WHERE artist ILIKE $1
                     ORDER BY title
                     LIMIT $2
@@ -201,8 +272,8 @@ class DatabaseBrowser:
             else:
                 tracks = await conn.fetch(
                     """
-                    SELECT id, title, artist, album, release_date 
-                    FROM tracks 
+                    SELECT id, title, artist, album, release_date
+                    FROM tracks
                     ORDER BY id DESC
                     LIMIT $1
                 """,
@@ -226,7 +297,7 @@ class DatabaseBrowser:
         async with self.db.get_connection() as conn:
             analyses = await conn.fetch(
                 """
-                SELECT ar.*, t.title, t.artist 
+                SELECT ar.*, t.title, t.artist
                 FROM analysis_results ar
                 JOIN tracks t ON ar.track_id = t.id
                 ORDER BY ar.created_at DESC
