@@ -19,12 +19,19 @@ Date: October 2025
 
 import logging
 from contextlib import asynccontextmanager
-from datetime import datetime
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import get_config
+from .routes import (
+    analyze,
+    batch,
+    health,
+    ml_models,
+    models_info,
+    web,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -92,24 +99,32 @@ if config.api.cors.enabled:
     logger.debug(f"✅ CORS enabled for origins: {config.api.cors.origins}")
 
 # ============================================================================
-# INCLUDE ROUTES (Will be added after route files are created)
+# INCLUDE ROUTES (All route modules)
 # ============================================================================
 
-# Routes will be included here:
-# - health routes
-# - analysis routes
-# - ml_models routes
-# - batch routes
-# - web interface routes
-# - models info routes
-
-# Placeholder for routes (to be imported once route files are created)
-# from .routes import health, analyze, ml_models, batch, web, models_info
-# app.include_router(health.router, tags=["health"])
-# app.include_router(analyze.router, tags=["analysis"])
-# ... etc
+# Register all route modules
+app.include_router(health.router, tags=["health"])
+app.include_router(analyze.router, tags=["analysis"])
+app.include_router(ml_models.router, tags=["ml-models"])
+app.include_router(batch.router, tags=["batch"])
+app.include_router(web.router, tags=["web"])
+app.include_router(models_info.router, tags=["models"])
 
 logger.info("✅ Unified FastAPI application initialized (v3.0.0)")
+logger.info("   Routes registered:")
+logger.info("   - GET  /health          - Health check")
+logger.info("   - GET  /config/info     - Configuration info")
+logger.info("   - POST /analyze         - QWEN analysis")
+logger.info("   - GET  /cache/stats     - Cache statistics")
+logger.info("   - POST /generate        - Lyrics generation")
+logger.info("   - POST /style-transfer  - Style transfer")
+logger.info("   - POST /predict-quality - Quality prediction")
+logger.info("   - POST /analyze-trends  - Trend analysis")
+logger.info("   - POST /batch           - Batch processing")
+logger.info("   - GET  /batch/{id}/status - Batch status")
+logger.info("   - GET  /                - Web interface")
+logger.info("   - GET  /models/info     - Models info")
+logger.info("   - GET  /models/status   - Models status")
 
 # ============================================================================
 # RUN SERVER
