@@ -14,9 +14,25 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from src.analyzers.qwen_analyzer import QwenAnalyzer
-from src.cache.redis_client import test_redis_connection
-from src.config import get_config
+# Graceful imports with fallbacks
+try:
+    from src.analyzers.qwen_analyzer import QwenAnalyzer
+    QWEN_AVAILABLE = True
+except ImportError:
+    QwenAnalyzer = None
+    QWEN_AVAILABLE = False
+
+try:
+    from src.cache.redis_client import test_redis_connection
+    REDIS_AVAILABLE = True
+except ImportError:
+    REDIS_AVAILABLE = False
+
+try:
+    from src.config import get_config
+    config = get_config()
+except Exception:
+    config = None
 
 router = APIRouter()
 config = get_config()

@@ -23,15 +23,95 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.config import get_config
-from .routes import (
-    analyze,
-    batch,
-    health,
-    ml_models,
-    models_info,
-    web,
+# Configure logging FIRST
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+logger = logging.getLogger(__name__)
+
+# Graceful imports with fallbacks
+try:
+    from src.config import get_config
+    config = get_config()
+    CONFIG_AVAILABLE = True
+except Exception as e:
+    logger.warning(f"⚠️ Config not available: {e}")
+    # Fallback config
+    class FallbackConfig:
+        class application:
+            environment = "development"
+            name = "Rap ML API"
+            version = "3.0.0"
+        class api:
+            host = "127.0.0.1"
+            port = 8000
+            workers = 1
+            reload = True
+            log_level = "info"
+            class cors:
+                enabled = True
+                origins = ["*"]
+                allow_credentials = True
+                allow_methods = ["*"]
+                allow_headers = ["*"]
+            class docs:
+                enabled = True
+                title = "Rap ML API"
+                version = "3.0.0"
+                swagger_url = "/docs"
+                redoc_url = "/redoc"
+        class database:
+            type = "postgresql"
+            pool_size = 20
+        class redis:
+            enabled = False
+    config = FallbackConfig()
+    CONFIG_AVAILABLE = False
+
+# Import routes with graceful fallback
+ROUTES_AVAILABLE = {}
+try:
+    from .routes import health
+    ROUTES_AVAILABLE['health'] = health
+except Exception as e:
+    logger.warning(f"⚠️ Health routes not available: {e}")
+    ROUTES_AVAILABLE['health'] = None
+
+try:
+    from .routes import analyze
+    ROUTES_AVAILABLE['analyze'] = analyze
+except Exception as e:
+    logger.warning(f"⚠️ Analyze routes not available: {e}")
+    ROUTES_AVAILABLE['analyze'] = None
+
+try:
+    from .routes import ml_models
+    ROUTES_AVAILABLE['ml_models'] = ml_models
+except Exception as e:
+    logger.warning(f"⚠️ ML models routes not available: {e}")
+    ROUTES_AVAILABLE['ml_models'] = None
+
+try:
+    from .routes import batch
+    ROUTES_AVAILABLE['batch'] = batch
+except Exception as e:
+    logger.warning(f"⚠️ Batch routes not available: {e}")
+    ROUTES_AVAILABLE['batch'] = None
+
+try:
+    from .routes import web
+    ROUTES_AVAILABLE['web'] = web
+except Exception as e:
+    logger.warning(f"⚠️ Web routes not available: {e}")
+    ROUTES_AVAILABLE['web'] = None
+
+try:
+    from .routes import models_info
+    ROUTES_AVAILABLE['models_info'] = models_info
+except Exception as e:
+    logger.warning(f"⚠️ Models info routes not available: {e}")
+    ROUTES_AVAILABLE['models_info'] = None
 
 # Configure logging
 logging.basicConfig(
@@ -102,29 +182,30 @@ if config.api.cors.enabled:
 # INCLUDE ROUTES (All route modules)
 # ============================================================================
 
-# Register all route modules
-app.include_router(health.router, tags=["health"])
-app.include_router(analyze.router, tags=["analysis"])
-app.include_router(ml_models.router, tags=["ml-models"])
-app.include_router(batch.router, tags=["batch"])
-app.include_router(web.router, tags=["web"])
-app.include_router(models_info.router, tags=["models"])
+# Register all available route modules
+routes_registered = []
 
-logger.info("✅ Unified FastAPI application initialized (v3.0.0)")
-logger.info("   Routes registered:")
-logger.info("   - GET  /health          - Health check")
-logger.info("   - GET  /config/info     - Configuration info")
-logger.info("   - POST /analyze         - QWEN analysis")
-logger.info("   - GET  /cache/stats     - Cache statistics")
-logger.info("   - POST /generate        - Lyrics generation")
-logger.info("   - POST /style-transfer  - Style transfer")
-logger.info("   - POST /predict-quality - Quality prediction")
-logger.info("   - POST /analyze-trends  - Trend analysis")
-logger.info("   - POST /batch           - Batch processing")
-logger.info("   - GET  /batch/{id}/status - Batch status")
-logger.info("   - GET  /                - Web interface")
-logger.info("   - GET  /models/info     - Models info")
-logger.info("   - GET  /models/status   - Models status")
+if ROUTES_AVAILABLE.get('health'):
+    app.include_router(ROUTES_AVAILABLE['health'].router, tags=["health"])
+    routes_registered.append("health")
+if ROUTES_AVAILABLE.get('analyze'):
+    app.include_router(ROUTES_AVAILABLE['analyze'].router, tags=["analysis"])
+    routes_registered.append("analyze")
+if ROUTES_AVAILABLE.get('ml_models'):
+    app.include_router(ROUTES_AVAILABLE['ml_models'].router, tags=["ml-models"])
+    routes_registered.append("ml_models")
+if ROUTES_AVAILABLE.get('batch'):
+    app.include_router(ROUTES_AVAILABLE['batch'].router, tags=["batch"])
+    routes_registered.append("batch")
+if ROUTES_AVAILABLE.get('web'):
+    app.include_router(ROUTES_AVAILABLE['web'].router, tags=["web"])
+    routes_registered.append("web")
+if ROUTES_AVAILABLE.get('models_info'):
+    app.include_router(ROUTES_AVAILABLE['models_info'].router, tags=["models"])
+    routes_registered.append("models_info")
+
+logger.info(f"✅ Unified FastAPI application initialized (v3.0.0)")
+logger.info(f"   Routes registered: {', '.join(routes_registered) if routes_registered else 'NONE'}")
 
 # ============================================================================
 # RUN SERVER
