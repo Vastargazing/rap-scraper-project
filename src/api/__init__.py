@@ -1,9 +1,11 @@
 """
-API module with FastAPI services
+🚀 Unified FastAPI Application Module
+Consolidated API with type-safe configuration
 
-v2.0.0: Config-integrated ML API service
+Version: 3.0.0 - Consolidated (all routes integrated)
 """
 
-from src.api.ml_api_service_v2 import app
+# Main app will be imported from main.py once it's created
+# This will be the primary import point for the application
 
-__all__ = ["app"]
+__all__ = ["app", "config"]

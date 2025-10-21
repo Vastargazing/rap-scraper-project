@@ -20,7 +20,17 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
+from dotenv import load_dotenv
 from pydantic import BaseModel, field_validator
+
+# Load .env file from project root (search up to 3 levels)
+project_root = Path(__file__).parent.parent.parent  # src/config/config_loader.py -> project root
+dotenv_path = project_root / ".env"
+if dotenv_path.exists():
+    load_dotenv(dotenv_path=dotenv_path, override=True)
+else:
+    # Fallback: try to find .env in current directory
+    load_dotenv(override=True)
 
 # ============================================================================
 # Application Settings
@@ -465,10 +475,24 @@ class Config(BaseModel):
     @classmethod
     def from_yaml(cls, config_path: str = "config.yaml") -> "Config":
         """Load configuration from YAML file"""
-        config_file = Path(config_path)
-
-        if not config_file.exists():
-            raise FileNotFoundError(f"Configuration file not found: {config_path}")
+        # Try multiple locations for config file
+        possible_paths = [
+            Path(config_path),  # Direct path (if absolute or relative to CWD)
+            Path(__file__).parent.parent.parent / config_path,  # Project root
+            Path.cwd() / config_path,  # Current working directory
+        ]
+        
+        config_file = None
+        for path in possible_paths:
+            if path.exists():
+                config_file = path
+                break
+        
+        if config_file is None:
+            raise FileNotFoundError(
+                f"Configuration file not found: {config_path}\n"
+                f"Searched in: {[str(p) for p in possible_paths]}"
+            )
 
         with open(config_file, encoding="utf-8") as f:
             config_data = yaml.safe_load(f)
