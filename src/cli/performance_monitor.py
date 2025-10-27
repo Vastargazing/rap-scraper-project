@@ -74,7 +74,7 @@ except ImportError:
 # Добавляем src в Python path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core.app import Application
+from src.core.app import create_app
 
 # Опциональные импорты для продвинутых фич
 try:
@@ -202,7 +202,7 @@ from pathlib import Path
 # Добавляем src в Python path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from core.app import Application
+from src.core.app import create_app
 
 class TestAnalyzerPerformance:
     """Benchmark тесты для анализатора {analyzer_type}"""
@@ -210,7 +210,7 @@ class TestAnalyzerPerformance:
     @pytest.fixture(scope="class")
     def analyzer(self):
         """Фикстура анализатора"""
-        app = Application()
+        app = create_app()
         return app.get_analyzer("{analyzer_type}")
     
     @pytest.fixture(scope="class") 
@@ -725,7 +725,7 @@ class EnhancedPerformanceMonitor:
     def __init__(
         self, monitoring_interval: float = 0.1, enable_prometheus: bool = False
     ):
-        self.app = Application()
+        self.app = create_app()
         self.monitoring_interval = monitoring_interval
         self.logger = logging.getLogger(__name__)
 
@@ -975,10 +975,10 @@ import asyncio
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from core.app import Application
+from src.core.app import create_app
 
 async def run_analyzer():
-    app = Application()
+    app = create_app()
     analyzer = app.get_analyzer("{analyzer_type}")
     texts = {test_texts[:10]}  # Ограничиваем для py-spy
     
@@ -1061,10 +1061,10 @@ import asyncio
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from core.app import Application
+from src.core.app import create_app
 
 async def main():
-    app = Application()
+    app = create_app()
     analyzer = app.get_analyzer("{analyzer_type}")
     text = "{test_text}"
     

@@ -35,7 +35,7 @@ from typing import Any
 # Добавляем src в Python path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core.app import Application
+from src.core.app import create_app
 
 
 @dataclass
@@ -77,7 +77,7 @@ class BatchProcessor:
     """Класс для пакетной обработки текстов"""
 
     def __init__(self, max_workers: int = 4, progress_interval: float = 5.0):
-        self.app = Application()
+        self.app = create_app()
         self.max_workers = max_workers
         self.progress_interval = progress_interval
         self.logger = logging.getLogger(__name__)
