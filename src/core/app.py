@@ -23,7 +23,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Core imports
-from src.core.config import AppConfig, get_config, load_config
+from src.config import Config, get_config, load_config
+from types import SimpleNamespace
 from src.database.postgres_adapter import PostgreSQLManager
 from src.interfaces.analyzer_interface import AnalyzerFactory
 
@@ -48,12 +49,62 @@ class Application:
     to core services like database, analyzers, etc.
     """
 
-    def __init__(self, config: AppConfig | None = None):
-        """Initialize application with configuration"""
-        self.config = config or get_config()
+    def __init__(self, config: Config | None = None):
+        """Initialize application with configuration
+
+        Accepts either a legacy-ish Config (Pydantic `Config` from src.config)
+        or a pre-normalized SimpleNamespace produced by tests/other callers.
+        We normalize to a small attribute-based object to keep the rest of
+        the module behaviour unchanged.
+        """
+        self.config = self._normalize_config(config)
         self.logger = None
         self.database = None
         self._initialized = False
+
+    def _normalize_config(self, cfg: Config | SimpleNamespace | None) -> SimpleNamespace:
+        """Normalize various config representations into a lightweight namespace.
+
+        This adapter maps the new `Config` pydantic model to the attribute
+        layout expected by the rest of this module (project_name, version,
+        data_dir, results_dir, logs_dir, cache_dir, logging, database, api).
+        """
+        if isinstance(cfg, SimpleNamespace):
+            return cfg
+
+        # If None or not a SimpleNamespace, load the pydantic Config
+        if cfg is None:
+            cfg = get_config()
+
+        ns = SimpleNamespace()
+
+        # Basic meta
+        ns.project_name = getattr(cfg.application, "name", "rap-scraper")
+        ns.version = getattr(cfg.application, "version", "1.0.0")
+
+        # Logging and api/database objects can be used directly
+        ns.logging = getattr(cfg, "logging", None)
+        ns.database = getattr(cfg, "database", None)
+        ns.api = getattr(cfg, "api", None)
+
+        # Provide simple directory defaults used throughout the app
+        base = Path.cwd()
+        ns.data_dir = str(base / "data")
+        ns.results_dir = str(base / "results")
+        # logs_dir - prefer directory of logging.file_path if present
+        log_fp = getattr(ns.logging, "file_path", None)
+        if log_fp:
+            ns.logs_dir = str(Path(log_fp).parent)
+        else:
+            ns.logs_dir = str(base / "logs")
+
+        ns.cache_dir = str(base / "cache")
+
+        # Feature flags
+        ns.debug = getattr(cfg.application, "environment", "production") == "development"
+        ns.enable_monitoring = hasattr(cfg, "monitoring")
+
+        return ns
 
     def initialize(self) -> None:
         """Initialize all application components"""
@@ -269,7 +320,7 @@ def init_analyzers():
 
 
 def create_app(
-    config: AppConfig | None = None, config_file: str | None = None, **config_kwargs
+    config: Config | None = None, config_file: str | None = None, **config_kwargs
 ) -> Application:
     """
     Create and configure application instance.
@@ -285,8 +336,8 @@ def create_app(
     global _app_instance
 
     if config is None:
-        # Load configuration
-        config = load_config(config_file=config_file, **config_kwargs)
+        # Load configuration (returns pydantic Config)
+        config = load_config(config_file or "config.yaml")
 
     # Инициализируем анализаторы перед созданием приложения
     init_analyzers()
