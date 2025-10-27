@@ -15,19 +15,7 @@ sys.path.insert(0, str(project_root))
 
 from src.scrapers.rap_scraper_optimized import OptimizedGeniusScraper, load_artist_list
 from src.utils.config import DATA_DIR, GENIUS_TOKEN, LOG_FILE, LOG_FORMAT
-
-
-def setup_logging():
-    """Настройка расширенного логирования"""
-    logging.basicConfig(
-        level=logging.INFO,
-        format=LOG_FORMAT,
-        handlers=[
-            logging.FileHandler(LOG_FILE, encoding="utf-8"),
-            logging.StreamHandler(),
-        ],
-    )
-    return logging.getLogger(__name__)
+from src.utils.logging_utils import setup_logging
 
 
 def check_environment():
@@ -74,7 +62,7 @@ def save_remaining_artists(artists: list, processed_count: int):
 
 def main():
     """Главная функция с улучшенной обработкой ошибок"""
-    logger = setup_logging()
+    logger = setup_logging(__name__, log_file=str(LOG_FILE))
 
     # Проверка окружения
     if not check_environment():

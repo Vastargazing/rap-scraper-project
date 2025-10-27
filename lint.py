@@ -16,11 +16,14 @@ Examples:
 """
 
 import argparse
+import logging
 import subprocess
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
+from src.utils.logging_utils import setup_logging
 
 
 class Colors:
