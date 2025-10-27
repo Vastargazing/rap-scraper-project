@@ -240,7 +240,8 @@ try:
     print(
         '   python -c "from src.cache import test_redis_connection; test_redis_connection()"'
     )
-    print("   python src/api/ml_api_service_v2.py")
+    print("   python main.py                    # Main CLI application")
+    print("   python src/api/main.py            # FastAPI server")
 
 except FileNotFoundError as e:
     print(f"\n❌ File Error: {e}")
