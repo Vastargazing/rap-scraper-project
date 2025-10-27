@@ -1,8 +1,8 @@
 # Pytest Configuration and Fixtures
-import os
-import sqlite3
+# SQLite fixtures removed - project migrated to PostgreSQL
+# See src/database/postgres_adapter.py for current database implementation
+
 import sys
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -10,68 +10,7 @@ import pytest
 # Добавляем src в path для импорта модулей
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from enhancers.spotify_enhancer import SpotifyEnhancer
 from models.models import SpotifyArtist, SpotifyAudioFeatures, SpotifyTrack
-
-
-@pytest.fixture
-def temp_db():
-    """Временная база данных для тестов"""
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
-    temp_file.close()
-
-    # Создаем базовую структуру таблиц
-    conn = sqlite3.connect(temp_file.name)
-    cursor = conn.cursor()
-
-    # Основная таблица songs
-    cursor.execute("""
-        CREATE TABLE songs (
-            id INTEGER PRIMARY KEY,
-            title TEXT,
-            artist TEXT,
-            lyrics TEXT,
-            url TEXT
-        )
-    """)
-
-    # Тестовые данные
-    test_songs = [
-        (
-            1,
-            "Hotline Bling",
-            "Drake",
-            "You used to call me on my...",
-            "https://genius.com/1",
-        ),
-        (
-            2,
-            "HUMBLE.",
-            "Kendrick Lamar",
-            "Sit down, be humble...",
-            "https://genius.com/2",
-        ),
-        (3, "God's Plan", "Drake", "I only love my bed...", "https://genius.com/3"),
-    ]
-
-    cursor.executemany("INSERT INTO songs VALUES (?, ?, ?, ?, ?)", test_songs)
-    conn.commit()
-    conn.close()
-
-    yield temp_file.name
-
-    # Cleanup
-    os.unlink(temp_file.name)
-
-
-@pytest.fixture
-def mock_spotify_enhancer(temp_db):
-    """Mock Spotify enhancer с временной базой"""
-    enhancer = SpotifyEnhancer(
-        client_id="test_client_id", client_secret="test_client_secret", db_path=temp_db
-    )
-    enhancer.create_spotify_tables()
-    return enhancer
 
 
 @pytest.fixture

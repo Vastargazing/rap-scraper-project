@@ -36,7 +36,10 @@ load_dotenv(env_path)
 # Data paths
 DATA_DIR = PROJECT_ROOT / "data"
 RESULTS_DIR = PROJECT_ROOT / "results"
-DB_PATH = DATA_DIR / "rap_lyrics.db"
+
+# DB_PATH removed - project migrated to PostgreSQL
+# Use src.config.get_config().database for database configuration
+# See src/database/postgres_adapter.py for database access
 
 # API Configuration
 GENIUS_TOKEN = os.getenv(
