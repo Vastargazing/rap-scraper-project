@@ -11,12 +11,8 @@
 ИСПОЛЬЗОВАНИЕ:
 from src.enhancers.spotify_enhancer import SpotifyEnhancer
 
-ЗАВИСИМОСТИ:                # Pause between batches
-                if i + batch_size < len(tracks):
-                    await asyncio.sleep(0.5)
-
-            logger.info(f"Enhancement completed: {stats}")
-            return statstgreSQL через database/postgres_adapter.py
+ЗАВИСИМОСТИ:
+- PostgreSQL через database/postgres_adapter.py
 - spotipy для Spotify Web API
 - SPOTIFY_CLIENT_ID/SPOTIFY_CLIENT_SECRET в env
 
@@ -44,14 +40,6 @@ load_dotenv()
 
 # Настройка путей
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-# Загрузка переменных окружения
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    print("WARNING: python-dotenv не установлен, используем системные переменные")
 
 from src.database.postgres_adapter import PostgreSQLManager
 
