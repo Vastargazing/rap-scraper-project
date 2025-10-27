@@ -141,52 +141,6 @@ def get_pool_status() -> dict:
     }
 
 
-# Backward compatibility with legacy code
-class DatabaseConnection:
-    """
-    Legacy database connection wrapper
-    Provides backward compatibility with old code
-
-    Usage (legacy):
-        from src.database.connection import DatabaseConnection
-        db = DatabaseConnection()
-        db.execute("SELECT * FROM songs")
-    """
-
-    def __init__(self):
-        self.engine = get_engine()
-        self.SessionLocal = get_session_local()
-        self.session = None
-
-    def get_session(self) -> Session:
-        """Get a new session"""
-        if self.session is None:
-            self.session = self.SessionLocal()
-        return self.session
-
-    def close_session(self):
-        """Close current session"""
-        if self.session:
-            self.session.close()
-            self.session = None
-
-    def execute(self, query: str, params: dict | None = None):
-        """Execute raw SQL query"""
-        with self.engine.connect() as conn:
-            if params:
-                return conn.execute(query, params)
-            return conn.execute(query)
-
-    def __enter__(self):
-        """Context manager support"""
-        self.session = self.get_session()
-        return self.session
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Context manager cleanup"""
-        self.close_session()
-
-
 if __name__ == "__main__":
     # Test database connection
     print("🧪 Testing database connection...")
