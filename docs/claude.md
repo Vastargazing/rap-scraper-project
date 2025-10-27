@@ -56,7 +56,7 @@ python test_ml_api.py                          # Тестирование ML API
 .\multi-region\deploy-multi-region.ps1 -Action status      # Check status
 python multi-region/test-multi-region.py                   # Test deployment
 
-# GITOPS DEPLOYMENT 
+# GITOPS DEPLOYMENT
 ./gitops/install-argocd.ps1                    # Install ArgoCD
 kubectl port-forward svc/argocd-server -n argocd 8080:443  # Access UI
 kubectl get applications -n argocd             # Check app status
@@ -68,7 +68,7 @@ helm status rap-analyzer -n rap-analyzer       # Helm status
 # DATABASE DIAGNOSTICS (для разработки)
 python scripts/tools/database_diagnostics.py --quick
 python scripts/mass_qwen_analysis.py --test
-python scripts/db_browser.py
+# Note: db_browser.py removed - use DataGrip or database_diagnostics.py
 ```
 
 ## 📊 ТЕКУЩИЙ СТАТУС ПРОЕКТА
@@ -76,7 +76,7 @@ python scripts/db_browser.py
 ### Актуальные метрики (2025-09-28)
 - 🎵 **Треки**: 57,718 (PostgreSQL)
 - 🤖 **Анализ Qwen**: 57,716 (100.0%) | **✅ ЗАВЕРШЕН**
-- 🤖 **Анализ Gemma**: 34,320 (59.4%)  
+- 🤖 **Анализ Gemma**: 34,320 (59.4%)
 - 🧮 **Алгоритмический анализ**: 57,716 (100.0%) | **✅ ЗАВЕРШЕН**
 - 🎯 **Общий анализ**: 57,718/57,718 (100.0%)
 - 📊 **Всего анализов**: 269,646
@@ -134,7 +134,7 @@ python scripts/tools/database_diagnostics.py --quick
 python scripts/mass_qwen_analysis.py --test
 
 # ИНТЕРАКТИВНАЯ РАБОТА С БД
-python scripts/db_browser.py
+# Note: db_browser.py removed - use DataGrip or database_diagnostics.py
 
 # ПРОВЕРКА CONCURRENT ДОСТУПА
 python scripts/tools/database_diagnostics.py --connections
@@ -220,7 +220,7 @@ CREATE INDEX idx_analysis_created_at ON analysis_results(created_at);
 
 📊 ОБЩАЯ СТАТИСТИКА:
 • Всего треков: 57,718
-• Треков с текстами: 57,718 (100%)  
+• Треков с текстами: 57,718 (100%)
 • Проанализированных треков: 57,718 (100%)
 • Всего анализов: 269,646
 • Средний анализ на трек: 4.7
@@ -230,23 +230,23 @@ CREATE INDEX idx_analysis_created_at ON analysis_results(created_at);
 ### 🔍 ВАЖНЫЕ SQL-ЗАПРОСЫ ДЛЯ AI АГЕНТА
 ```sql
 -- Найти треки без Qwen анализа
-SELECT t.id, t.artist, t.title 
-FROM tracks t 
-LEFT JOIN analysis_results ar ON t.id = ar.track_id 
+SELECT t.id, t.artist, t.title
+FROM tracks t
+LEFT JOIN analysis_results ar ON t.id = ar.track_id
   AND ar.analyzer_type = 'qwen-3-4b-fp8'
 WHERE ar.id IS NULL AND t.lyrics IS NOT NULL
 ORDER BY t.id
 LIMIT 100;
 
 -- Статистика анализаторов
-SELECT 
+SELECT
     analyzer_type,
     COUNT(*) as total_analyses,
     COUNT(DISTINCT track_id) as unique_tracks,
     AVG(confidence) as avg_confidence,
     AVG(complexity_score) as avg_complexity
-FROM analysis_results 
-GROUP BY analyzer_type 
+FROM analysis_results
+GROUP BY analyzer_type
 ORDER BY total_analyses DESC;
 
 -- Треки конкретного исполнителя с анализом
@@ -271,7 +271,7 @@ LIMIT 20;
 ### Актуальные метрики (2025-09-26)
 - 🎵 **Треки**: 57,718 (PostgreSQL)
 - 🤖 **Анализ Qwen**: 57,716 (100.0%) | **✅ ЗАВЕРШЕН**
-- 🤖 **Анализ Gemma**: 34,320 (59.4%)  
+- 🤖 **Анализ Gemma**: 34,320 (59.4%)
 - 🧮 **Алгоритмический анализ**: 57,716 (100.0%) | **✅ ЗАВЕРШЕН**
 - 🎯 **Общий анализ**: 57,718/57,718 (100.0%)
 - � **Всего анализов**: 269,646
@@ -331,7 +331,7 @@ LIMIT 20;
 │              │                                            │
 │  ┌─────── FASTAPI SERVICE ────────┐                      │
 │  │  • Regional Auto-scaling       │                      │
-│  │  • HPA (CPU/Memory based)      │                      │  
+│  │  • HPA (CPU/Memory based)      │                      │
 │  │  • Health Probes              │                      │
 │  │  • Cross-Region Load Balancing │                      │
 │  └───────────┬───────────────────┘                      │
@@ -358,12 +358,12 @@ LIMIT 20;
 ### Legacy Development архитектура
 ```
 📦 Основные файлы для AI агента:
+├── src/config/config_loader.py          # Type-safe Pydantic Config System
 ├── src/database/postgres_adapter.py     # PostgreSQL подключение (ОСНОВА)
 ├── scripts/mass_qwen_analysis.py        # Массовый анализ (ГЛАВНЫЙ)
 ├── scripts/tools/database_diagnostics.py # Диагностика (ПЕРВАЯ ПОМОЩЬ)
-├── config.yaml                          # Конфигурация
-├── .env                                 # PostgreSQL credentials
-└── scripts/db_browser.py               # Интерактивный браузер БД
+├── config.yaml                          # Main configuration (type-safe)
+└── .env                                 # Secrets (DB password, API keys)
 ```
 
 ### Database Layer (PostgreSQL)
@@ -380,7 +380,7 @@ LIMIT 20;
 
 ### 📋 ВСЕ ТАБЛИЦЫ В POSTGRESQL
 - **`tracks`** - ОСНОВНАЯ ТАБЛИЦА (57,718 записей)
-- **`analysis_results`** - результаты AI анализа (256,021 записей)  
+- **`analysis_results`** - результаты AI анализа (256,021 записей)
 - **`songs`** - LEGACY ТАБЛИЦА (рекомендуется удаление)
 
 ### ⚠️ ТАБЛИЦА `songs` - УДАЛИТЬ?
@@ -399,28 +399,29 @@ def investigate_issue(problem_description):
     run_command("python src/config/test_loader.py")  # Full config test
     # ИЛИ
     run_command("python src/config/config_loader.py")  # Quick check
-    
+
     # ШАГ 1: БАЗА ДАННЫХ (ВСЕГДА ВТОРОЙ)
     run_command("python scripts/tools/database_diagnostics.py --quick")
-    
+
     # ШАГ 2: СПЕЦИФИЧЕСКАЯ ДИАГНОСТИКА
     if "analysis" in problem_description.lower():
         run_command("python scripts/mass_qwen_analysis.py --test")
     elif "connection" in problem_description.lower():
         run_command("python scripts/tools/database_diagnostics.py --connections")
     elif "concurrent" in problem_description.lower():
-        run_command("python scripts/db_browser.py") # тест интерактивного доступа
-    
+        # Note: db_browser.py removed - use database_diagnostics.py
+        run_command("python scripts/tools/database_diagnostics.py --connections")
+
     # ШАГ 3: КОНФИГУРАЦИЯ (если проблема не найдена)
     check_file(".env")  # PostgreSQL credentials
     check_file("config.yaml")  # система конфигурации
     check_file("src/config/config_loader.py")  # Pydantic models
-    
+
     # ШАГ 4: КОД АНАЛИЗ (если нужен)
     if requires_code_investigation():
         check_file("src/database/postgres_adapter.py")  # database layer
         check_file("scripts/mass_qwen_analysis.py")     # main script
-    
+
     return solution_with_validation_steps()
 ```
 
@@ -428,35 +429,35 @@ def investigate_issue(problem_description):
 ```sql
 -- 🔍 ПОИСК НЕАНАЛИЗИРОВАННЫХ ТРЕКОВ QWEN
 SELECT COUNT(*) FROM tracks t
-LEFT JOIN analysis_results ar ON t.id = ar.track_id 
+LEFT JOIN analysis_results ar ON t.id = ar.track_id
   AND ar.analyzer_type = 'qwen-3-4b-fp8'
 WHERE ar.id IS NULL AND t.lyrics IS NOT NULL;
 
 -- 📊 СТАТИСТИКА ПО ИСПОЛНИТЕЛЯМ
 SELECT artist, COUNT(*) as tracks_count
-FROM tracks 
+FROM tracks
 WHERE lyrics IS NOT NULL
-GROUP BY artist 
-ORDER BY tracks_count DESC 
+GROUP BY artist
+ORDER BY tracks_count DESC
 LIMIT 20;
 
 -- 🎯 ПРОГРЕСС QWEN АНАЛИЗА
-SELECT 
+SELECT
     (SELECT COUNT(*) FROM tracks WHERE lyrics IS NOT NULL) as total_tracks,
-    (SELECT COUNT(DISTINCT track_id) FROM analysis_results 
+    (SELECT COUNT(DISTINCT track_id) FROM analysis_results
      WHERE analyzer_type = 'qwen-3-4b-fp8') as analyzed_tracks,
-    ROUND(100.0 * (SELECT COUNT(DISTINCT track_id) FROM analysis_results 
-     WHERE analyzer_type = 'qwen-3-4b-fp8') / 
+    ROUND(100.0 * (SELECT COUNT(DISTINCT track_id) FROM analysis_results
+     WHERE analyzer_type = 'qwen-3-4b-fp8') /
      (SELECT COUNT(*) FROM tracks WHERE lyrics IS NOT NULL), 2) as percentage;
 
 -- ⚡ ПРОИЗВОДИТЕЛЬНОСТЬ АНАЛИЗА
-SELECT 
+SELECT
     analyzer_type,
     AVG(processing_time_ms) as avg_time_ms,
     MIN(processing_time_ms) as min_time_ms,
     MAX(processing_time_ms) as max_time_ms,
     COUNT(*) as total_analyses
-FROM analysis_results 
+FROM analysis_results
 WHERE processing_time_ms IS NOT NULL
 GROUP BY analyzer_type;
 ```
@@ -572,8 +573,8 @@ async def test():
 asyncio.run(test())
 "
 
-# Интерактивный доступ к БД
-python scripts/db_browser.py
+# Интерактивный доступ к БД - use DataGrip
+# (db_browser.py removed during refactoring)
 ```
 
 ### Уровень 3: Выполнение задач
@@ -648,8 +649,8 @@ cat .env | grep NOVITA  # проверить API ключ
 ```bash
 # PostgreSQL health check
 python scripts/tools/database_diagnostics.py --quick
-python scripts/db_browser.py  # интерактивная проверка
-python -c "from src.utils.config import get_db_config; print(get_db_config())"
+python scripts/tools/database_diagnostics.py --connections  # connection pool check
+python -c "from src.config import get_config; print(get_config().database)"
 ```
 
 ### Сценарий 3: "Concurrent access не работает"
@@ -658,7 +659,7 @@ python -c "from src.utils.config import get_db_config; print(get_db_config())"
 python scripts/mass_qwen_analysis.py --batch 10 &
 
 # Terminal 2 (одновременно)
-python scripts/db_browser.py
+python scripts/tools/database_diagnostics.py --connections
 
 # Проверка подключений
 python scripts/tools/database_diagnostics.py --connections
@@ -734,7 +735,7 @@ print('PostgreSQL adapter:', PostgreSQLManager.__file__)
 4. **`.env`** - 🔑 **Environment Variables** (Secrets, credentials)
 5. **`models/test_qwen.py`** - 🤖 **QWEN Primary ML Model** (2025-09-28)
 6. `src/database/postgres_adapter.py` - PostgreSQL connection management
-7. `scripts/mass_qwen_analysis.py` - основной анализ скрипт  
+7. `scripts/mass_qwen_analysis.py` - основной анализ скрипт
 8. `scripts/tools/database_diagnostics.py` - главный diagnostic tool
 9. **`src/models/ml_api_service.py`** - 🚀 **ML API Service** (Production ML API)
 10. **`test_ml_api.py`** - 🧪 **ML API Testing** (Test suite для ML endpoints)
@@ -801,7 +802,7 @@ python models/test_qwen.py --test-api          # Проверка подключ
 # 📊 ПОДГОТОВКА ДАННЫХ
 python models/test_qwen.py --prepare-dataset   # Загрузка 1000 samples из PostgreSQL
 
-# 🎯 ОБУЧЕНИЕ МОДЕЛИ  
+# 🎯 ОБУЧЕНИЕ МОДЕЛИ
 python models/test_qwen.py --train             # Симуляция обучения (5 samples)
 
 # 📈 ОЦЕНКА КАЧЕСТВА
@@ -831,13 +832,13 @@ models/
 
 results/qwen_training/
 ├── training_dataset.json       # 📊 Dataset (1000 samples)
-├── training_results_*.json     # 🎯 Training results 
+├── training_results_*.json     # 🎯 Training results
 └── evaluation_results_*.json   # 📈 Evaluation metrics
 ```
 
 ### 💡 QWEN для AI агента
 - **✅ QWEN** - основная модель для всех ML задач
-- **❌ GPT-2** - удален, заменен на QWEN как основную модель  
+- **❌ GPT-2** - удален, заменен на QWEN как основную модель
 - **📊 Dataset** - автоматически из PostgreSQL (57,718 треков доступно)
 - **🎯 Training** - симуляция через prompt engineering (fine-tuning пока недоступен)
 - **📈 Evaluation** - автоматическая оценка качества модели
@@ -877,7 +878,7 @@ analyzers:
     model: "qwen/qwen3-4b-fp8"
     max_retries: 3
     timeout: 30
-  
+
   gemma:
     enabled: true
     model: "gemma-3-27b-it"
@@ -920,11 +921,11 @@ performance:
 
 ### Database Health
 - ✅ PostgreSQL подключение < 100ms
-- ✅ Query response < 500ms  
+- ✅ Query response < 500ms
 - ✅ Connection pool 15+ доступных подключений
 - ✅ Data integrity 100%
 
-### Analysis Performance  
+### Analysis Performance
 - ✅ Qwen API success rate > 90%
 - ✅ Processing rate ~2-5 tracks/min
 - ✅ Error recovery работает
@@ -959,7 +960,7 @@ performance:
 0. ⚙️ **НОВОЕ:** `python src/config/test_loader.py` (config validation)
 1. `python scripts/tools/database_diagnostics.py --quick`
 2. `python scripts/mass_qwen_analysis.py --test` (для анализа)
-3. `python scripts/db_browser.py` (для интерактивной проверки)
+3. Use DataGrip for DB browsing (db_browser.py removed during refactoring)
 
 ### ⚙️ НОВОЕ: Правила работы с конфигурацией
 - ✅ **ВСЕГДА** использовать `from src.config import get_config`
