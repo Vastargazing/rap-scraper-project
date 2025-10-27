@@ -602,117 +602,6 @@ def register_analyzer(name: str):
     return decorator
 
 
-@register_analyzer("qwen")
-class QwenAnalyzerWrapper(BaseAnalyzer):
-    """
-    Wrapper around the existing legacy QwenAnalyzer implementation.
-
-    This wrapper imports the legacy analyzer at runtime to avoid circular
-    imports and adapts its synchronous API to the async `BaseAnalyzer`
-    contract. It also ensures the returned `AnalysisResult` matches the
-    new schema used by this interface.
-    """
-
-    def __init__(self, config: dict[str, Any] | None = None):
-        super().__init__(config)
-        self._legacy_config = config or {}
-        self.name = "QwenAnalyzerWrapper"
-
-    @property
-    def analyzer_type(self) -> str:
-        return AnalyzerType.QWEN.value
-
-    def get_analyzer_info(self) -> dict[str, Any]:
-        # Try to import legacy analyzer and reuse its info if available
-        try:
-            from archive.qwen_analyzer import QwenAnalyzer as LegacyQwen
-
-            legacy = LegacyQwen(self._legacy_config)
-            info = legacy.get_analyzer_info()
-            info["type"] = self.analyzer_type
-            return info
-        except Exception:
-            return {
-                "name": "QwenAnalyzerWrapper",
-                "version": "wrapper-1.0",
-                "description": "Wrapper for legacy Qwen analyzer",
-                "type": self.analyzer_type,
-                "available": self.available,
-                "supported_features": [],
-            }
-
-    @property
-    def supported_features(self) -> list[str]:
-        try:
-            from archive.qwen_analyzer import QwenAnalyzer as LegacyQwen
-
-            legacy = LegacyQwen(self._legacy_config)
-            return legacy.supported_features
-        except Exception:
-            return []
-
-    async def analyze_song(
-        self, artist: str, title: str, lyrics: str, track_id: int | None = None
-    ) -> AnalysisResult:
-        # Validate input using base helper
-        if not self.validate_input(artist, title, lyrics):
-            raise ValueError("Invalid input parameters")
-
-        # Run the legacy, synchronous analysis in a thread to avoid blocking
-        def sync_analyze():
-            from archive.qwen_analyzer import QwenAnalyzer as LegacyQwen
-
-            legacy = LegacyQwen(self._legacy_config)
-
-            if not legacy.available:
-                raise RuntimeError("Legacy Qwen analyzer not available")
-
-            start = time.time()
-
-            # reuse legacy helpers to build prompts and call model
-            system_prompt, user_prompt = legacy._create_analysis_prompts(
-                artist, title, legacy.preprocess_lyrics(lyrics)
-            )
-
-            response = legacy.client.chat.completions.create(
-                model=legacy.model_name,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                max_tokens=legacy.max_tokens,
-                temperature=legacy.temperature,
-            )
-
-            raw = legacy._parse_response(response.choices[0].message.content)
-            confidence = legacy._calculate_confidence(raw)
-            processing_time = time.time() - start
-
-            # Adapt to the new AnalysisResult schema
-            result = AnalysisResult(
-                artist=artist,
-                title=title,
-                analyzer_type=self.analyzer_type,
-                analysis_data=raw,
-                confidence=confidence,
-                processing_time=processing_time,
-                track_id=track_id,
-                status=AnalysisStatus.SUCCESS,
-                metadata={
-                    "model_name": legacy.model_name,
-                    "provider": "Novita AI",
-                    "usage": getattr(response, "usage", {}),
-                },
-                raw_output=raw,
-                timestamp=datetime.now().isoformat(),
-            )
-
-            return result
-
-        # Execute synchronous legacy logic in background
-        return await asyncio.to_thread(sync_analyze)
-
-
 @register_analyzer("advanced_algorithmic")
 class AdvancedAlgorithmicAnalyzerWrapper(BaseAnalyzer):
     """
@@ -1373,7 +1262,7 @@ async def test_all_analyzers() -> None:
 if __name__ == "__main__":
     """
     Standalone запуск для тестирования
-    
+
     Использование:
         python src/interfaces/analyzer_interface.py
         python src/interfaces/analyzer_interface.py test qwen
