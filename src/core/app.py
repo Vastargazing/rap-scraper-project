@@ -300,11 +300,10 @@ def init_analyzers():
     """Инициализируем анализаторы"""
     try:
         # Регистрируем анализаторы напрямую (обход проблем с issubclass)
-        from archive.qwen_analyzer import QwenAnalyzer
-
-        from analyzers.algorithmic_analyzer import AdvancedAlgorithmicAnalyzer
-        from analyzers.emotion_analyzer import EmotionAnalyzer
-        from analyzers.ollama_analyzer import OllamaAnalyzer
+        from src.analyzers.qwen_analyzer import QwenAnalyzer
+        from src.analyzers.algorithmic_analyzer import AdvancedAlgorithmicAnalyzer
+        from src.analyzers.emotion_analyzer import EmotionAnalyzer
+        from src.analyzers.ollama_analyzer import OllamaAnalyzer
 
         AnalyzerFactory._analyzers["algorithmic_basic"] = AdvancedAlgorithmicAnalyzer
         AnalyzerFactory._analyzers["qwen"] = QwenAnalyzer
