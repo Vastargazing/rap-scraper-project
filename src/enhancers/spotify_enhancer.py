@@ -329,7 +329,7 @@ class SpotifyEnhancer:
             }
 
             query = """
-                UPDATE tracks 
+                UPDATE tracks
                 SET spotify_data = $2
                 WHERE id = $1
             """
@@ -350,7 +350,7 @@ class SpotifyEnhancer:
         try:
             query = """
                 SELECT id, artist, title
-                FROM tracks 
+                FROM tracks
                 WHERE spotify_data IS NULL
                 ORDER BY id
                 LIMIT $1
@@ -420,11 +420,11 @@ class SpotifyEnhancer:
         """Статистика обогащения"""
         try:
             query = """
-                SELECT 
+                SELECT
                     (SELECT COUNT(*) FROM tracks) as total_songs,
                     (SELECT COUNT(*) FROM tracks WHERE spotify_data IS NOT NULL) as enhanced_songs,
-                    (SELECT AVG(CAST(spotify_data->>'popularity' AS NUMERIC)) 
-                     FROM tracks 
+                    (SELECT AVG(CAST(spotify_data->>'popularity' AS NUMERIC))
+                     FROM tracks
                      WHERE spotify_data IS NOT NULL AND spotify_data->>'popularity' != '') as avg_popularity
             """
 
