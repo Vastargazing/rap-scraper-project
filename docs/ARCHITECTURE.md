@@ -1,7 +1,7 @@
 # 🏗️ Rap Scraper Project - Architecture Documentation
 
-**Version:** 2.0.0  
-**Last Updated:** October 1, 2025  
+**Version:** 2.0.0
+**Last Updated:** October 1, 2025
 **Status:** Production-Ready ML Platform
 
 ---
@@ -587,7 +587,6 @@ rap-scraper-project/
 │
 ├── 💾 Data Directories
 │   ├── data/                   # Raw data
-│   │   ├── rap_lyrics.db       # SQLite backup
 │   │   └── ml/                 # ML datasets
 │   │
 │   ├── results/                # ML results
@@ -1021,14 +1020,15 @@ When contributing to this project:
 
 ## 📝 Version History
 
+- **2.1.0** (2025-10-27) - **Legacy Cleanup**: Removed all SQLite code (3,805 lines), full PostgreSQL migration
 - **2.0.0** (2025-10-01) - Pydantic Config System, QWEN Primary Model, 100% analysis
 - **1.5.0** (2025-09-28) - ML Models system, Quality Predictor, Style Transfer
 - **1.0.0** (2025-01-19) - Kubernetes deployment, Multi-region, GitOps
 - **0.5.0** - PostgreSQL migration, pgvector integration
-- **0.1.0** - Initial release with SQLite
+- **0.1.0** - Initial release (SQLite-based, deprecated)
 
 ---
 
-**Last Updated:** October 1, 2025  
-**Maintained by:** Vastargazing  
+**Last Updated:** October 27, 2025
+**Maintained by:** Vastargazing
 **Status:** Production-Ready ✅
