@@ -50,7 +50,7 @@ load_dotenv()
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 try:
-    from src.cli import AnalyzerCLI, BatchProcessor, PerformanceMonitor
+    from src.cli import BatchProcessor, PerformanceMonitor
     from src.core.app import create_app
     from src.interfaces.analyzer_interface import AnalyzerFactory
     from src.scrapers.rap_scraper_postgres import OptimizedPostgreSQLScraper
@@ -70,7 +70,6 @@ class RapScraperMainApp:
 
         try:
             self.app = create_app()
-            self.cli = AnalyzerCLI()
             self.batch_processor = BatchProcessor()
             self.performance_monitor = PerformanceMonitor()
 
@@ -95,13 +94,11 @@ class RapScraperMainApp:
         """Показать главное меню"""
         print("\n🎯 Main Menu:")
         print("1. 🕷️ Scraping Operations")
-        print("2. 📝 Analyze single text")
-        print("3. 📊 Compare analyzers")
-        print("4. 📦 Batch processing")
-        print("5. 📈 Performance benchmark")
-        print("6. 🔍 System information")
-        print("7. 🧪 Run tests")
-        print("8. 📋 Configuration")
+        print("2.  Batch processing")
+        print("3. 📈 Performance benchmark")
+        print("4. 🔍 System information")
+        print("5. 🧪 Run tests")
+        print("6. 📋 Configuration")
         print("0. ❌ Exit")
         print(
             "\n💡 Quick start: Press Enter to start scraping from remaining_artists.json"
@@ -114,7 +111,7 @@ class RapScraperMainApp:
             self.show_main_menu()
 
             try:
-                choice = input("Select option (0-8, Enter=scraping): ").strip()
+                choice = input("Select option (0-6, Enter=scraping): ").strip()
 
                 if choice == "":
                     # Быстрый запуск скрапинга
@@ -128,21 +125,17 @@ class RapScraperMainApp:
                 elif choice == "1":
                     await self.scraping_operations_interactive()
                 elif choice == "2":
-                    await self.analyze_single_text_interactive()
-                elif choice == "3":
-                    await self.compare_analyzers_interactive()
-                elif choice == "4":
                     await self.batch_processing_interactive()
-                elif choice == "5":
+                elif choice == "3":
                     await self.performance_benchmark_interactive()
-                elif choice == "6":
+                elif choice == "4":
                     await self.show_system_info()
-                elif choice == "7":
+                elif choice == "5":
                     await self.run_tests_interactive()
-                elif choice == "8":
+                elif choice == "6":
                     await self.show_configuration()
                 else:
-                    print("❌ Invalid choice. Please select 0-8.")
+                    print("❌ Invalid choice. Please select 0-6.")
 
                 input("\nPress Enter to continue...")
 
@@ -630,107 +623,6 @@ class RapScraperMainApp:
 
         except Exception as e:
             return {"success": False, "error": str(e), "artist": artist_name}
-
-    async def analyze_single_text_interactive(self) -> None:
-        """Интерактивный анализ одного текста"""
-        print("\n📝 Single Text Analysis")
-        print("-" * 30)
-
-        # Получаем текст
-        print("Enter text to analyze (or paste lyrics):")
-        lines = []
-        print("(Type 'END' on a new line to finish)")
-
-        while True:
-            line = input()
-            if line.strip().upper() == "END":
-                break
-            lines.append(line)
-
-        text = "\n".join(lines).strip()
-
-        if not text:
-            print("❌ No text provided")
-            return
-
-        # Выбираем анализатор
-        analyzers = self.app.list_analyzers()
-        print(f"\nAvailable analyzers: {', '.join(analyzers)}")
-        analyzer_type = input("Select analyzer: ").strip()
-
-        if analyzer_type not in analyzers:
-            print(f"❌ Unknown analyzer: {analyzer_type}")
-            return
-
-        try:
-            print(f"\n🔄 Analyzing with {analyzer_type}...")
-            result = await self.cli.analyze_text(text, analyzer_type)
-
-            print("\n📊 Analysis Results:")
-            print(f"⏱️  Analysis time: {result['analysis_time']}s")
-            print(f"📏 Text length: {result['text_length']} chars")
-            print(f"📅 Timestamp: {result['timestamp']}")
-
-            # Показываем результат анализа
-            analysis_result = result["result"]
-            if isinstance(analysis_result, dict):
-                print("\n🎯 Analysis Details:")
-                for key, value in analysis_result.items():
-                    print(f"  {key}: {value}")
-
-            # Предлагаем сохранить
-            save = input("\nSave results to file? (y/n): ").strip().lower()
-            if save == "y":
-                filename = f"analysis_result_{analyzer_type}_{result['timestamp'].replace(':', '-').replace(' ', '_')}.json"
-                with open(filename, "w", encoding="utf-8") as f:
-                    json.dump(result, f, indent=2, ensure_ascii=False)
-                print(f"💾 Results saved to: {filename}")
-
-        except Exception as e:
-            print(f"❌ Analysis failed: {e}")
-
-    async def compare_analyzers_interactive(self) -> None:
-        """Интерактивное сравнение анализаторов"""
-        print("\n📊 Compare Analyzers")
-        print("-" * 25)
-
-        # Получаем текст
-        text = input("Enter text for comparison: ").strip()
-        if not text:
-            print("❌ No text provided")
-            return
-
-        # Выбираем анализаторы
-        available = self.app.list_analyzers()
-        print(f"Available analyzers: {', '.join(available)}")
-
-        analyzer_input = input("Select analyzers (comma-separated): ").strip()
-        analyzers = [a.strip() for a in analyzer_input.split(",") if a.strip()]
-
-        if not analyzers:
-            analyzers = available  # Используем все доступные
-
-        try:
-            print(f"\n🔄 Comparing {len(analyzers)} analyzers...")
-            result = await self.cli.compare_analyzers(
-                text=text, analyzers=analyzers, output_file="comparison_results.json"
-            )
-
-            print("📊 Comparison completed!")
-            print("📄 Results saved to: comparison_results.json")
-
-            # Краткая сводка
-            if "analyzers" in result:
-                print("\n⚡ Quick Summary:")
-                for analyzer, data in result["analyzers"].items():
-                    if "error" not in data:
-                        time_taken = data.get("analysis_time", 0)
-                        print(f"  {analyzer}: {time_taken}s")
-                    else:
-                        print(f"  {analyzer}: ❌ {data['error']}")
-
-        except Exception as e:
-            print(f"❌ Comparison failed: {e}")
 
     async def batch_processing_interactive(self) -> None:
         """Интерактивная пакетная обработка"""
