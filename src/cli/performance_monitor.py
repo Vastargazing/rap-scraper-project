@@ -206,28 +206,28 @@ from src.core.app import create_app
 
 class TestAnalyzerPerformance:
     """Benchmark тесты для анализатора {analyzer_type}"""
-    
+
     @pytest.fixture(scope="class")
     def analyzer(self):
         """Фикстура анализатора"""
         app = create_app()
         return app.get_analyzer("{analyzer_type}")
-    
-    @pytest.fixture(scope="class") 
+
+    @pytest.fixture(scope="class")
     def test_texts(self):
         """Тестовые тексты"""
         return {test_texts[:10]}  # Ограничиваем для быстрых тестов
-    
+
     def test_single_analysis_benchmark(self, benchmark, analyzer, test_texts):
         """Benchmark одиночного анализа"""
         def run_analysis():
             text = test_texts[0]
             return asyncio.run(analyzer.analyze_song("Test Artist", "Test Song", text))
-        
+
         result = benchmark(run_analysis)
         assert result is not None
         assert hasattr(result, 'confidence')
-    
+
     def test_batch_analysis_benchmark(self, benchmark, analyzer, test_texts):
         """Benchmark батчевого анализа"""
         async def batch_analysis():
@@ -236,22 +236,22 @@ class TestAnalyzerPerformance:
                 result = await analyzer.analyze_song("Test Artist", f"Test Song {{i}}", text)
                 results.append(result)
             return results
-        
+
         def run_batch():
             return asyncio.run(batch_analysis())
-        
+
         results = benchmark(run_batch)
         assert len(results) == len(test_texts)
         assert all(hasattr(r, 'confidence') for r in results)
-    
+
     @pytest.mark.parametrize("text_length", [50, 200, 500, 1000])
     def test_text_length_scaling_benchmark(self, benchmark, analyzer, text_length):
         """Benchmark масштабирования по длине текста"""
         test_text = "word " * (text_length // 5)  # Примерно text_length символов
-        
+
         def run_analysis():
             return asyncio.run(analyzer.analyze_song("Test Artist", "Test Song", test_text))
-        
+
         result = benchmark(run_analysis)
         assert result is not None
 
@@ -981,7 +981,7 @@ async def run_analyzer():
     app = create_app()
     analyzer = app.get_analyzer("{analyzer_type}")
     texts = {test_texts[:10]}  # Ограничиваем для py-spy
-    
+
     for i in range(100):  # Много итераций для py-spy
         for j, text in enumerate(texts):
             try:
@@ -1067,7 +1067,7 @@ async def main():
     app = create_app()
     analyzer = app.get_analyzer("{analyzer_type}")
     text = "{test_text}"
-    
+
     try:
         import inspect
         if inspect.iscoroutinefunction(analyzer.analyze_song):
@@ -1259,8 +1259,8 @@ def generate_test_texts(count: int = 50) -> list[str]:
         "Sad lyrics about lost love and broken dreams",
         "Energetic rap with political messages and social commentary",
         "Calm meditation on nature and human existence in modern world",
-        """This is a comprehensive analysis of modern culture and its impact 
-        on society, exploring themes of justice, growth, and artistic expression 
+        """This is a comprehensive analysis of modern culture and its impact
+        on society, exploring themes of justice, growth, and artistic expression
         through complex metaphors and intricate wordplay that challenges thinking""",
     ]
 
