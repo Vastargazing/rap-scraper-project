@@ -1,22 +1,37 @@
 #!/usr/bin/env python3
 """
-🤖 Объединенный массовый Qwen анализатор (PostgreSQL + встроенный Qwen)
+Unified mass analysis tool with embedded Qwen model integration.
 
-НАЗНАЧЕНИЕ:
-- Встроенный Qwen анализатор (из archive/qwen_analyzer.py)
-- Массовый анализ PostgreSQL базы данных
-- Оптимизированная обработка без внешних зависимостей
-- Полная совместимость с системой
+This module provides a unified mass analyzer combining PostgreSQL database
+scanning with embedded Qwen language model capabilities for comprehensive
+rap song analysis. It processes unanalyzed tracks from the database,
+applies Qwen analysis through Novita AI API, and stores results for
+further processing.
 
-ИСПОЛЬЗОВАНИЕ:
-python src/analyzers/mass_qwen_analysis.py --test      # Тестовый режим
-python src/analyzers/mass_qwen_analysis.py --stats    # Статистика
-python src/analyzers/mass_qwen_analysis.py --batch 100 # Кастомный батч
-python src/analyzers/mass_qwen_analysis.py --resume   # Продолжить
+Features:
+    - Embedded Qwen analyzer (from archive/qwen_analyzer.py)
+    - Mass analysis of PostgreSQL database tracks
+    - Optimized processing without external model dependencies
+    - Full system compatibility with checkpoint/resume support
+    - Comprehensive error handling and batch processing
 
-АВТОР: AI Assistant
-ДАТА: Сентябрь 2025
-ВЕРСИЯ: 3.0 (Unified)
+Usage:
+    python src/analyzers/mass_qwen_analysis.py                    # Full analysis
+    python src/analyzers/mass_qwen_analysis.py --test             # Test mode (10 records)
+    python src/analyzers/mass_qwen_analysis.py --stats            # Database statistics only
+    python src/analyzers/mass_qwen_analysis.py --batch 100        # Custom batch size
+    python src/analyzers/mass_qwen_analysis.py --resume           # Continue from checkpoint
+    python src/analyzers/mass_qwen_analysis.py --max 1000         # Limit to 1000 records
+
+Requirements:
+    - Python 3.8+
+    - PostgreSQL database with tracks and analysis_results tables
+    - Novita API key in NOVITA_API_KEY environment variable
+    - OpenAI Python library (for Novita API client)
+    - Async database connection pool
+
+Author: AI Assistant
+Version: 3.0 (Unified)
 """
 
 import argparse
@@ -33,16 +48,16 @@ from typing import Any
 
 from dotenv import load_dotenv
 
-# Загружаем переменные окружения
+# Load environment variables from .env file
 load_dotenv()
 
-# Добавляем корневую папку в path
+# Add root folder to Python path for imports
 project_root = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
 sys.path.insert(0, project_root)
 
-# Условный импорт для OpenAI-совместимого клиента
+# Conditional import for OpenAI-compatible client
 try:
     import openai
 
@@ -51,24 +66,24 @@ except ImportError:
     HAS_OPENAI = False
 
 try:
-    from src.core.app import create_app
+    # from src.core.app import create_app  # Old import - not needed anymore
     from src.database.postgres_adapter import PostgreSQLManager
 except ImportError as e:
-    print(f"❌ Ошибка импорта: {e}")
-    print("💡 Убедитесь, что вы запускаете скрипт из корневой папки проекта")
+    print(f"❌ Import error: {e}")
+    print("💡 Make sure you are running the script from the project root directory")
     sys.exit(1)
 
 logger = logging.getLogger(__name__)
 
 
 # ============================================================================
-# ВСТРОЕННЫЙ QWEN АНАЛИЗАТОР (из archive/qwen_analyzer.py)
+# EMBEDDED QWEN ANALYZER (from archive/qwen_analyzer.py)
 # ============================================================================
 
 
 @dataclass
 class AnalysisResult:
-    """Результат анализа для совместимости с массовым анализатором"""
+    """Analysis result for compatibility with mass analyzer."""
 
     artist: str
     title: str
@@ -82,11 +97,39 @@ class AnalysisResult:
 
 class EmbeddedQwenAnalyzer:
     """
-    Встроенный Qwen анализатор (объединенная версия из archive/qwen_analyzer.py)
+    Embedded Qwen analyzer with unified integration.
+
+    This analyzer provides a unified version of the Qwen language model
+    analyzer originally from archive/qwen_analyzer.py. It integrates with
+    Novita AI API to provide cost-free analysis using the Qwen 3 4B FP8 model.
+
+    Attributes:
+        model_name: The name of the Qwen model to use (default: qwen/qwen3-4b-fp8)
+        base_url: Novita API base URL (default: https://api.novita.ai/openai/v1)
+        temperature: Model sampling temperature (default: 0.1)
+        max_tokens: Maximum tokens in response (default: 1500)
+        timeout: Request timeout in seconds (default: 30)
+        available: Boolean flag indicating if analyzer is properly initialized
+        client: OpenAI-compatible client instance for Novita API
     """
 
     def __init__(self, config: dict[str, Any] | None = None):
-        """Инициализация встроенного Qwen анализатора"""
+        """
+        Initialize the embedded Qwen analyzer.
+
+        Args:
+            config: Configuration dictionary with optional keys:
+                - model_name: Model identifier (default: qwen/qwen3-4b-fp8)
+                - base_url: API endpoint URL
+                - api_key: Novita API key (falls back to NOVITA_API_KEY env var)
+                - temperature: Sampling temperature (0.0-1.0)
+                - max_tokens: Maximum response length
+                - timeout: Request timeout
+
+        Raises:
+            None. Invalid configuration is logged but doesn't raise exceptions;
+            analyzer becomes unavailable instead (available = False).
+        """
         self.config = config or {}
 
         # Настройки модели
@@ -113,7 +156,18 @@ class EmbeddedQwenAnalyzer:
             logger.warning("⚠️ Встроенный Qwen анализатор недоступен")
 
     def _check_availability(self) -> bool:
-        """Проверка доступности Novita AI API"""
+        """
+        Check if Novita AI API is available and accessible.
+
+        Performs a test connection to the Novita AI API to verify that
+        the API key is valid and the service is reachable.
+
+        Returns:
+            bool: True if Qwen model is available and working, False otherwise.
+
+        Raises:
+            None. Exceptions are caught and logged; method returns False on error.
+        """
         if not HAS_OPENAI:
             logger.error("❌ openai не установлен. Установите: pip install openai")
             return False
@@ -149,7 +203,17 @@ class EmbeddedQwenAnalyzer:
             return False
 
     def validate_input(self, artist: str, title: str, lyrics: str) -> bool:
-        """Валидация входных данных"""
+        """
+        Validate input parameters for analysis.
+
+        Args:
+            artist: Artist name (must not be empty)
+            title: Song title (must not be empty)
+            lyrics: Song lyrics (must not be empty and minimum 10 characters)
+
+        Returns:
+            bool: True if all inputs are valid, False otherwise.
+        """
         if not all([artist, title, lyrics]):
             return False
         if len(lyrics.strip()) < 10:
@@ -157,7 +221,19 @@ class EmbeddedQwenAnalyzer:
         return True
 
     def preprocess_lyrics(self, lyrics: str) -> str:
-        """Предобработка текста песни"""
+        """
+        Preprocess song lyrics for analysis.
+
+        Cleans and normalizes lyrics by removing excessive whitespace,
+        repeated characters, URLs, and special characters while preserving
+        semantic structure.
+
+        Args:
+            lyrics: Raw song lyrics text
+
+        Returns:
+            str: Cleaned and normalized lyrics ready for analysis.
+        """
         lyrics = lyrics.strip()
 
         # Удаление избыточных пробелов
@@ -179,7 +255,24 @@ class EmbeddedQwenAnalyzer:
 
     def analyze_song(self, artist: str, title: str, lyrics: str) -> AnalysisResult:
         """
-        Анализ песни с использованием Qwen модели
+        Analyze a song using the Qwen language model.
+
+        Performs comprehensive analysis of rap lyrics including genre,
+        mood, content, technical metrics, quality assessment, and
+        cultural context. Uses the Qwen 3 4B model via Novita AI API.
+
+        Args:
+            artist: Artist name
+            title: Song title
+            lyrics: Complete song lyrics text
+
+        Returns:
+            AnalysisResult: Comprehensive analysis with confidence scores,
+                metadata, and detailed output from the model.
+
+        Raises:
+            ValueError: If input parameters are invalid (empty/too short)
+            RuntimeError: If Qwen analyzer is unavailable or analysis fails
         """
         start_time = time.time()
 
@@ -260,7 +353,20 @@ class EmbeddedQwenAnalyzer:
     def _create_analysis_prompts(
         self, artist: str, title: str, lyrics: str
     ) -> tuple[str, str]:
-        """Создание системного и пользовательского промптов для Qwen модели"""
+        """
+        Create system and user prompts for Qwen model analysis.
+
+        Generates carefully crafted prompts to ensure the model returns
+        well-structured JSON analysis output with specific analysis categories.
+
+        Args:
+            artist: Artist name for context
+            title: Song title for context
+            lyrics: Preprocessed song lyrics (max 2000 chars)
+
+        Returns:
+            tuple: (system_prompt, user_prompt) ready for API call
+        """
         # Ограничиваем длину текста для API
         max_lyrics_length = 2000
         if len(lyrics) > max_lyrics_length:
@@ -268,7 +374,7 @@ class EmbeddedQwenAnalyzer:
 
         system_prompt = """You are a rap lyrics analyzer. You MUST respond with ONLY a JSON object, no other text.
 
-CRITICAL: Do not include ANY explanations, thoughts, or text outside the JSON. 
+CRITICAL: Do not include ANY explanations, thoughts, or text outside the JSON.
 NO <think> tags, NO explanations, NO additional text.
 Start your response with { and end with }.
 
@@ -288,7 +394,7 @@ Return ONLY this JSON structure (fill with actual analysis):
     "mood_analysis": {{
         "primary_mood": "confident",
         "emotional_intensity": "high",
-        "energy_level": "high", 
+        "energy_level": "high",
         "valence": "positive"
     }},
     "content_analysis": {{
@@ -325,7 +431,19 @@ Return ONLY this JSON structure (fill with actual analysis):
         return system_prompt, user_prompt
 
     def _parse_response(self, response_text: str) -> dict[str, Any]:
-        """Парсинг ответа от Qwen модели"""
+        """
+        Parse Qwen model response into structured analysis data.
+
+        Extracts JSON from model response, handling edge cases like
+        <think> tags and malformed JSON. Falls back to default structure
+        if parsing fails.
+
+        Args:
+            response_text: Raw response from the Qwen model
+
+        Returns:
+            dict: Parsed analysis data with all required sections.
+        """
         try:
             # Очистка от лишнего текста
             response_text = response_text.strip()
@@ -405,7 +523,15 @@ Return ONLY this JSON structure (fill with actual analysis):
         return json_str
 
     def _validate_analysis_structure(self, data: dict[str, Any]) -> None:
-        """Валидация структуры результата анализа"""
+        """
+        Validate analysis data structure completeness.
+
+        Args:
+            data: Analysis data to validate. Missing sections are added.
+
+        Returns:
+            None. Modifies data dict in-place if needed.
+        """
         required_sections = [
             "genre_analysis",
             "mood_analysis",
@@ -436,7 +562,18 @@ Return ONLY this JSON structure (fill with actual analysis):
                     logger.warning(f"Invalid metric value for {metric}: {value}")
 
     def _calculate_confidence(self, analysis_data: dict[str, Any]) -> float:
-        """Вычисление уверенности в результатах анализа"""
+        """
+        Calculate overall confidence score for analysis results.
+
+        Computes confidence based on analysis completeness, genre confidence,
+        and quality metrics.
+
+        Args:
+            analysis_data: Full analysis results dictionary
+
+        Returns:
+            float: Confidence score between 0.0 and 1.0.
+        """
         confidence_factors = []
 
         # Проверка полноты анализа
@@ -486,7 +623,12 @@ Return ONLY this JSON structure (fill with actual analysis):
         return 0.5  # Средняя уверенность при отсутствии данных
 
     def _create_fallback_analysis(self) -> dict[str, Any]:
-        """Создает базовый анализ в случае ошибки парсинга ответа"""
+        """
+        Create fallback analysis structure when parsing fails.
+
+        Returns:
+            dict: Default analysis structure with low confidence values.
+        """
         return {
             "genre_analysis": {
                 "primary_genre": "rap",
@@ -532,13 +674,27 @@ Return ONLY this JSON structure (fill with actual analysis):
 
 
 # ============================================================================
-# МАССОВЫЙ АНАЛИЗАТОР (из src/analyzers/mass_qwen_analysis.py)
+# MASS ANALYZER (from src/analyzers/mass_qwen_analysis.py)
 # ============================================================================
 
 
 @dataclass
 class AnalysisStats:
-    """Статистика анализа"""
+    """
+    Statistics tracking for mass analysis operations.
+
+    Tracks processing progress including record counts, performance metrics,
+    and time estimates for batch operations.
+
+    Attributes:
+        total_records: Total records to process
+        processed: Successfully processed records
+        errors: Failed processing attempts
+        skipped: Skipped records
+        start_time: Analysis start timestamp
+        current_batch: Current batch number
+        total_batches: Total number of batches
+    """
 
     total_records: int = 0
     processed: int = 0
@@ -572,7 +728,21 @@ class AnalysisStats:
 
 
 class UnifiedQwenMassAnalyzer:
-    """Объединенный массовый анализатор с встроенным Qwen"""
+    """
+    Unified mass analyzer integrating Qwen model with PostgreSQL database.
+
+    Performs batch analysis of tracks from PostgreSQL database using the
+    embedded Qwen language model. Supports checkpoint-based resume, progress
+    tracking, and comprehensive error handling.
+
+    Attributes:
+        app: FastAPI application instance for dependencies
+        analyzer: EmbeddedQwenAnalyzer instance for model inference
+        db_manager: PostgreSQL connection manager
+        stats: AnalysisStats tracking current progress
+        last_processed_id: ID of last successfully analyzed track
+        checkpoint_file: Path to resume checkpoint file
+    """
 
     def __init__(self):
         self.app = None
@@ -616,13 +786,13 @@ class UnifiedQwenMassAnalyzer:
         try:
             async with self.db_manager.connection_pool.acquire() as conn:
                 stats_query = """
-                SELECT 
+                SELECT
                     COUNT(*) as total_tracks,
                     COUNT(CASE WHEN lyrics IS NOT NULL AND lyrics != '' THEN 1 END) as tracks_with_lyrics,
                     COUNT(DISTINCT ar.track_id) as qwen_analyzed,
                     COUNT(CASE WHEN ar.track_id IS NULL THEN 1 END) as unanalyzed
                 FROM tracks t
-                LEFT JOIN analysis_results ar ON t.id = ar.track_id 
+                LEFT JOIN analysis_results ar ON t.id = ar.track_id
                     AND ar.analyzer_type LIKE '%qwen%'
                 WHERE t.lyrics IS NOT NULL AND t.lyrics != ''
                 """
@@ -680,13 +850,13 @@ class UnifiedQwenMassAnalyzer:
             async with self.db_manager.connection_pool.acquire() as conn:
                 # Базовый запрос
                 query = """
-                SELECT t.id, t.artist, t.title, t.lyrics 
+                SELECT t.id, t.artist, t.title, t.lyrics
                 FROM tracks t
-                WHERE t.lyrics IS NOT NULL 
-                AND t.lyrics != '' 
+                WHERE t.lyrics IS NOT NULL
+                AND t.lyrics != ''
                 AND t.id NOT IN (
-                    SELECT DISTINCT track_id 
-                    FROM analysis_results 
+                    SELECT DISTINCT track_id
+                    FROM analysis_results
                     WHERE analyzer_type LIKE '%qwen%'
                 )
                 """
@@ -766,7 +936,7 @@ class UnifiedQwenMassAnalyzer:
 
                 # Вставляем новый анализ
                 insert_query = """
-                INSERT INTO analysis_results 
+                INSERT INTO analysis_results
                 (track_id, analyzer_type, analysis_data, confidence, sentiment, complexity_score, themes, processing_time_ms, model_version, created_at)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
                 RETURNING id
@@ -1027,7 +1197,27 @@ class UnifiedQwenMassAnalyzer:
 
 
 async def main():
-    """Главная функция с расширенным парсингом аргументов"""
+    """
+    Main entry point for mass Qwen analysis.
+
+    Parses command-line arguments and orchestrates the mass analysis workflow.
+    Supports multiple modes: full analysis, test mode, statistics-only, resume
+    from checkpoint, and custom batch size configuration.
+
+    Supported arguments:
+        --batch: Batch size (default: 100)
+        --max: Maximum records to analyze
+        --test: Test mode with 10 records (batch 5)
+        --resume: Continue from last checkpoint
+        --stats: Show database statistics only
+
+    Returns:
+        None. Prints progress and results to stdout.
+
+    Raises:
+        KeyboardInterrupt: Gracefully handles user interruption (Ctrl+C)
+        Exception: Logs any unexpected errors during analysis
+    """
     parser = argparse.ArgumentParser(
         description="Объединенный массовый анализ Qwen (PostgreSQL v3.0)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
