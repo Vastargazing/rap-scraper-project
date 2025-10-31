@@ -1,13 +1,20 @@
 """
 Analyzers module for the rap scraper project.
 
-Содержит реализации различных анализаторов текста песен:
-- Алгоритмические анализаторы
-- AI-анализаторы
-- Гибридные анализаторы
+This package provides unified access to all text analyzers used in the platform.
 
-New config-integrated analyzers (v2.0.0):
-- QwenAnalyzer: Type-safe QWEN with config integration
+Features:
+    - Algorithmic analyzers (rule-based, statistical)
+    - AI-powered analyzers (LLM, Qwen, Ollama, Emotion)
+    - Hybrid analyzers (combining ML and heuristics)
+
+New in v2.0.0:
+    - QwenAnalyzer: Type-safe, config-integrated QWEN analyzer
+
+Usage:
+    from src.analyzers import QwenAnalyzer, AdvancedAlgorithmicAnalyzer
+
+All analyzers are auto-registered via @register_analyzer decorator.
 """
 
 from .algorithmic_analyzer import AdvancedAlgorithmicAnalyzer
@@ -20,8 +27,8 @@ from .ollama_analyzer import OllamaAnalyzer
 # New config-integrated analyzers
 from .qwen_analyzer import QwenAnalyzer  # v2.0.0 with config integration
 
-# При создании новых анализаторов они будут автоматически зарегистрированы
-# благодаря декоратору @register_analyzer
+# When new analyzers are created, they will be automatically registered
+# thanks to the @register_analyzer decorator
 
 __all__ = [
     "AdvancedAlgorithmicAnalyzer",
