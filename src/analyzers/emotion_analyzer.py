@@ -1,28 +1,32 @@
 #!/usr/bin/env python3
-"""
-🎯 Advanced Emotion Analyzer - Production Ready
-Анализ эмоций в рэп-лирике с использованием Hugging Face transformers
+"""Advanced emotion analyzer for rap lyrics using Hugging Face transformers.
 
-УЛУЧШЕНИЯ V2.0:
-- Async-first архитектура с proper context management
-- PostgreSQL интеграция через database abstraction
-- Продвинутые эмоциональные паттерны для рэп-музыки
-- Caching и batch optimization
-- Comprehensive error handling и graceful degradation
-- Memory management и resource cleanup
-- Расширенная метрика качества анализа
+This module provides production-ready emotion analysis for rap lyrics with advanced
+features including async-first architecture, PostgreSQL integration, and rap-specific
+emotion patterns. It supports batch processing, caching, comprehensive error handling,
+and graceful degradation with proper memory management.
 
-ИСПОЛЬЗОВАНИЕ:
-python src/analyzers/emotion_analyzer.py --test
-# Or via main.py interface with PostgreSQL backend
+Key Features:
+    - Async-first architecture with proper context management
+    - PostgreSQL integration through database abstraction layer
+    - Advanced emotion patterns optimized for rap music
+    - Result caching and batch optimization
+    - Comprehensive error handling with graceful degradation
+    - Memory management and resource cleanup
+    - Extended quality assessment metrics
 
-ТРЕБОВАНИЯ:
-- Python 3.8+
-- transformers >= 4.21.0
-- torch >= 1.12.0
-- PostgreSQL connection (через project config)
+Usage:
+    python src/analyzers/emotion_analyzer.py --test
+    Or via main.py interface with PostgreSQL backend
 
-АВТОР: Enhanced by Claude | ДАТА: Сентябрь 2025
+Requirements:
+    - Python 3.8+
+    - transformers >= 4.21.0
+    - torch >= 1.12.0
+    - PostgreSQL connection configured via project config
+
+Author: Vastargazing
+Date: September 2025
 """
 
 import sys
@@ -66,7 +70,7 @@ try:
 except ImportError:
     HAS_INTERFACE = False
 
-    # Fallback для независимого тестирования
+    # Fallback for independent testing
     class BaseAnalyzer:
         def __init__(self, config=None):
             self.config = config or {}
@@ -101,10 +105,10 @@ except ImportError:
     DatabaseConfig = None
 
 
-# Enhanced результат с детальными метриками
+# Enhanced result with detailed metrics
 @dataclass
 class EmotionAnalysisResult:
-    """Расширенный результат анализа эмоций"""
+    """Extended emotion analysis result with detailed metrics."""
 
     analyzer_name: str
     sentiment_score: float  # 0.0-1.0 (negative to positive)
@@ -123,7 +127,7 @@ class EmotionAnalysisResult:
     complexity_score: float = 0.0
 
 
-# Model cache для предотвращения повторной загрузки
+# Model cache to prevent repeated loading
 class ModelCache:
     """Thread-safe model caching"""
 
@@ -183,16 +187,20 @@ logger = logging.getLogger(__name__)
 
 @register_analyzer("emotion_analyzer")
 class EmotionAnalyzer(BaseAnalyzer):
-    """
-    Production-ready анализатор эмоций для рэп-лирики
+    """Production-ready emotion analyzer for rap lyrics.
 
-    НОВЫЕ ВОЗМОЖНОСТИ V2.0:
-    - Async-first с proper resource management
-    - Rap-specific emotion patterns и метрики
-    - Advanced caching и batch processing
-    - PostgreSQL-ready с structured metadata
-    - Enhanced error handling и monitoring
-    - Memory-efficient model loading
+    This analyzer provides comprehensive emotion analysis with async-first architecture,
+    proper resource management, and rap-specific emotion patterns. It includes advanced
+    caching and batch processing capabilities, PostgreSQL integration with structured
+    metadata, enhanced error handling, and memory-efficient model loading.
+
+    Key Features:
+        - Async-first with proper resource management
+        - Rap-specific emotion patterns and metrics
+        - Advanced caching and batch processing
+        - PostgreSQL-ready with structured metadata
+        - Enhanced error handling and monitoring
+        - Memory-efficient model loading
     """
 
     # Rap-specific emotion mappings
@@ -205,7 +213,7 @@ class EmotionAnalyzer(BaseAnalyzer):
         "energy": ["excitement", "hype", "motivation"],
     }
 
-    # Расширенные ключевые слова для рэп-анализа
+    # Extended keywords for rap analysis
     RAP_KEYWORDS = {
         "aggression": {
             "high": ["fuck", "shit", "damn", "bitch", "kill", "murder", "war", "fight"],
@@ -1286,7 +1294,14 @@ class EmotionAnalyzer(BaseAnalyzer):
 
 # Performance monitoring decorator
 def monitor_performance(func):
-    """Decorator для мониторинга производительности"""
+    """Decorator for monitoring function performance metrics.
+
+    Args:
+        func: Async function to monitor.
+
+    Returns:
+        Wrapped function with performance monitoring.
+    """
 
     @functools.wraps(func)
     async def wrapper(self, *args, **kwargs):
@@ -1309,7 +1324,7 @@ def monitor_performance(func):
     return wrapper
 
 
-# Utility functions для тестирования и интеграции
+# Utility functions for testing and integration
 async def test_analyzer_comprehensive():
     """Comprehensive analyzer testing"""
     print("🎯 Testing Enhanced Emotion Analyzer V2.0")
@@ -1507,7 +1522,11 @@ async def test_batch_processing():
 
 # Interactive menu functions
 async def create_interactive_menu():
-    """Создать интерактивное меню для выбора режима анализа"""
+    """Display interactive menu for selecting analysis mode.
+
+    Returns:
+        None: Prints menu to stdout.
+    """
     print("\n" + "=" * 70)
     print("🎯 ENHANCED EMOTION ANALYZER V2.0 - ИНТЕРАКТИВНОЕ МЕНЮ")
     print("=" * 70)
@@ -1900,8 +1919,8 @@ async def search_tracks_by_artist(db_manager, artist_name: str, limit: int = 10)
     """Поиск треков по исполнителю"""
     try:
         query = """
-        SELECT id, artist, title, lyrics 
-        FROM tracks 
+        SELECT id, artist, title, lyrics
+        FROM tracks
         WHERE artist ILIKE %s AND lyrics IS NOT NULL
         LIMIT %s
         """
@@ -1916,8 +1935,8 @@ async def search_tracks_by_title(db_manager, title: str, limit: int = 10):
     """Поиск треков по названию"""
     try:
         query = """
-        SELECT id, artist, title, lyrics 
-        FROM tracks 
+        SELECT id, artist, title, lyrics
+        FROM tracks
         WHERE title ILIKE %s AND lyrics IS NOT NULL
         LIMIT %s
         """
@@ -1932,8 +1951,8 @@ async def get_random_track(db_manager):
     """Получить случайный трек"""
     try:
         query = """
-        SELECT id, artist, title, lyrics 
-        FROM tracks 
+        SELECT id, artist, title, lyrics
+        FROM tracks
         WHERE lyrics IS NOT NULL
         ORDER BY RANDOM()
         LIMIT 1
@@ -2004,8 +2023,8 @@ async def get_unanalyzed_tracks_count(db_manager):
 
         # Проанализированные треков emotion_analyzer_v2
         analyzed_query = """
-        SELECT COUNT(DISTINCT track_id) as count 
-        FROM analysis_results 
+        SELECT COUNT(DISTINCT track_id) as count
+        FROM analysis_results
         WHERE analyzer_type = 'emotion_analyzer_v2'
         """
         analyzed_result = await db_manager.execute_query(analyzed_query)
@@ -2025,9 +2044,9 @@ async def get_analyzer_stats(db_manager):
     """Получить статистику по анализаторам"""
     try:
         query = """
-        SELECT analyzer_type, COUNT(*) as count 
-        FROM analysis_results 
-        GROUP BY analyzer_type 
+        SELECT analyzer_type, COUNT(*) as count
+        FROM analysis_results
+        GROUP BY analyzer_type
         ORDER BY count DESC
         """
         result = await db_manager.execute_query(query)
