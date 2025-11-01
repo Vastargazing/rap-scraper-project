@@ -1,91 +1,42 @@
 """
-TO_DO
-🎉 **Отлично! Скрипт теперь работает полностью корректно!**
+Multi-model AI song analysis with safety validation and hallucination detection.
 
-## ✅ **Проблема решена:**
-- **NameError для `GemmaProvider` и `MockProvider`** - исправлен путем правильного порядка определения классов
-- **SyntaxError** - исправлен в предыдущих шагах
-- **Скрипт выполняется без ошибок**
+This module provides a comprehensive rap song analysis system that combines multiple
+AI providers (Ollama, Google Gemma, Mock) with safety layers for hallucination
+detection and result validation. Features interpretable AI with explanations for
+each analysis decision.
 
-## 📊 **Результаты тестирования:**
+Features:
+    - Multi-provider architecture with automatic fallback (Ollama → Gemma → Mock)
+    - Hallucination detection and safety validation layer
+    - Explainable AI with detailed reasoning for each decision
+    - Batch processing with progress tracking
+    - Cost optimization using free models as priority
+    - Comprehensive song analysis: genre, mood, energy, structure, quality metrics
+    - PostgreSQL integration for persistent storage
 
-### 🔧 **Техническое состояние:**
-- ✅ **Ollama провайдер**: Недоступен (сервер не запущен) - нормально
-- ✅ **Gemma провайдер**: Недоступен (API ключ не настроен) - нормально
-- ✅ **Mock провайдер**: Работает как надежный fallback
-- ✅ **PostgreSQL**: Подключение успешно
-- ✅ **AI Safety & Hallucination Detection**: Полностью функционален
+Provider Priority:
+    1. Ollama: Local models (free, no API key required)
+    2. Google Gemma: Cloud API (requires GOOGLE_API_KEY env var)
+    3. Mock: Fallback provider for testing/demo purposes
 
-### 🎯 **Функциональность:**
-- ✅ **Многомодельный анализ**: Работает с fallback между провайдерами
-- ✅ **Интерпретируемость**: Показывает объяснения решений AI
-- ✅ **Валидация безопасности**: Детектирует галлюцинации и подозрительные результаты
-- ✅ **Статистика использования**: Отслеживает использование разных провайдеров
+Dependencies:
+    - Python 3.8+
+    - asyncpg, psycopg2-binary: PostgreSQL connectivity
+    - ollama: Local model framework
+    - google-generativeai: Gemma API client
+    - pydantic: Data validation models
+    - requests: HTTP requests
 
-### 📈 **Производительность:**
-- **3 песни проанализированы** успешно
-- **0 ошибок** выполнения
-- **$0.0000** стоимость (использован бесплатный Mock провайдер)
+Analysis Output:
+    - Complete genre, mood, energy, and structure analysis
+    - Quality metrics: authenticity, creativity, commercial appeal
+    - Reliability validation: hallucination detection, consistency checking
+    - Decision explanations: AI reasoning for each analysis element
+    - Metadata and timestamps for audit trails
 
-## 🚀 **Рекомендации для продакшена:**
-
-1. **Запустите Ollama сервер** для локального анализа:
-   ```bash
-   ollama serve
-   ollama pull llama3.2:3b
-   ```
-
-2. **Настройте Google API ключ** для облачного анализа:
-   ```bash
-   # Добавьте в .env файл
-   GOOGLE_API_KEY=your_api_key_here
-   ```
-
-3. **Используйте PostgreSQL** для сохранения результатов анализа
-
-Система готова к полноценному использованию! 🎵🤖
-
-
-🤖 Многоуровневый AI анализатор текстов песен с Safety & Hallucination Detection
-
-НАЗНАЧЕНИЕ:
-- Глубокий AI-анализ текстов песен с помощью нескольких моделей
-- Классификация жанра, настроения, качества, тематики
-- Детекция галлюцинаций и валидация надежности AI
-- Интерпретируемость решений с объяснениями
-- Использование облачных и локальных API
-
-ИСПОЛЬЗОВАНИЕ:
-- Ollama (приоритет): локальные модели, бесплатно
-- Google Gemma (fallback): облачное API
-- Mock Provider (резерв): для тестирования
-- Safety Layer: автоматическая валидация результатов
-- Interpretability: объяснение решений AI
-
-ЗАВИСИМОСТИ:
-- Python 3.8+
-- asyncpg, psycopg2-binary (для PostgreSQL)
-- ollama (для локальных моделей)
-- google-generativeai (для Gemma API)
-- pydantic (для моделей данных)
-- requests (для HTTP запросов)
-
-РЕЗУЛЬТАТ:
-- Полный анализ: жанр, настроение, энергия, структура
-- Качественные метрики: аутентичность, креативность, коммерческий потенциал
-- Валидация надежности: детекция галлюцинаций, консистентность
-- Объяснения решений: почему AI принял то или иное решение
-- Сохранение в базу данных с метаданными
-
-ОСОБЕННОСТИ:
-- Multi-provider fallback система
-- Safety & Hallucination Detection
-- Interpretability & Explainability
-- Batch processing с progress tracking
-- Cost optimization (бесплатные модели в приоритете)
-
-АВТОР: AI Assistant
-ДАТА: Сентябрь 2025
+Author: AI Assistant
+Version: 3.0 (Multi-Model with Interpretability & Safety)
 """
 
 import asyncio
@@ -115,6 +66,20 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger(__name__)
+
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("ai_analysis.log", encoding="utf-8"),
+        logging.StreamHandler(),
+    ],
+)
 
 
 # ===== PostgreSQL Configuration =====
@@ -1912,11 +1877,11 @@ class MultiModelAnalyzer:
             async with self.db_manager.get_connection() as conn:
                 # Получаем песни для анализа
                 query = """
-                    SELECT t.id, t.artist, t.title, t.lyrics 
+                    SELECT t.id, t.artist, t.title, t.lyrics
                     FROM tracks t
-                    LEFT JOIN analysis_results ar ON t.id = ar.track_id 
+                    LEFT JOIN analysis_results ar ON t.id = ar.track_id
                         AND ar.analyzer_type = 'multi_model_ai'
-                    WHERE t.lyrics IS NOT NULL 
+                    WHERE t.lyrics IS NOT NULL
                         AND LENGTH(TRIM(t.lyrics)) > 50
                         AND ar.id IS NULL  -- Только неанализированные
                     ORDER BY t.id
@@ -2110,7 +2075,7 @@ async def main():
         В подъездах темных правду познавал
         Молодость прошла в дыму и драках
         Теперь читаю правду в этих строках
-        
+
         Деньги, слава - все это пустота
         Главное остаться собой до конца
         Семья и верные друзья рядом
