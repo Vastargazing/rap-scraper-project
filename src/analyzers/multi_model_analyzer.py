@@ -1,91 +1,65 @@
-"""
-TO_DO
-🎉 **Отлично! Скрипт теперь работает полностью корректно!**
+"""Multi-model AI analyzer for rap lyrics with safety validation and interpretability.
 
-## ✅ **Проблема решена:**
-- **NameError для `GemmaProvider` и `MockProvider`** - исправлен путем правильного порядка определения классов
-- **SyntaxError** - исправлен в предыдущих шагах
-- **Скрипт выполняется без ошибок**
+This module provides comprehensive AI-powered analysis of rap song lyrics using
+multiple provider models with automatic fallback, safety validation, and hallucination
+detection. It supports local models (Ollama), cloud APIs (Google Gemma), and mock
+providers for testing.
 
-## 📊 **Результаты тестирования:**
+Key Features:
+    - Multi-provider AI analysis with automatic fallback (Ollama -> Gemma -> Mock)
+    - Safety validation and hallucination detection to ensure reliable results
+    - Interpretable analysis with decision explanations and confidence scores
+    - Batch processing with PostgreSQL storage and async support
+    - Cost optimization (prioritizes free local models)
+    - Comprehensive quality metrics and authenticity scoring
 
-### 🔧 **Техническое состояние:**
-- ✅ **Ollama провайдер**: Недоступен (сервер не запущен) - нормально
-- ✅ **Gemma провайдер**: Недоступен (API ключ не настроен) - нормально
-- ✅ **Mock провайдер**: Работает как надежный fallback
-- ✅ **PostgreSQL**: Подключение успешно
-- ✅ **AI Safety & Hallucination Detection**: Полностью функционален
+Architecture:
+    - ModelProvider: Base class for AI providers (Ollama, Gemma, Mock)
+    - MultiModelAnalyzer: Main analyzer with fallback logic
+    - SafetyValidator: Validates analysis reliability and detects hallucinations
+    - InterpretableAnalyzer: Generates explanations for AI decisions
+    - PostgreSQLManager: Async database connection management
 
-### 🎯 **Функциональность:**
-- ✅ **Многомодельный анализ**: Работает с fallback между провайдерами
-- ✅ **Интерпретируемость**: Показывает объяснения решений AI
-- ✅ **Валидация безопасности**: Детектирует галлюцинации и подозрительные результаты
-- ✅ **Статистика использования**: Отслеживает использование разных провайдеров
+Typical Usage:
+    Basic analysis:
+        analyzer = MultiModelAnalyzer()
+        await analyzer.initialize()
+        result = analyzer.analyze_song("Kendrick Lamar", "HUMBLE.", lyrics)
+        await analyzer.close()
 
-### 📈 **Производительность:**
-- **3 песни проанализированы** успешно
-- **0 ошибок** выполнения
-- **$0.0000** стоимость (использован бесплатный Mock провайдер)
+    Analysis with safety validation:
+        result = analyzer.analyze_song_with_safety("Drake", "Hotline Bling", lyrics)
+        if result['is_safe']:
+            print(f"Reliable: {result['summary']}")
 
-## 🚀 **Рекомендации для продакшена:**
+    Explainable analysis:
+        explainable = analyzer.analyze_with_explanations("Artist", "Title", lyrics)
+        print(f"Confidence: {explainable.confidence:.2f}")
+        print(f"Explanations: {explainable.explanation}")
 
-1. **Запустите Ollama сервер** для локального анализа:
-   ```bash
-   ollama serve
-   ollama pull llama3.2:3b
-   ```
+    Batch processing:
+        await analyzer.batch_analyze_from_db(limit=100)
 
-2. **Настройте Google API ключ** для облачного анализа:
-   ```bash
-   # Добавьте в .env файл
-   GOOGLE_API_KEY=your_api_key_here
-   ```
+Dependencies:
+    - asyncpg, psycopg2-binary: PostgreSQL connectivity
+    - ollama: Local model inference (optional)
+    - google-generativeai: Gemma API access (optional)
+    - pydantic: Data validation and models
+    - requests: HTTP requests for Ollama API
 
-3. **Используйте PostgreSQL** для сохранения результатов анализа
+Environment Variables:
+    - POSTGRES_HOST: PostgreSQL server (default: localhost)
+    - POSTGRES_PORT: PostgreSQL port (default: 5432)
+    - POSTGRES_DATABASE: Database name (default: rap_lyrics)
+    - POSTGRES_USERNAME: Database user (default: rap_user)
+    - POSTGRES_PASSWORD: Database password (required)
+    - GOOGLE_API_KEY: Google Gemma API key (optional)
 
-Система готова к полноценному использованию! 🎵🤖
+Author:
+    AI Assistant
 
-
-🤖 Многоуровневый AI анализатор текстов песен с Safety & Hallucination Detection
-
-НАЗНАЧЕНИЕ:
-- Глубокий AI-анализ текстов песен с помощью нескольких моделей
-- Классификация жанра, настроения, качества, тематики
-- Детекция галлюцинаций и валидация надежности AI
-- Интерпретируемость решений с объяснениями
-- Использование облачных и локальных API
-
-ИСПОЛЬЗОВАНИЕ:
-- Ollama (приоритет): локальные модели, бесплатно
-- Google Gemma (fallback): облачное API
-- Mock Provider (резерв): для тестирования
-- Safety Layer: автоматическая валидация результатов
-- Interpretability: объяснение решений AI
-
-ЗАВИСИМОСТИ:
-- Python 3.8+
-- asyncpg, psycopg2-binary (для PostgreSQL)
-- ollama (для локальных моделей)
-- google-generativeai (для Gemma API)
-- pydantic (для моделей данных)
-- requests (для HTTP запросов)
-
-РЕЗУЛЬТАТ:
-- Полный анализ: жанр, настроение, энергия, структура
-- Качественные метрики: аутентичность, креативность, коммерческий потенциал
-- Валидация надежности: детекция галлюцинаций, консистентность
-- Объяснения решений: почему AI принял то или иное решение
-- Сохранение в базу данных с метаданными
-
-ОСОБЕННОСТИ:
-- Multi-provider fallback система
-- Safety & Hallucination Detection
-- Interpretability & Explainability
-- Batch processing с progress tracking
-- Cost optimization (бесплатные модели в приоритете)
-
-АВТОР: AI Assistant
-ДАТА: Сентябрь 2025
+Version:
+    2.0.0 - Multi-model with safety validation
 """
 
 import asyncio
@@ -119,7 +93,24 @@ logger = logging.getLogger(__name__)
 
 # ===== PostgreSQL Configuration =====
 class DatabaseConfig:
-    """PostgreSQL connection configuration"""
+    """PostgreSQL database connection configuration.
+
+    Configuration class for PostgreSQL connection parameters loaded from
+    environment variables with sensible defaults.
+
+    Attributes:
+        host: PostgreSQL server hostname (default: localhost).
+        port: PostgreSQL server port (default: 5432).
+        database: Target database name (default: rap_lyrics).
+        username: Database username for authentication (default: rap_user).
+        password: Database password for authentication (default: securepassword123).
+        max_connections: Maximum connection pool size (default: 20).
+        min_connections: Minimum connection pool size (default: 5).
+
+    Note:
+        All attributes are loaded from environment variables with POSTGRES_ prefix.
+        Connection pooling parameters should be tuned based on expected load.
+    """
 
     host: str = os.getenv("POSTGRES_HOST", "localhost")
     port: int = int(os.getenv("POSTGRES_PORT", "5432"))
@@ -132,7 +123,21 @@ class DatabaseConfig:
 
 # ===== Data Models =====
 class SongMetadata(BaseModel):
-    """Song metadata model"""
+    """Song metadata and high-level characteristics.
+
+    Pydantic model for storing basic song metadata including genre classification,
+    emotional characteristics, and content warnings.
+
+    Attributes:
+        genre: Music genre classification (e.g., "rap", "trap", "drill", "old_school").
+            Default: "rap".
+        mood: Emotional mood/tone (e.g., "aggressive", "melancholic", "energetic", "neutral").
+            Default: "neutral".
+        energy_level: Energy intensity level ("low", "medium", "high").
+            Default: "medium".
+        explicit_content: Whether song contains explicit language or mature themes.
+            Default: False.
+    """
 
     genre: str = Field(default="rap")
     mood: str = Field(default="neutral")
@@ -141,7 +146,27 @@ class SongMetadata(BaseModel):
 
 
 class LyricsAnalysis(BaseModel):
-    """Lyrics analysis model"""
+    """Detailed lyrics structure and literary analysis.
+
+    Pydantic model for in-depth analysis of lyrical content, structure,
+    themes, and artistic techniques.
+
+    Attributes:
+        structure: Song structure pattern (e.g., "verse-chorus-verse", "freestyle", "hook").
+            Default: "verse".
+        rhyme_scheme: Rhyme pattern (e.g., "AABB", "ABAB", "complex", "simple").
+            Default: "unknown".
+        complexity_level: Lyrical complexity rating ("beginner", "intermediate", "advanced").
+            Default: "intermediate".
+        main_themes: List of identified thematic elements (e.g., ["money", "street_life"]).
+            Default: empty list.
+        emotional_tone: Overall emotional tone ("positive", "negative", "neutral", "mixed").
+            Default: "neutral".
+        storytelling_type: Narrative style ("narrative", "abstract", "conversational").
+            Default: "conversational".
+        wordplay_quality: Quality of wordplay and linguistic creativity ("basic", "good", "excellent").
+            Default: "basic".
+    """
 
     structure: str = Field(default="verse")
     rhyme_scheme: str = Field(default="unknown")
@@ -153,7 +178,33 @@ class LyricsAnalysis(BaseModel):
 
 
 class QualityMetrics(BaseModel):
-    """Quality metrics model"""
+    """Quality and authenticity metrics for song analysis.
+
+    Pydantic model for quantitative quality assessments across multiple dimensions
+    including authenticity, creativity, commercial viability, and AI detection.
+
+    Attributes:
+        authenticity_score: Perceived authenticity and genuineness (0.0-1.0).
+            Higher values indicate more authentic street/real expression.
+            Default: 0.5.
+        lyrical_creativity: Creative and linguistic innovation level (0.0-1.0).
+            Measures wordplay, metaphors, and unique expression.
+            Default: 0.5.
+        commercial_appeal: Mainstream commercial potential (0.0-1.0).
+            Likelihood of broad audience appeal and radio play.
+            Default: 0.5.
+        uniqueness: Originality and distinctiveness (0.0-1.0).
+            How unique the style and content are.
+            Default: 0.5.
+        overall_quality: Aggregate quality rating ("poor", "fair", "good", "excellent").
+            Default: "fair".
+        ai_likelihood: Probability lyrics are AI-generated (0.0-1.0).
+            Higher values suggest potential AI authorship.
+            Default: 0.5.
+
+    Note:
+        All float metrics are constrained to [0.0, 1.0] range via Pydantic validation.
+    """
 
     authenticity_score: float = Field(default=0.5, ge=0.0, le=1.0)
     lyrical_creativity: float = Field(default=0.5, ge=0.0, le=1.0)
@@ -164,7 +215,31 @@ class QualityMetrics(BaseModel):
 
 
 class EnhancedSongData(BaseModel):
-    """Результат AI анализа песни"""
+    """Complete AI analysis results for a song.
+
+    Comprehensive analysis result combining metadata, lyrical analysis,
+    quality metrics, and analysis metadata.
+
+    Attributes:
+        artist: Artist/performer name.
+        title: Song title.
+        metadata: High-level metadata (genre, mood, energy, explicit).
+        lyrics_analysis: Detailed lyrical analysis (structure, themes, complexity).
+        quality_metrics: Quality scores (authenticity, creativity, commercial appeal).
+        model_used: Name of AI model/provider used (e.g., "ollama", "gemma-2-27b-it").
+        analysis_date: ISO 8601 timestamp of analysis completion.
+
+    Example:
+        >>> data = EnhancedSongData(
+        ...     artist="Kendrick Lamar",
+        ...     title="HUMBLE.",
+        ...     metadata=SongMetadata(genre="trap", mood="aggressive"),
+        ...     lyrics_analysis=LyricsAnalysis(complexity_level="advanced"),
+        ...     quality_metrics=QualityMetrics(authenticity_score=0.92),
+        ...     model_used="ollama-llama3.2",
+        ...     analysis_date="2025-11-02T10:30:00"
+        ... )
+    """
 
     artist: str
     title: str
@@ -176,7 +251,33 @@ class EnhancedSongData(BaseModel):
 
 
 class ExplainableAnalysisResult(BaseModel):
-    """Результат анализа с объяснениями"""
+    """Analysis result with AI decision explanations and interpretability.
+
+    Extended analysis result that includes base analysis plus interpretability
+    features: explanations, confidence scores, decision factors, and influential phrases.
+
+    Attributes:
+        analysis: Base EnhancedSongData analysis result.
+        explanation: Category-keyed explanations for AI decisions.
+            Keys: "genre_indicators", "mood_triggers", "authenticity_markers", "quality_indicators".
+            Values: List of human-readable explanation strings.
+        confidence: Overall confidence score in analysis (0.0-1.0).
+            Based on text length, genre evidence, metric consistency, and detail presence.
+        decision_factors: Dictionary of factor names to importance scores (0.0-1.0).
+            E.g., {"trap_keywords": 0.85, "authenticity": 0.73, "word_diversity": 0.67}.
+        influential_phrases: Category-keyed lists of influential lyrics phrases.
+            Keys: "genre_phrases", "mood_phrases", "authenticity_phrases", "quality_phrases".
+            Values: Lists of actual lyrics lines that influenced the decision.
+
+    Example:
+        >>> result = ExplainableAnalysisResult(
+        ...     analysis=enhanced_data,
+        ...     explanation={"genre_indicators": ["Genre 'trap' detected: молли, lean, скрр"]},
+        ...     confidence=0.87,
+        ...     decision_factors={"trap_keywords": 0.92, "authenticity": 0.78},
+        ...     influential_phrases={"genre_phrases": ["Молли в моей чашке, я lean пью"]}
+        ... )
+    """
 
     analysis: EnhancedSongData
     explanation: dict[str, list[str]]
@@ -187,15 +288,56 @@ class ExplainableAnalysisResult(BaseModel):
 
 # ===== PostgreSQL Database Manager =====
 class PostgreSQLManager:
-    """PostgreSQL connection manager with async support"""
+    """PostgreSQL connection manager with async connection pooling.
+
+    Manages asyncpg connection pool for efficient async database operations.
+    Supports both async and synchronous connection modes with automatic
+    connection lifecycle management.
+
+    Attributes:
+        config: DatabaseConfig instance with connection parameters.
+        pool: asyncpg connection pool (None until initialized).
+        logger: Logger instance for database operations.
+
+    Example:
+        >>> db = PostgreSQLManager()
+        >>> await db.initialize()
+        >>> async with db.get_connection() as conn:
+        ...     result = await conn.fetch("SELECT * FROM tracks LIMIT 10")
+        >>> await db.close()
+    """
 
     def __init__(self, config: DatabaseConfig = None):
+        """Initialize PostgreSQL manager with configuration.
+
+        Args:
+            config: DatabaseConfig instance. If None, creates default config
+                from environment variables.
+
+        Note:
+            Connection pool is not created until initialize() is called.
+        """
         self.config = config or DatabaseConfig()
         self.pool = None
         self.logger = logging.getLogger(f"{__name__}.PostgreSQLManager")
 
     async def initialize(self) -> bool:
-        """Initialize connection pool"""
+        """Initialize asyncpg connection pool and test connectivity.
+
+        Creates connection pool with configured min/max size and tests
+        database connectivity by executing a simple query.
+
+        Returns:
+            True if pool initialized and test query succeeds, False otherwise.
+
+        Side Effects:
+            - Creates self.pool asyncpg connection pool
+            - Logs initialization status
+
+        Note:
+            This method is idempotent - calling multiple times recreates the pool.
+            Connection timeout is set to 60 seconds for all queries.
+        """
         try:
             self.logger.info("Initializing PostgreSQL connection pool")
 
@@ -224,19 +366,60 @@ class PostgreSQLManager:
             return False
 
     async def get_connection(self):
-        """Get database connection from pool"""
+        """Get connection from pool, initializing if necessary.
+
+        Returns:
+            asyncpg.pool.PoolAcquireContext: Connection context manager.
+                Use with async context manager pattern.
+
+        Side Effects:
+            If pool not initialized, calls initialize() automatically.
+
+        Example:
+            >>> async with db.get_connection() as conn:
+            ...     rows = await conn.fetch("SELECT * FROM tracks")
+        """
         if not self.pool:
             await self.initialize()
         return self.pool.acquire()
 
     async def close(self):
-        """Close connection pool"""
+        """Close connection pool and release all connections.
+
+        Gracefully closes all pooled connections and resets pool to None.
+        Safe to call multiple times (idempotent).
+
+        Side Effects:
+            - Closes all active connections in pool
+            - Sets self.pool to None
+        """
         if self.pool:
             await self.pool.close()
             self.pool = None
 
     def get_sync_connection(self):
-        """Get synchronous connection for non-async operations"""
+        """Get synchronous psycopg2 connection for non-async operations.
+
+        Creates a new synchronous connection using psycopg2 with RealDictCursor
+        for dict-style row access. Connection is NOT pooled.
+
+        Returns:
+            psycopg2.extensions.connection: Synchronous database connection
+                with RealDictCursor factory.
+
+        Warning:
+            Caller is responsible for closing the connection.
+            Prefer async methods when possible for better performance.
+
+        Example:
+            >>> conn = db.get_sync_connection()
+            >>> try:
+            ...     cursor = conn.cursor()
+            ...     cursor.execute("SELECT * FROM tracks LIMIT 1")
+            ...     row = cursor.fetchone()
+            ... finally:
+            ...     conn.close()
+        """
         return psycopg2.connect(
             host=self.config.host,
             port=self.config.port,
@@ -248,9 +431,45 @@ class PostgreSQLManager:
 
 
 class SafetyValidator:
-    """Валидатор для проверки достоверности AI анализа и детекции галлюцинаций"""
+    """Validator for AI analysis reliability and hallucination detection.
+
+    Comprehensive validation system that checks AI-generated analysis results
+    for internal consistency, factual accuracy, hallucinations, and text-analysis
+    alignment. Uses keyword-based validation with English and Russian support.
+
+    Key Validation Checks:
+        - Internal consistency: Logical coherence of predictions
+        - Factual accuracy: Claims match actual lyrics content
+        - Hallucination detection: Identifies fabricated themes/attributes
+        - Text alignment: Analysis matches lyrics characteristics
+        - Warning flags: Identifies suspicious patterns
+
+    Attributes:
+        theme_keywords: Dict mapping themes to English keyword lists.
+        mood_indicators: Dict mapping moods to English keyword lists.
+        consistency_threshold: Minimum score for consistency (default: 0.6).
+        hallucination_threshold: Maximum acceptable hallucination risk (default: 0.4).
+
+    Example:
+        >>> validator = SafetyValidator()
+        >>> result = validator.validate_analysis(lyrics, analysis_dict)
+        >>> if result['is_reliable']:
+        ...     print(f"✅ {result['validation_summary']}")
+        ... else:
+        ...     print(f"⚠️ Warnings: {result['warning_flags']}")
+    """
 
     def __init__(self):
+        """Initialize SafetyValidator with keyword dictionaries and thresholds.
+
+        Sets up theme and mood keyword dictionaries for validation, primarily
+        focused on English keywords with some Russian support.
+
+        Note:
+            Thresholds can be adjusted after initialization if needed:
+            - consistency_threshold: Lower = more permissive (default 0.6)
+            - hallucination_threshold: Higher = stricter (default 0.4)
+        """
         # Словари для проверки тематик (English-focused)
         self.theme_keywords = {
             "money": [
@@ -447,7 +666,50 @@ class SafetyValidator:
         self.hallucination_threshold = 0.4  # Повышен для строгого контроля галлюцинаций
 
     def validate_analysis(self, lyrics: str, ai_analysis: dict) -> dict:
-        """Полная проверка достоверности AI анализа"""
+        """Perform comprehensive reliability validation of AI analysis results.
+
+        Validates AI-generated analysis through multiple checks including internal
+        consistency, factual accuracy, hallucination detection, and text alignment.
+        Returns detailed validation metrics and overall reliability verdict.
+
+        Args:
+            lyrics: Original song lyrics text (any language).
+            ai_analysis: Dictionary containing AI analysis results with expected keys:
+                - metadata: dict with genre, mood, energy_level, explicit_content
+                - lyrics_analysis: dict with structure, main_themes, complexity_level
+                - quality_metrics: dict with authenticity_score, commercial_appeal, etc.
+                (Keys may vary; missing keys are handled gracefully)
+
+        Returns:
+            Dictionary with validation results:
+                - is_reliable (bool): Overall reliability verdict based on all checks
+                - reliability_score (float): Aggregate reliability 0.0-1.0
+                - consistency_score (float): Internal consistency 0.0-1.0
+                - factual_accuracy (float): Factual claims accuracy 0.0-1.0
+                - hallucination_risk (float): Risk of hallucinations 0.0-1.0
+                - text_alignment (float): Text-analysis alignment 0.0-1.0
+                - warning_flags (list[str]): List of warning flag identifiers
+                - validation_summary (str): Human-readable summary message
+
+        Example:
+            >>> validator = SafetyValidator()
+            >>> analysis = {
+            ...     "genre": "trap", "mood": "aggressive",
+            ...     "main_themes": ["money", "street_life"],
+            ...     "authenticity_score": 0.85
+            ... }
+            >>> result = validator.validate_analysis(lyrics, analysis)
+            >>> print(f"Reliable: {result['is_reliable']}")
+            >>> print(f"Hallucination risk: {result['hallucination_risk']:.2f}")
+
+        Note:
+            Result is considered reliable if:
+            - hallucination_risk < 0.4
+            - consistency_score > 0.6
+            - factual_accuracy > 0.5
+            - text_alignment > 0.4
+            - No critical warning flags
+        """
 
         # 1. Проверка внутренней консистентности
         consistency_score = self.check_internal_consistency(ai_analysis)
@@ -488,7 +750,30 @@ class SafetyValidator:
         }
 
     def detect_hallucinations(self, lyrics: str, analysis: dict) -> float:
-        """Детектирует возможные галлюцинации в AI анализе"""
+        """Detect potential hallucinations in AI analysis results.
+
+        Checks if AI-claimed themes, moods, genre, and explicit content are actually
+        supported by evidence in the lyrics. Accumulates penalty scores for
+        unsupported claims.
+
+        Args:
+            lyrics: Original song lyrics text.
+            analysis: Dict with analysis results (genre, mood, main_themes, etc.).
+
+        Returns:
+            Hallucination risk score 0.0-1.0, where:
+                - 0.0 = No hallucinations detected
+                - 0.4+ = High risk (threshold for unreliable)
+                - 1.0 = Maximum risk (capped)
+
+        Note:
+            Penalties are accumulated:
+            - Theme not found: +0.15 per theme
+            - Mood unsupported: +0.2
+            - Inappropriate genre: +0.3
+            - Explicit content mismatch: +0.1
+            - Unrealistic quality scores: +0.1
+        """
         hallucination_score = 0.0
         lyrics_lower = lyrics.lower()
 
@@ -608,7 +893,28 @@ class SafetyValidator:
         return any(word in lyrics_lower for word in explicit_words)
 
     def check_internal_consistency(self, analysis: dict) -> float:
-        """Проверяет внутреннюю консистентность анализа"""
+        """Check internal logical consistency of analysis results.
+
+        Validates that different analysis dimensions are logically coherent
+        (e.g., aggressive mood with low energy is suspicious).
+
+        Args:
+            analysis: Dict with analysis results (mood, energy_level, quality metrics).
+
+        Returns:
+            Consistency score 0.0-1.0, where:
+                - 1.0 = Perfectly consistent
+                - 0.6+ = Acceptable consistency (threshold)
+                - 0.0 = Highly inconsistent
+
+        Note:
+            Penalties for logical contradictions:
+            - Melancholic mood + high energy: -0.2
+            - Aggressive mood + low energy: -0.3
+            - Very high authenticity + very high commercial: -0.2
+            - Advanced complexity + poor quality: -0.2
+            - Beginner complexity + excellent quality: -0.1
+        """
         consistency_score = 1.0
 
         # Проверяем соответствие настроения и энергии
@@ -642,7 +948,29 @@ class SafetyValidator:
         return max(consistency_score, 0.0)
 
     def validate_factual_claims(self, lyrics: str, analysis: dict) -> float:
-        """Валидирует фактические утверждения в анализе"""
+        """Validate factual claims in analysis against actual lyrics.
+
+        Checks if structural and complexity claims are reasonable given
+        the actual lyrics length, structure, and characteristics.
+
+        Args:
+            lyrics: Original song lyrics text.
+            analysis: Dict with structure, rhyme_scheme, complexity_level claims.
+
+        Returns:
+            Factual accuracy score 0.0-1.0, where:
+                - 1.0 = All claims validated
+                - 0.5+ = Acceptable accuracy (threshold)
+                - 0.0 = Multiple invalid claims
+
+        Note:
+            Penalties for unrealistic claims:
+            - Complex structure claimed but too few lines: -0.2
+            - Hook structure but too many lines: -0.1
+            - Complex rhyme scheme but simple repetition: -0.1
+            - Advanced complexity but < 100 words: -0.2
+            - Beginner complexity but > 500 words: -0.1
+        """
         factual_score = 1.0
         lyrics_lower = lyrics.lower()
 
@@ -683,7 +1011,28 @@ class SafetyValidator:
         return max(factual_score, 0.0)
 
     def check_text_analysis_alignment(self, lyrics: str, analysis: dict) -> float:
-        """Проверяет соответствие между текстом и анализом"""
+        """Check alignment between lyrics characteristics and analysis.
+
+        Validates that analysis matches observable text characteristics like
+        length, explicit content, energy indicators (punctuation, caps).
+
+        Args:
+            lyrics: Original song lyrics text.
+            analysis: Dict with analysis results.
+
+        Returns:
+            Alignment score 0.0-1.0, where:
+                - 1.0 = Perfect alignment
+                - 0.4+ = Acceptable alignment (threshold)
+                - 0.0 = Poor alignment
+
+        Note:
+            Penalties for misalignment:
+            - Short text but detailed analysis: -0.2
+            - Explicit content mismatch: -0.3
+            - High energy but no indicators: -0.2
+            - Low energy but many indicators: -0.2
+        """
         alignment_score = 1.0
         lyrics_lower = lyrics.lower()
 
@@ -773,9 +1122,41 @@ class SafetyValidator:
 
 
 class InterpretableAnalyzer:
-    """Анализатор с возможностью объяснения решений AI"""
+    """Analyzer with AI decision explanations and interpretability features.
+
+    Wraps base analyzer to provide interpretability by explaining classification
+    decisions, calculating confidence scores, identifying key decision factors,
+    and extracting influential phrases from lyrics.
+
+    Uses keyword-based feature extraction with Russian and English support
+    to explain genre, mood, and authenticity classifications.
+
+    Attributes:
+        base_analyzer: Base analyzer instance (e.g., MultiModelAnalyzer).
+        genre_keywords: Dict mapping genres to keyword lists.
+        mood_keywords: Dict mapping moods to keyword lists.
+        authenticity_keywords: Dict mapping authenticity types to keywords.
+
+    Example:
+        >>> base = MultiModelAnalyzer()
+        >>> interpreter = InterpretableAnalyzer(base)
+        >>> result = interpreter.analyze_with_explanation("Artist", "Title", lyrics)
+        >>> print(f"Confidence: {result.confidence:.2f}")
+        >>> for category, explanations in result.explanation.items():
+        ...     print(f"{category}: {explanations}")
+    """
 
     def __init__(self, base_analyzer):
+        """Initialize InterpretableAnalyzer with base analyzer.
+
+        Args:
+            base_analyzer: Base analyzer instance that provides analyze_song() method.
+                Typically MultiModelAnalyzer.
+
+        Note:
+            Initializes genre, mood, and authenticity keyword dictionaries
+            for decision explanation generation.
+        """
         self.base_analyzer = base_analyzer
 
         # Словари ключевых слов для разных категорий
@@ -817,7 +1198,38 @@ class InterpretableAnalyzer:
     def analyze_with_explanation(
         self, artist: str, title: str, lyrics: str
     ) -> ExplainableAnalysisResult | None:
-        """Анализ с объяснением решений"""
+        """Analyze song with AI decision explanations and confidence scores.
+
+        Performs base analysis and augments it with interpretability features:
+        explanations of classification decisions, confidence score, key decision
+        factors, and influential lyrics phrases.
+
+        Args:
+            artist: Artist/performer name.
+            title: Song title.
+            lyrics: Complete song lyrics text.
+
+        Returns:
+            ExplainableAnalysisResult containing:
+                - analysis: Base EnhancedSongData with full analysis
+                - explanation: Dict of category to list of explanation strings
+                - confidence: Overall confidence score 0.0-1.0
+                - decision_factors: Dict of factor names to importance scores
+                - influential_phrases: Dict of category to influential lyrics
+            Returns None if base analysis fails.
+
+        Example:
+            >>> result = analyzer.analyze_with_explanation("Kendrick", "DNA.", lyrics)
+            >>> if result:
+            ...     print(f"Genre: {result.analysis.metadata.genre}")
+            ...     print(f"Confidence: {result.confidence:.2f}")
+            ...     for expl in result.explanation['genre_indicators']:
+            ...         print(f"  - {expl}")
+
+        Note:
+            Confidence is based on text length, genre evidence strength,
+            quality metric consistency, and detail presence.
+        """
         try:
             # Базовый анализ
             base_result = self.base_analyzer.analyze_song(artist, title, lyrics)
@@ -1087,30 +1499,95 @@ class InterpretableAnalyzer:
 
 
 class ModelProvider:
-    """Базовый класс для AI провайдеров"""
+    """Base class for AI provider implementations.
+
+    Abstract base class defining interface for AI model providers.
+    Concrete implementations must provide availability checking and
+    song analysis functionality.
+
+    Attributes:
+        name: Provider name (e.g., "Ollama", "Gemma", "Mock").
+        available: Whether provider is available/initialized (bool).
+        cost_per_1k_tokens: Cost per 1000 tokens in USD (float).
+
+    Note:
+        Subclasses must implement check_availability() and analyze_song().
+    """
 
     def __init__(self, name: str):
+        """Initialize provider with name.
+
+        Args:
+            name: Provider identifier string.
+        """
         self.name = name
         self.available = False
         self.cost_per_1k_tokens = 0.0
 
     def check_availability(self) -> bool:
-        """Проверка доступности модели"""
+        """Check if provider is available and operational.
+
+        Returns:
+            True if provider can be used, False otherwise.
+
+        Raises:
+            NotImplementedError: Must be implemented by subclass.
+        """
         raise NotImplementedError
 
     def analyze_song(
         self, artist: str, title: str, lyrics: str
     ) -> EnhancedSongData | None:
-        """Анализ песни"""
+        """Analyze song lyrics and return structured results.
+
+        Args:
+            artist: Artist/performer name.
+            title: Song title.
+            lyrics: Complete song lyrics text.
+
+        Returns:
+            EnhancedSongData with analysis results, or None on failure.
+
+        Raises:
+            NotImplementedError: Must be implemented by subclass.
+        """
         raise NotImplementedError
 
 
 class OllamaProvider(ModelProvider):
-    """Провайдер для локальных моделей Ollama"""
+    """Provider for local Ollama models.
+
+    Connects to locally-running Ollama server for free, offline AI inference.
+    Automatically checks availability and attempts to pull missing models.
+
+    Attributes:
+        model_name: Ollama model identifier (e.g., "llama3.2:3b").
+        base_url: Ollama API base URL (default: http://localhost:11434).
+        cost_per_1k_tokens: Always 0.0 (free local inference).
+
+    Example:
+        >>> provider = OllamaProvider(model_name="llama3.2:3b")
+        >>> if provider.available:
+        ...     result = provider.analyze_song("Artist", "Title", lyrics)
+
+    Note:
+        Requires Ollama server running: `ollama serve`
+        Timeout is 60 seconds for analysis requests.
+    """
 
     def __init__(
         self, model_name: str = "llama3.2:3b", base_url: str = "http://localhost:11434"
     ):
+        """Initialize Ollama provider with model and URL.
+
+        Args:
+            model_name: Ollama model to use (default: "llama3.2:3b").
+            base_url: Ollama API endpoint (default: "http://localhost:11434").
+
+        Note:
+            Automatically calls check_availability() during initialization.
+            If model not found, attempts to pull it automatically.
+        """
         super().__init__("Ollama")
         self.model_name = model_name
         self.base_url = base_url
@@ -1118,7 +1595,25 @@ class OllamaProvider(ModelProvider):
         self.available = self.check_availability()
 
     def check_availability(self) -> bool:
-        """Проверка запущен ли Ollama"""
+        """Check if Ollama server is running and model is available.
+
+        Makes HTTP request to Ollama API /api/tags to verify:
+        1. Server is running and responsive
+        2. Configured model exists locally
+        3. If model missing, attempts automatic pull
+
+        Returns:
+            True if Ollama accessible and model available/downloaded,
+            False if server unreachable or model pull fails.
+
+        Side Effects:
+            - Logs availability status and model list
+            - May trigger model download via _pull_model()
+
+        Note:
+            Uses 5 second timeout for API request.
+            Disables proxies for local connection.
+        """
         try:
             response = requests.get(
                 f"{self.base_url}/api/tags",
@@ -1165,7 +1660,26 @@ class OllamaProvider(ModelProvider):
     def analyze_song(
         self, artist: str, title: str, lyrics: str
     ) -> EnhancedSongData | None:
-        """Анализ песни через Ollama"""
+        """Analyze song using local Ollama model.
+
+        Sends lyrics to Ollama with structured prompt requesting JSON analysis.
+        Parses response and constructs EnhancedSongData.
+
+        Args:
+            artist: Artist/performer name.
+            title: Song title.
+            lyrics: Complete song lyrics (truncated to 2000 chars in prompt).
+
+        Returns:
+            EnhancedSongData with analysis results, or None if:
+                - Provider not available
+                - API request fails
+                - JSON parsing fails
+
+        Note:
+            Uses temperature=0.1 for consistent results.
+            60 second timeout for analysis.
+        """
         if not self.available:
             return None
 
@@ -1305,22 +1819,68 @@ class OllamaProvider(ModelProvider):
 
 
 class MockProvider(ModelProvider):
-    """Mock провайдер для демонстрации и тестирования"""
+    """Mock provider for testing and demonstration.
+
+    Provides rule-based analysis without external AI models. Always available
+    and free, serves as fallback when other providers fail. Uses keyword matching
+    and heuristics for genre, mood, and quality estimation.
+
+    Attributes:
+        cost_per_1k_tokens: Always 0.0 (no cost for mock analysis).
+        available: Always True (no dependencies).
+
+    Example:
+        >>> provider = MockProvider()
+        >>> result = provider.analyze_song("Test", "Song", lyrics)
+        >>> print(f"Genre: {result.metadata.genre}")
+
+    Note:
+        Provides reasonable estimates but not true AI analysis.
+        Useful for testing, demos, and fallback scenarios.
+    """
 
     def __init__(self):
+        """Initialize MockProvider (always available).
+
+        No external dependencies required. Sets available=True immediately.
+        """
         super().__init__("Mock")
         self.cost_per_1k_tokens = 0.0  # Бесплатно для тестов
         self.available = True  # Всегда доступен
 
     def check_availability(self) -> bool:
-        """Mock провайдер всегда доступен"""
+        """Check availability (always returns True).
+
+        Returns:
+            True (MockProvider has no dependencies and is always available).
+        """
         logger.info("✅ Mock провайдер готов для демонстрации")
         return True
 
     def analyze_song(
         self, artist: str, title: str, lyrics: str
     ) -> EnhancedSongData | None:
-        """Mock анализ песни с умными предположениями"""
+        """Analyze song using rule-based heuristics.
+
+        Performs keyword-based analysis for genre, mood, themes, and quality
+        without external AI. Uses pattern matching and statistical features.
+
+        Args:
+            artist: Artist/performer name.
+            title: Song title.
+            lyrics: Complete song lyrics text.
+
+        Returns:
+            EnhancedSongData with heuristic analysis, or None on error.
+
+        Note:
+            Analysis logic:
+            - Genre: Keyword matching (trap, drill, emo_rap, etc.)
+            - Mood: Sentiment keywords (aggressive, sad, energetic)
+            - Energy: Punctuation and caps ratio
+            - Explicit: Profanity detection
+            - Quality: Word diversity and length heuristics
+        """
         try:
             lyrics_lower = lyrics.lower()
 
@@ -1511,16 +2071,47 @@ class MockProvider(ModelProvider):
 
 
 class GemmaProvider(ModelProvider):
-    """Провайдер для Google Gemma API"""
+    """Provider for Google Gemma API.
+
+    Connects to Google's Gemma model API for cloud-based AI analysis.
+    Requires GOOGLE_API_KEY environment variable.
+
+    Attributes:
+        api_key: Google API key from environment (str or None).
+        cost_per_1k_tokens: 0.0 within free tier limits.
+
+    Example:
+        >>> os.environ['GOOGLE_API_KEY'] = 'your_key_here'
+        >>> provider = GemmaProvider()
+        >>> if provider.available:
+        ...     result = provider.analyze_song("Artist", "Title", lyrics)
+
+    Note:
+        Uses gemma-2-27b-it model.
+        Requires google-generativeai package installed.
+    """
 
     def __init__(self):
+        """Initialize GemmaProvider with API key from environment.
+
+        Reads GOOGLE_API_KEY from environment and checks availability.
+        """
         super().__init__("Gemma")
         self.api_key = os.getenv("GOOGLE_API_KEY")
         self.available = self.check_availability()
         self.cost_per_1k_tokens = 0.0  # Free tier в пределах лимитов
 
     def check_availability(self) -> bool:
-        """Проверка API ключа Google"""
+        """Check if Google API key is valid and library is installed.
+
+        Returns:
+            True if API key present and google-generativeai importable,
+            False otherwise.
+
+        Note:
+            Configures API with key if available.
+            Logs warnings if key missing or import fails.
+        """
         if not self.api_key:
             logger.warning("⌛ GOOGLE_API_KEY не найден в .env")
             return False
@@ -1543,7 +2134,26 @@ class GemmaProvider(ModelProvider):
     def analyze_song(
         self, artist: str, title: str, lyrics: str
     ) -> EnhancedSongData | None:
-        """Анализ песни через Google Gemma"""
+        """Analyze song using Google Gemma API.
+
+        Sends structured prompt to Gemma requesting JSON analysis.
+        Parses response and constructs EnhancedSongData.
+
+        Args:
+            artist: Artist/performer name.
+            title: Song title.
+            lyrics: Complete song lyrics (truncated to 2000 chars in prompt).
+
+        Returns:
+            EnhancedSongData with analysis results, or None if:
+                - Provider not available
+                - API request fails
+                - JSON parsing fails
+
+        Note:
+            Uses temperature=0.1 and max 1500 output tokens.
+            Model: gemma-2-27b-it
+        """
         if not self.available:
             return None
 
@@ -1670,9 +2280,45 @@ Return ONLY JSON, no additional text!
 
 
 class MultiModelAnalyzer:
-    """Анализатор с поддержкой нескольких провайдеров"""
+    """Multi-provider AI analyzer with fallback, safety validation, and interpretability.
+
+    Main analyzer class that coordinates multiple AI providers with automatic fallback,
+    provides safety validation, hallucination detection, and interpretable analysis
+    with explanations.
+
+    Architecture:
+        - Provider priority: Ollama (free local) -> Gemma (cloud) -> Mock (fallback)
+        - Safety validation via SafetyValidator
+        - Interpretability via InterpretableAnalyzer
+        - PostgreSQL persistence via PostgreSQLManager
+
+    Attributes:
+        providers: List of ModelProvider instances in priority order.
+        current_provider: Active provider (first available).
+        db_manager: PostgreSQLManager for database operations.
+        stats: Dict tracking usage statistics (analyzed count, costs).
+        interpretable_analyzer: InterpretableAnalyzer for explanations.
+        safety_validator: SafetyValidator for reliability checks.
+
+    Example:
+        >>> analyzer = MultiModelAnalyzer()
+        >>> await analyzer.initialize()
+        >>> result = analyzer.analyze_song("Kendrick", "HUMBLE.", lyrics)
+        >>> safe_result = analyzer.analyze_song_with_safety("Drake", "God's Plan", lyrics)
+        >>> await analyzer.batch_analyze_from_db(limit=100)
+        >>> await analyzer.close()
+    """
 
     def __init__(self):
+        """Initialize MultiModelAnalyzer with all providers and validators.
+
+        Sets up provider chain (Ollama -> Gemma -> Mock), database manager,
+        interpretable analyzer, and safety validator. Initializes usage statistics.
+
+        Note:
+            Database connection not established until initialize() is called.
+            Providers check their own availability during initialization.
+        """
         self.providers = []
         self.current_provider = None
         self.db_manager = PostgreSQLManager()
@@ -1694,17 +2340,44 @@ class MultiModelAnalyzer:
         self.safety_validator = SafetyValidator()
 
     async def initialize(self) -> bool:
-        """Инициализация базы данных"""
+        """Initialize database connection pool.
+
+        Returns:
+            True if database initialized successfully, False otherwise.
+
+        Note:
+            Must be called before any database operations (e.g., batch_analyze_from_db).
+        """
         return await self.db_manager.initialize()
 
     async def close(self):
-        """Закрытие соединений"""
+        """Close database connections and cleanup resources.
+
+        Gracefully closes PostgreSQL connection pool.
+        """
         await self.db_manager.close()
 
     def analyze_with_explanations(
         self, artist: str, title: str, lyrics: str
     ) -> ExplainableAnalysisResult | None:
-        """Анализ с полными объяснениями решений AI"""
+        """Analyze song with AI decision explanations and interpretability.
+
+        Delegates to InterpretableAnalyzer for explainable analysis.
+
+        Args:
+            artist: Artist/performer name.
+            title: Song title.
+            lyrics: Complete song lyrics.
+
+        Returns:
+            ExplainableAnalysisResult with analysis, explanations, confidence,
+            decision factors, and influential phrases. None on failure.
+
+        Example:
+            >>> result = analyzer.analyze_with_explanations("Artist", "Title", lyrics)
+            >>> print(f"Confidence: {result.confidence:.2f}")
+            >>> print(result.explanation['genre_indicators'])
+        """
         return self.interpretable_analyzer.analyze_with_explanation(
             artist, title, lyrics
         )
@@ -1862,7 +2535,30 @@ class MultiModelAnalyzer:
     def analyze_song(
         self, artist: str, title: str, lyrics: str
     ) -> EnhancedSongData | None:
-        """Анализ песни с fallback между провайдерами"""
+        """Analyze song using multi-provider fallback strategy.
+
+        Attempts analysis with providers in priority order (Ollama -> Gemma -> Mock).
+        Returns first successful result. Updates usage statistics.
+
+        Args:
+            artist: Artist/performer name.
+            title: Song title.
+            lyrics: Complete song lyrics text.
+
+        Returns:
+            EnhancedSongData with analysis results from first successful provider,
+            or None if all providers fail.
+
+        Side Effects:
+            - Updates self.stats with usage counts
+            - Logs provider attempts and results
+
+        Example:
+            >>> result = analyzer.analyze_song("Kendrick", "HUMBLE.", lyrics)
+            >>> if result:
+            ...     print(f"Analyzed by: {result.model_used}")
+            ...     print(f"Genre: {result.metadata.genre}")
+        """
 
         for provider in self.providers:
             try:
@@ -1904,7 +2600,35 @@ class MultiModelAnalyzer:
         }
 
     async def batch_analyze_from_db(self, limit: int = 100, offset: int = 0):
-        """Массовый анализ песен из базы данных"""
+        """Batch analyze unanalyzed songs from database.
+
+        Fetches songs without multi_model_ai analysis from database,
+        analyzes them using multi-provider strategy, and saves results.
+        Includes progress tracking and error handling.
+
+        Args:
+            limit: Maximum number of songs to analyze (default: 100).
+            offset: Number of songs to skip (default: 0).
+
+        Returns:
+            None (logs progress and summary).
+
+        Side Effects:
+            - Fetches songs from tracks table
+            - Saves analysis results to analysis_results table
+            - Updates self.stats with usage counts
+            - 2 second delay between analyses to avoid rate limits
+
+        Example:
+            >>> analyzer = MultiModelAnalyzer()
+            >>> await analyzer.initialize()
+            >>> await analyzer.batch_analyze_from_db(limit=50)
+            # Logs: "✅ Успешно: 45, ⌛ Ошибок: 5"
+
+        Note:
+            Requires initialize() to be called first.
+            Only analyzes songs with lyrics longer than 50 characters.
+        """
 
         logger.info(f"🎵 Начинаем batch анализ: {limit} песен с offset {offset}")
 
@@ -2010,7 +2734,44 @@ class MultiModelAnalyzer:
     def analyze_song_with_safety(
         self, artist: str, title: str, lyrics: str
     ) -> dict | None:
-        """Анализ песни с валидацией безопасности и детекцией галлюцинаций"""
+        """Analyze song with AI safety validation and hallucination detection.
+
+        Performs standard multi-provider analysis followed by comprehensive
+        safety validation using SafetyValidator to detect hallucinations,
+        check consistency, and verify factual accuracy.
+
+        Args:
+            artist: Artist/performer name.
+            title: Song title.
+            lyrics: Complete song lyrics text.
+
+        Returns:
+            Dictionary containing:
+                - analysis (EnhancedSongData): Full AI analysis result
+                - validation (dict): Detailed validation metrics
+                - is_safe (bool): Whether analysis passed validation
+                - confidence (float): Overall reliability score 0.0-1.0
+                - warnings (list): List of warning flag strings
+                - summary (str): Human-readable validation summary
+            Returns None if initial analysis fails.
+
+        Example:
+            >>> result = analyzer.analyze_song_with_safety("Drake", "God's Plan", lyrics)
+            >>> if result and result['is_safe']:
+            ...     print(f"✅ Reliable: {result['summary']}")
+            ...     print(f"Confidence: {result['confidence']:.2f}")
+            >>> else:
+            ...     print(f"⚠️ Warnings: {result['warnings']}")
+            ...     print(f"Risk: {result['validation']['hallucination_risk']:.2f}")
+
+        Note:
+            Analysis considered reliable if:
+            - hallucination_risk < 0.4
+            - consistency_score > 0.6
+            - factual_accuracy > 0.5
+            - text_alignment > 0.4
+            - No critical warning flags
+        """
 
         logger.info(f"🛡️ Безопасный анализ: {artist} - {title}")
 
@@ -2083,7 +2844,28 @@ class MultiModelAnalyzer:
 
 
 async def main():
-    """Тестирование многомодельного анализатора с интерпретируемостью"""
+    """Test multi-model analyzer with interpretability and safety features.
+
+    Comprehensive test suite demonstrating:
+        - Multi-provider initialization and fallback
+        - Explainable analysis with decision explanations
+        - Safety validation and hallucination detection
+        - Statistics tracking and cost optimization
+
+    Returns:
+        None. Prints test results to stdout and logs to file.
+
+    Raises:
+        Exception: Any unhandled errors are logged with traceback.
+
+    Example:
+        >>> asyncio.run(main())
+        # Outputs test results with analysis examples and validation demos
+
+    Note:
+        Uses test lyrics in Russian for demonstration.
+        Requires database connection (continues if fails).
+    """
 
     print("🤖 Многомодельный AI анализатор с объяснениями решений")
     print("=" * 70)
