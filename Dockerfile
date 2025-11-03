@@ -20,15 +20,24 @@ RUN useradd -m -u 1000 rapuser
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+# Install Poetry
+RUN pip install --no-cache-dir poetry==1.7.1
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Configure Poetry no virtual needed in Docker
+ENV POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_NO_INTERACTION=1
+
+# Copy dependency files for better caching
+COPY pyproject.toml poetry.lock ./
+
+# Install Python dependencies (production only)
+RUN poetry install --only main --no-root --no-cache
 
 # Copy application code
 COPY . .
+
+# Install the project itself (scripts and package)
+RUN poetry install --only-root
 
 # Create necessary directories
 RUN mkdir -p logs data results temp && \
