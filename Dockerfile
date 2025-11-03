@@ -10,7 +10,6 @@ LABEL version="1.0.0"
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
-    sqlite3 \
     curl \
     git \
     && rm -rf /var/lib/apt/lists/*
