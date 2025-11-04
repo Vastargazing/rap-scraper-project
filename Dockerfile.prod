@@ -8,17 +8,19 @@
 # Use DOCKER_BUILDKIT=1 environment variable when building
 FROM python:3.11-slim-bookworm AS deps-builder
 
-    # System dependencies for compilation
-    RUN apt-get update && apt-get install -y \
-        --no-install-recommends \
-        --fix-missing \
-        build-essential \
-        curl \
-        && rm -rf /var/lib/apt/lists/* \
-        && apt-get clean# Install Poetry
+# System dependencies for compilation
+RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
+    --fix-missing \
+    build-essential \
+    wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Install Poetry
 ENV POETRY_HOME="/opt/poetry" \
     POETRY_VERSION=1.8.3
-RUN curl -sSL https://install.python-poetry.org | python3 - && \
+RUN wget -qO- https://install.python-poetry.org | python3 - && \
     ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry
 
 # Poetry configuration for production
@@ -97,8 +99,8 @@ EXPOSE 8000
 
 # Production command with proper settings
 CMD ["python", "-m", "uvicorn", "src.models.ml_api_service:app", \
-     "--host", "0.0.0.0", \
-     "--port", "8000", \
-     "--workers", "2", \
-     "--log-level", "info", \
-     "--no-access-log"]
+    "--host", "0.0.0.0", \
+    "--port", "8000", \
+    "--workers", "2", \
+    "--log-level", "info", \
+    "--no-access-log"]
