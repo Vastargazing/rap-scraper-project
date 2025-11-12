@@ -54,18 +54,29 @@ class PostgreSQLDiagnostics:
 
         # Загружаем конфигурацию БД
         try:
-            from src.utils.config import get_db_config
-
-            self.db_config = get_db_config()
-        except ImportError:
-            # Fallback конфигурация для Windows PostgreSQL
+            from config.config_loader import get_config
+            config_obj = get_config()
+            db_config = config_obj.database
             self.db_config = {
-                "host": os.getenv("DB_HOST", "localhost"),
-                "port": int(os.getenv("DB_PORT", "5432")),
-                "database": os.getenv("DB_NAME", "postgres"),  # Используем дефолтную БД
-                "user": os.getenv("DB_USER", "postgres"),
-                "password": os.getenv("DB_PASSWORD", ""),  # Пустой пароль для Windows
+                "host": db_config.host,
+                "port": db_config.port,
+                "database": db_config.database,
+                "user": db_config.username,
+                "password": db_config.password,
             }
+        except (ImportError, AttributeError):
+            # Fallback конфигурация для Windows PostgreSQL
+            try:
+                from src.utils.config import get_db_config
+                self.db_config = get_db_config()
+            except ImportError:
+                self.db_config = {
+                    "host": os.getenv("DB_HOST", "localhost"),
+                    "port": int(os.getenv("DB_PORT", "5432")),
+                    "database": os.getenv("DB_NAME", "postgres"),
+                    "user": os.getenv("DB_USER", "postgres"),
+                    "password": os.getenv("DB_PASSWORD", ""),
+                }
 
     def connect(self):
         """Подключение к PostgreSQL базе данных"""

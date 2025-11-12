@@ -69,6 +69,7 @@ from typing import Any
 
 # Импорты с fallback для standalone запуска
 try:
+    from config.config_loader import get_config
     from interfaces.analyzer_interface import (
         AnalysisResult,
         BaseAnalyzer,
@@ -2424,23 +2425,37 @@ class PostgreSQLAnalyzer:
         try:
             import yaml
 
-            config_path = Path(__file__).parent.parent.parent / "config.yaml"
-
-            if config_path.exists():
-                with open(config_path, encoding="utf-8") as f:
-                    config = yaml.safe_load(f)
-                    return config.get("database", {})
-            else:
-                print(
-                    "⚠️ Файл config.yaml не найден, используются значения по умолчанию"
-                )
+            # Сначала пытаемся использовать новую систему config_loader
+            try:
+                from config.config_loader import get_config
+                config_obj = get_config()
+                db_config = config_obj.database
                 return {
-                    "host": "localhost",
-                    "port": 5432,
-                    "name": "rap_lyrics_db",
-                    "user": "postgres",
-                    "password": "password",
+                    "host": db_config.host,
+                    "port": db_config.port,
+                    "name": db_config.database,
+                    "user": db_config.username,
+                    "password": db_config.password,
                 }
+            except (ImportError, AttributeError):
+                # Fallback на YAML файл
+                config_path = Path(__file__).parent.parent.parent / "config.yaml"
+
+                if config_path.exists():
+                    with open(config_path, encoding="utf-8") as f:
+                        config = yaml.safe_load(f)
+                        return config.get("database", {})
+                else:
+                    print(
+                        "⚠️ Файл config.yaml не найден, используются значения по умолчанию"
+                    )
+                    return {
+                        "host": "localhost",
+                        "port": 5432,
+                        "name": "rap_lyrics_db",
+                        "user": "postgres",
+                        "password": "password",
+                    }
         except Exception as e:
             print(f"⚠️ Ошибка загрузки конфигурации: {e}")
             return {}
