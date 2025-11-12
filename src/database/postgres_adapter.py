@@ -44,17 +44,34 @@ class DatabaseConfig:
 
     @classmethod
     def from_env(cls) -> "DatabaseConfig":
-        """Create config from environment variables"""
-        return cls(
-            host=os.getenv("POSTGRES_HOST", "localhost"),
-            port=int(os.getenv("POSTGRES_PORT", "5432")),
-            database=os.getenv("POSTGRES_DATABASE", "rap_lyrics"),
-            username=os.getenv("POSTGRES_USERNAME", "rap_user"),
-            password=os.getenv("POSTGRES_PASSWORD", "securepassword123"),
-            max_connections=int(os.getenv("POSTGRES_MAX_CONNECTIONS", "20")),
-            min_connections=int(os.getenv("POSTGRES_MIN_CONNECTIONS", "5")),
-            enable_pgvector=os.getenv("ENABLE_PGVECTOR", "true").lower() == "true",
-        )
+        """Create config from environment variables or config_loader"""
+        try:
+            # Попытка использовать новую систему config_loader
+            from config.config_loader import get_config
+            config_obj = get_config()
+            db_config = config_obj.database
+            return cls(
+                host=db_config.host,
+                port=db_config.port,
+                database=db_config.database,
+                username=db_config.username,
+                password=db_config.password,
+                max_connections=db_config.pool_size or 20,
+                min_connections=db_config.min_pool_size or 5,
+                enable_pgvector=True,  # Can be added to config later
+            )
+        except (ImportError, AttributeError):
+            # Fallback на environment variables
+            return cls(
+                host=os.getenv("POSTGRES_HOST", "localhost"),
+                port=int(os.getenv("POSTGRES_PORT", "5432")),
+                database=os.getenv("POSTGRES_DATABASE", "rap_lyrics"),
+                username=os.getenv("POSTGRES_USERNAME", "rap_user"),
+                password=os.getenv("POSTGRES_PASSWORD", "securepassword123"),
+                max_connections=int(os.getenv("POSTGRES_MAX_CONNECTIONS", "20")),
+                min_connections=int(os.getenv("POSTGRES_MIN_CONNECTIONS", "5")),
+                enable_pgvector=os.getenv("ENABLE_PGVECTOR", "true").lower() == "true",
+            )
 
     @property
     def sync_url(self) -> str:
