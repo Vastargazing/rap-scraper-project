@@ -50,14 +50,12 @@ from pydantic import BaseModel, Field, field_validator
 # PostgreSQL imports with fallback
 try:
     import asyncpg
-    import psycopg2
-    from psycopg2.extras import RealDictCursor
 
     POSTGRES_AVAILABLE = True
 except ImportError:
     POSTGRES_AVAILABLE = False
     print("ERROR: PostgreSQL dependencies not installed")
-    print("Install with: pip install asyncpg psycopg2-binary")
+    print("Install with: pip install asyncpg")
     sys.exit(1)
 
 # ===== Configuration and Constants =====
@@ -71,7 +69,7 @@ class DatabaseConfig:
     port: int = 5432
     database: str = "rap_lyrics"
     username: str = "rap_user"
-    password: str = "securepassword123"
+    password: str = ""
     max_connections: int = 20
     min_connections: int = 5
     connection_timeout: int = 30
@@ -83,6 +81,7 @@ class DatabaseConfig:
         try:
             # Попытка использовать новую систему config_loader
             from config.config_loader import get_config
+
             config_obj = get_config()
             db_config = config_obj.database
             return cls(
@@ -109,20 +108,22 @@ class DatabaseConfig:
                 connection_timeout=int(os.getenv("POSTGRES_CONNECTION_TIMEOUT", "30")),
                 command_timeout=int(os.getenv("POSTGRES_COMMAND_TIMEOUT", "60")),
             )
-            return cls(
-                host=os.getenv("POSTGRES_HOST", "localhost"),
-                port=int(os.getenv("POSTGRES_PORT", "5432")),
-                database=os.getenv("POSTGRES_DATABASE", "rap_lyrics"),
-                username=os.getenv("POSTGRES_USERNAME", "rap_user"),
-                password=os.getenv("POSTGRES_PASSWORD", "securepassword123"),
-                max_connections=int(os.getenv("POSTGRES_MAX_CONNECTIONS", "20")),
-                min_connections=int(os.getenv("POSTGRES_MIN_CONNECTIONS", "5")),
-                connection_timeout=int(os.getenv("POSTGRES_CONNECTION_TIMEOUT", "30")),
-                command_timeout=int(os.getenv("POSTGRES_COMMAND_TIMEOUT", "60")),
-            )
 
     def validate(self) -> list[str]:
-        """Validate configuration parameters"""
+        """Validate configuration parameters.
+
+        Args:
+            None
+
+        Returns:
+            list[str]: List of validation error messages. Empty if valid.
+
+        Example:
+            >>> config = DatabaseConfig()
+            >>> errors = config.validate()
+            >>> if errors:
+            ...     print(errors)
+        """
         errors = []
         if not self.host:
             errors.append("Database host is required")
@@ -132,6 +133,8 @@ class DatabaseConfig:
             errors.append("Database name is required")
         if not self.username:
             errors.append("Username is required")
+        if not self.password:
+            errors.append("Database password is required")
         if self.max_connections <= self.min_connections:
             errors.append("max_connections must be greater than min_connections")
         return errors
