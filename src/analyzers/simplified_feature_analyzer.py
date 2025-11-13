@@ -97,7 +97,18 @@ class DatabaseConfig:
                 command_timeout=int(os.getenv("POSTGRES_COMMAND_TIMEOUT", "60")),
             )
         except (ImportError, AttributeError):
-            # Fallback на environment variables
+            # Fallback на environment variables - БЕЗ hardcoded секретов!
+            return cls(
+                host=os.getenv("POSTGRES_HOST") or "localhost",
+                port=int(os.getenv("POSTGRES_PORT", "5432")),
+                database=os.getenv("POSTGRES_DATABASE", "rap_lyrics"),
+                username=os.getenv("POSTGRES_USERNAME", "rap_user"),
+                password=os.getenv("POSTGRES_PASSWORD") or "",  # ОБЯЗАТЕЛЬНО из ENV!
+                max_connections=int(os.getenv("POSTGRES_MAX_CONNECTIONS", "20")),
+                min_connections=int(os.getenv("POSTGRES_MIN_CONNECTIONS", "5")),
+                connection_timeout=int(os.getenv("POSTGRES_CONNECTION_TIMEOUT", "30")),
+                command_timeout=int(os.getenv("POSTGRES_COMMAND_TIMEOUT", "60")),
+            )
             return cls(
                 host=os.getenv("POSTGRES_HOST", "localhost"),
                 port=int(os.getenv("POSTGRES_PORT", "5432")),
