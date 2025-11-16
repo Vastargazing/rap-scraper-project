@@ -108,3 +108,6 @@ tls/
 # Registry credentials
 .dockerconfigjson
 docker-config.json
+
+# PowerShell project-specific profile (personal settings)
+.ps-profile.ps1

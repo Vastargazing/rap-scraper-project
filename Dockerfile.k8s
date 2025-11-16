@@ -1,67 +1,136 @@
-# Многоэтапная сборка для оптимизации размера образа
-FROM python:3.11-slim as builder
+# Kubernetes-optimized Dockerfile with requirements.txt
 
-# Установка системных зависимостей
-RUN apt-get update && apt-get install -y \
+# ===== BUILDER STAGE =====
+ARG PYTHON_VERSION=3.11
+ARG DEBIAN_VERSION=bookworm
+ARG APP_VERSION=latest
+ARG VCS_REF
+
+# ============ STAGE 1: DEPENDENCIES BUILDER ============
+FROM python:${PYTHON_VERSION}-slim-${DEBIAN_VERSION} AS builder
+
+# Labels for intermediate stages (will be discarded)
+LABEL stage="builder"
+
+# Install system dependencies with cache mount and retry logic
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    -o Acquire::Retries=5 \
+    -o Acquire::http::Timeout=30 \
+    -o Acquire::https::Timeout=30 \
     gcc \
     g++ \
-    musl-dev \
     libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+    || (sleep 5 && apt-get update && apt-get install -y --no-install-recommends gcc g++ libpq-dev)
 
-# Создание виртуального окружения
+# Create and activate virtual environment
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
+ENV VIRTUAL_ENV=/opt/venv
 
-# Копирование файлов зависимостей
-COPY requirements.txt .
+# Upgrade pip and install dependencies
+RUN pip install --no-cache-dir --upgrade \
+    pip==24.0 \
+    wheel==0.42.0
 
-# Установка Python зависимостей
-RUN pip install --upgrade pip && \
+# Copy ONLY dependency files
+WORKDIR /build
+COPY requirements.txt ./
+
+# Install Python dependencies with optimal pip settings
+RUN --mount=type=cache,target=/opt/venv/pip-cache \
     pip install --no-cache-dir -r requirements.txt
 
-# Production образ
-FROM python:3.11-slim
 
-# Установка runtime зависимостей
-RUN apt-get update && apt-get install -y \
+# ============ STAGE 2: PRODUCTION RUNTIME ============
+FROM python:${PYTHON_VERSION}-slim-${DEBIAN_VERSION} AS production
+
+# Build arguments for runtime
+ARG APP_VERSION
+ARG BUILD_DATE
+ARG VCS_REF
+
+# OCI standard labels
+LABEL org.opencontainers.image.title="Rap Analyzer ML Platform" \
+    org.opencontainers.image.description="Production ML API for rap lyrics analysis" \
+    org.opencontainers.image.version="${APP_VERSION}" \
+    org.opencontainers.image.created="${BUILD_DATE}" \
+    org.opencontainers.image.revision="${VCS_REF}" \
+    org.opencontainers.image.vendor="Vastargazing" \
+    org.opencontainers.image.licenses="MIT" \
+    maintainer="Vastargazing Team vastargazing@gmail.com"
+
+# Kubernetes-specific labels
+LABEL io.k8s.description="Production ML API for rap lyrics analysis" \
+    io.k8s.display-name="Rap Analyzer API" \
+    io.openshift.tags="ml,api,rap,lyrics"
+
+# Install runtime dependencies with cache mount and retry logic
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    -o Acquire::Retries=5 \
+    -o Acquire::http::Timeout=30 \
+    -o Acquire::https::Timeout=30 \
     libpq5 \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    ca-certificates \
+    || (sleep 5 && apt-get update && apt-get install -y --no-install-recommends libpq5 curl ca-certificates)
 
-# Копирование виртуального окружения из builder
-COPY --from=builder /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Create non-root user with specific UID/GID
+RUN groupadd -r appuser -g 1000 && \
+    useradd -r -u 1000 -g appuser \
+    -d /app -s /sbin/nologin \
+    -c "Application user" appuser && \
+    mkdir -p /app && \
+    chown -R appuser:appuser /app
 
-# Создание пользователя для приложения
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-
-# Создание рабочей директории
+# Set working directory
 WORKDIR /app
 
-# Копирование исходного кода
-COPY --chown=appuser:appuser . .
+# Copy virtual environment from builder
+COPY --from=builder --chown=appuser:appuser /opt/venv /opt/venv
 
-# Права на выполнение
-RUN chmod +x /app/*.py
+# Set Python environment variables
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONPATH="/app" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    # Container optimization
+    PYTHONHASHSEED=random \
+    PYTHONIOENCODING=utf-8 \
+    # Disable warnings in production
+    PYTHONWARNINGS="ignore"
 
-# Переключение на непривилегированного пользователя
+# Copy ONLY necessary application files
+COPY --chown=appuser:appuser src/ ./src/
+COPY --chown=appuser:appuser config.yaml ./
+
+# Switch to non-root user
 USER appuser
 
-# Переменные окружения
-ENV PYTHONPATH=/app
-ENV PYTHONUNBUFFERED=1
-ENV POSTGRES_HOST=postgres-service
-ENV POSTGRES_PORT=5432
-ENV POSTGRES_DATABASE=rap_lyrics
-ENV POSTGRES_USERNAME=rap_user
-
-# Проверка здоровья
+# Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD python -c "import urllib.request; \
+    response = urllib.request.urlopen('http://localhost:8000/health', timeout=5); \
+    exit(0) if response.status == 200 else exit(1)" \
+    || exit 1
 
-# Экспозиция порта
+# Expose API port
 EXPOSE 8000
 
-# Команда по умолчанию
-CMD ["python", "api.py"]
+# Default command
+ENTRYPOINT ["uvicorn"]
+CMD ["src.api.main:app", \
+    "--host", "0.0.0.0", \
+    "--port", "8000", \
+    "--workers", "1", \
+    "--loop", "uvloop", \
+    "--log-level", "info", \
+    "--access-log", \
+    "--use-colors"]

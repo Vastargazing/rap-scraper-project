@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rap-analyzer
+  namespace: default
+  labels:
+    app: rap-analyzer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rap-analyzer
+  template:
+    metadata:
+      labels:
+        app: rap-analyzer
+    spec:
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+
+      containers:
+      - name: api
+        image: rap-analyzer:k8s-latest
+        imagePullPolicy: IfNotPresent
+
+        # Container security
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false  # TODO: make true after testing
+          capabilities:
+            drop:
+            - ALL
+
+        # Environment from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: rap-analyzer-config
+
+        # Sensitive data from Secret
+        env:
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: rap-analyzer-secrets
+              key: POSTGRES_USERNAME
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rap-analyzer-secrets
+              key: POSTGRES_PASSWORD
+        - name: NOVITA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rap-analyzer-secrets
+              key: NOVITA_API_KEY
+        - name: GOOGLE_AI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rap-analyzer-secrets
+              key: GOOGLE_AI_API_KEY
+
+        # Ports
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+
+        # Health probes
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # Resources
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+        # Volume mounts
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: app-logs
+          mountPath: /app/logs
+        - name: app-tmp
+          mountPath: /app/tmp
+
+      # Volumes
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: app-logs
+        emptyDir: {}
+      - name: app-tmp
+        emptyDir: {}
