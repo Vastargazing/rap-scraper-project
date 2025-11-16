@@ -1,5 +1,9 @@
+# Build arguments for flexibility
+ARG PYTHON_VERSION=3.11
+ARG PYTHON_IMAGE=python:${PYTHON_VERSION}-slim-bookworm
+
 # 🐳 Production-ready Docker image for Rap Lyrics Analyzer API
-FROM python:3.11-slim
+FROM ${PYTHON_IMAGE}
 
 # Metadata
 LABEL maintainer="Rap Lyrics Analyzer Team"
@@ -20,15 +24,24 @@ RUN useradd -m -u 1000 rapuser
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+# Install Poetry
+RUN pip install --no-cache-dir poetry==2.2.1
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Configure Poetry - no virtual env needed in Docker
+ENV POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_NO_INTERACTION=1
+
+# Copy dependency files first for better caching
+COPY pyproject.toml poetry.lock ./
+
+# Install Python dependencies (production only)
+RUN poetry install --only main --no-root --no-cache
 
 # Copy application code
 COPY . .
+
+# Install the project itself (scripts and package)
+RUN poetry install --only-root
 
 # Create necessary directories
 RUN mkdir -p logs data results temp && \
