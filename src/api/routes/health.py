@@ -172,6 +172,15 @@ async def health_check() -> HealthResponse:
     - Monitoring and alerting systems
     - Production debugging
 
+    # TODO(FAANG): Improve health check implementation
+    #   - Add timeout for each component check (e.g., 2 seconds)
+    #   - Run component checks in parallel (asyncio.gather)
+    #   - Add circuit breaker to prevent cascade failures
+    #   - Cache health status (5-10 seconds TTL)
+    #   - Add detailed error messages for debugging
+    #   - Return 503 status code if critical components fail
+    #   - Add shallow vs deep health check modes
+
     The endpoint classifies overall status based on component health:
     - "healthy": All critical components operational
     - "degraded": Some non-critical components unavailable but API functional
@@ -223,6 +232,12 @@ async def health_check() -> HealthResponse:
     except Exception as e:
         components["qwen"] = f"error: {str(e)[:50]}"
 
+    # TODO(FAANG): Fix incorrect overall status logic
+    #   - Current logic is flawed: doesn't properly check for errors
+    #   - Should return "healthy" only if ALL components healthy
+    #   - Should return "error" if any critical component has error
+    #   - Should return "degraded" if non-critical components down
+    #   - Define critical vs non-critical components (database=critical, redis=optional)
     # Calculate overall status
     all_statuses = list(components.values())
     if all(s in ["healthy", "unavailable"] for s in all_statuses):
@@ -232,6 +247,10 @@ async def health_check() -> HealthResponse:
     else:
         overall_status = "degraded"
 
+    # TODO(FAANG): Fix timezone-naive datetime (DTZ005)
+    #   - Use datetime.now(timezone.utc) instead of datetime.now()
+    #   - Ensure all timestamps are UTC with timezone info
+    #   - Apply consistently across all endpoints
     return HealthResponse(
         status=overall_status,
         version=config.application.version,
@@ -256,6 +275,12 @@ async def config_info() -> dict[str, dict[str, object]]:
 
     Returns current API configuration excluding secrets like API keys, passwords,
     or authentication tokens. Safe to expose in logs and monitoring systems.
+
+    # TODO(FAANG): Add access control for config endpoint
+    #   - Require authentication (API key or JWT)
+    #   - Add rate limiting (prevent information gathering)
+    #   - Log access attempts for security monitoring
+    #   - Consider removing from public API entirely
 
     This endpoint is useful for:
     - Verifying deployed configuration matches expectations

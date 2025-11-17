@@ -44,6 +44,13 @@ from src.config import get_config
 router = APIRouter(tags=["ML Models"])
 config = get_config()
 
+# TODO(FAANG): Add rate limiting for expensive ML operations
+#   - Implement per-user/API-key rate limits (e.g., 10 requests/minute)
+#   - Add request queue with priority (premium vs free tier)
+#   - Implement circuit breaker for model failures
+#   - Add request timeout (prevent hanging requests)
+#   - Track and limit concurrent requests per model
+
 
 # ============================================================================
 # PYDANTIC MODELS
@@ -374,6 +381,15 @@ async def generate_lyrics(request: GenerateRequest) -> GenerateResponse:
         - Style guidance improves relevance but may limit creativity
         - Results not cached - each request generates fresh content
     """
+    # TODO(FAANG-CRITICAL): Implement actual QWEN model generation
+    #   - Load and initialize QWEN model (huggingface/novita)
+    #   - Add input validation and sanitization (prevent prompt injection)
+    #   - Implement timeout (e.g., 30 seconds max)
+    #   - Add content filtering (toxicity, hate speech)
+    #   - Cache responses for identical prompts
+    #   - Add telemetry (latency, token count, model version)
+    #   - Implement retry logic with exponential backoff
+    #   - Add A/B testing for different model versions
     try:
         # ML model generation logic would go here
         generated_text = f"[Generated based on: {request.prompt[:30]}...]\nYeah, I'm the best in the game..."
@@ -457,6 +473,14 @@ async def style_transfer(request: StyleTransferRequest) -> StyleTransferResponse
         - Processing typically takes 3-8 seconds depending on input length
         - Best results with well-known artists and clean input lyrics
     """
+    # TODO(FAANG-CRITICAL): Implement actual T5 style transfer model
+    #   - Load T5 model (HuggingFace transformers)
+    #   - Implement artist style embeddings and training
+    #   - Add timeout (e.g., 60 seconds for long lyrics)
+    #   - Validate artist names against whitelist
+    #   - Add quality check for transferred output
+    #   - Cache common artist pair transfers
+    #   - Add metrics for transfer quality score
     try:
         # ML model style transfer logic would go here
         return StyleTransferResponse(
@@ -538,6 +562,14 @@ async def predict_quality(request: QualityPredictionRequest) -> QualityPredictio
         - Analysis typically takes 1-3 seconds
         - Results cached for identical lyrics to improve performance
     """
+    # TODO(FAANG-CRITICAL): Implement ensemble quality prediction model
+    #   - Train ensemble model (RandomForest + XGBoost + Neural Net)
+    #   - Add feature engineering (rhyme density, vocab diversity, etc.)
+    #   - Implement timeout (e.g., 10 seconds)
+    #   - Add A/B testing for model improvements
+    #   - Cache predictions for identical lyrics
+    #   - Include confidence intervals in predictions
+    #   - Add explainability (SHAP/LIME) for predictions
     try:
         # ML model quality prediction logic would go here
         return QualityPredictionResponse(
@@ -619,6 +651,14 @@ async def analyze_trends(request: TrendAnalysisRequest) -> TrendAnalysisResponse
         - Results updated regularly with new data
         - Processing typically takes 2-5 seconds
     """
+    # TODO(FAANG-CRITICAL): Implement real trend analysis with data pipeline
+    #   - Build data ingestion pipeline (Spotify, Billboard, Genius)
+    #   - Implement time-series forecasting (Prophet/ARIMA)
+    #   - Add clustering algorithms for theme detection
+    #   - Cache results with appropriate TTL (1-24 hours)
+    #   - Add historical trend comparison
+    #   - Implement timeout (e.g., 15 seconds)
+    #   - Include confidence scores for forecasts
     try:
         # ML model trend analysis logic would go here
         return TrendAnalysisResponse(

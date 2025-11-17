@@ -85,6 +85,11 @@ from fastapi.middleware.cors import CORSMiddleware
 # LOGGING CONFIGURATION
 # ============================================================================
 
+# TODO(FAANG): Replace basicConfig with structured logging (JSON format)
+#   - Use structured logging library (structlog/python-json-logger)
+#   - Add request_id, user_id, trace_id for distributed tracing
+#   - Integrate with centralized logging (CloudWatch/Stackdriver/ELK)
+#   - Add log sampling for high-volume endpoints
 # Configure logging FIRST (before any other imports)
 logging.basicConfig(
     level=logging.INFO,
@@ -157,6 +162,10 @@ except Exception as e:
 # ROUTE IMPORTS WITH GRACEFUL FALLBACKS
 # ============================================================================
 
+# TODO(FAANG): Thread safety - global mutable dict is not thread-safe
+#   - Use thread-safe data structure (threading.Lock or concurrent.futures)
+#   - Consider using dependency injection instead of global state
+#   - Add health check to verify all critical routes loaded
 # Import route modules with error handling to prevent total failure
 ROUTES_AVAILABLE: dict[str, Any] = {}
 
@@ -303,6 +312,13 @@ async def lifespan(app: FastAPI):
     logger.info("=" * 80)
     logger.info("🛑 SHUTTING DOWN RAP ML API")
     logger.info("=" * 80)
+    # TODO(FAANG): Implement proper graceful shutdown
+    #   - Close database connection pools properly
+    #   - Flush Redis cache connections
+    #   - Cancel pending background tasks
+    #   - Wait for in-flight requests to complete (with timeout)
+    #   - Release ML model resources (GPU memory)
+    #   - Send shutdown metrics to monitoring
     # Add cleanup logic here if needed (e.g., close database connections)
 
 
@@ -369,6 +385,14 @@ app = FastAPI(
 # MIDDLEWARE CONFIGURATION
 # ============================================================================
 
+# TODO(FAANG): Add critical production middleware
+#   - Request ID middleware for distributed tracing
+#   - Rate limiting middleware (slowapi/fastapi-limiter)
+#   - Request timeout middleware (prevent long-running requests)
+#   - Compression middleware (gzip) for response optimization
+#   - Security headers middleware (HSTS, CSP, X-Frame-Options)
+#   - Metrics/monitoring middleware (Prometheus/StatsD)
+#   - Error tracking middleware (Sentry integration)
 # Configure CORS middleware for cross-origin requests
 if config.api.cors.enabled:
     app.add_middleware(

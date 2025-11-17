@@ -164,6 +164,13 @@ async def models_status() -> ModelsStatusResponse:
     provider details. Essential for monitoring model health and debugging
     performance issues in production.
 
+    # TODO(FAANG): Replace mock data with real model status checks
+    #   - Implement actual model health checks (ping/inference test)
+    #   - Query real latency metrics from monitoring system
+    #   - Add circuit breaker status for each model
+    #   - Include GPU/CPU utilization metrics
+    #   - Add model queue depth and request rate
+
     This endpoint supports:
     - Production monitoring and alerting
     - Performance benchmarking and optimization
@@ -196,6 +203,11 @@ async def models_status() -> ModelsStatusResponse:
         - This endpoint provides extended metrics vs. /models/info
         - Use /health for overall API health (includes model status)
     """
+    # TODO(FAANG): Dynamic model status instead of hardcoded values
+    #   - Check actual model loading state (loaded/loading/error)
+    #   - Calculate real average latency from metrics
+    #   - Query model provider API for health status
+    #   - Add error details for failed models
     return ModelsStatusResponse(
         api_version="3.0.0",
         models_loaded=True,

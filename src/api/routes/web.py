@@ -112,6 +112,12 @@ class ModelsInfoResponse(BaseModel):
 # ============================================================================
 
 
+# TODO(FAANG): Security - XSS and injection vulnerabilities
+#   - Move HTML to separate template file (Jinja2)
+#   - Add Content-Security-Policy headers
+#   - Sanitize all user inputs in JavaScript
+#   - Add CSRF protection for forms
+#   - Use nonce for inline scripts
 @router.get(
     "/",
     response_class=HTMLResponse,
@@ -398,6 +404,13 @@ async def models_info() -> ModelsInfoResponse:
     including their names, providers, supported operations, and operational status.
     Useful for understanding which models to use for specific tasks.
 
+    # TODO(FAANG): Replace hardcoded model data with dynamic discovery
+    #   - Query actual model registry/database for real-time status
+    #   - Add model version tracking and deprecation warnings
+    #   - Include model performance metrics (latency, accuracy)
+    #   - Add pagination for large model lists
+    #   - Cache response with short TTL (5-10 min)
+
     This endpoint supports:
     - Model discovery and capability exploration
     - API integration planning and decision-making
@@ -425,6 +438,10 @@ async def models_info() -> ModelsInfoResponse:
         - Model status "deprecated" means will be removed in future version
         - Capabilities list shows all operations the model supports
     """
+    # TODO(FAANG): Move static model data to configuration or database
+    #   - Create ModelRegistry service for centralized model management
+    #   - Add health checks to verify model availability
+    #   - Include circuit breaker pattern for failing models
     return ModelsInfoResponse(
         models={
             "qwen": ModelCapabilities(

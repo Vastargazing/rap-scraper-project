@@ -47,6 +47,16 @@ from src.config import get_config
 router = APIRouter(tags=["Batch Processing"])
 config = get_config()
 
+# TODO(FAANG-CRITICAL): Replace in-memory storage with persistent storage
+#   - Use Redis for job state (survives restarts, supports multi-instance)
+#   - Use PostgreSQL for job history and results
+#   - Add distributed locking (Redis locks) for concurrent access
+#   - Implement job expiration/cleanup (TTL in Redis)
+#   - Add job queue (Celery/RQ/BullMQ) for better scalability
+#   - Implement dead letter queue for failed jobs
+# TODO(FAANG-CRITICAL): Thread safety - global dict has race conditions
+#   - Multiple workers can corrupt job state
+#   - Use thread-safe data structure or external storage
 # In-memory batch tracking (would be in DB/Redis in production)
 batch_jobs: dict[str, dict[str, Any]] = {}
 
@@ -291,7 +301,17 @@ async def process_batch(batch_id: str, items: list[dict[str, Any]], operation: s
         - Updates batch_jobs dict with real-time progress
         - In production, should update database/Redis instead
         - Error handling should be added for failed items
+
+    # TODO(FAANG): Improve batch processing implementation
+    #   - Add timeout for entire batch (e.g., 1 hour max)
+    #   - Process items in parallel (asyncio.gather with concurrency limit)
+    #   - Add retry logic for failed items (exponential backoff)
+    #   - Store individual item results (not just count)
+    #   - Add progress callbacks/webhooks
+    #   - Implement graceful shutdown (save progress)
+    #   - Add telemetry (processing rate, error rate)
     """
+    # TODO(FAANG): Race condition - multiple workers could update simultaneously
     batch_jobs[batch_id]["status"] = "processing"
 
     try:
@@ -321,6 +341,14 @@ async def process_single_item(item: dict[str, Any], operation: str):
         Add actual implementation based on operation type:
         - "analyze": Call QWEN analyzer
         - "validate": Run validation checks
+
+    # TODO(FAANG-CRITICAL): Implement actual batch item processing
+    #   - Add timeout per item (e.g., 30 seconds)
+    #   - Implement circuit breaker for failing services
+    #   - Add input validation and sanitization
+    #   - Store individual item results (not just progress)
+    #   - Add error details for failed items
+    #   - Implement retry logic with exponential backoff
     """
     # TODO: Implement actual processing logic
     # if operation == "analyze":
@@ -349,6 +377,11 @@ async def process_single_item(item: dict[str, Any], operation: str):
         },
     },
 )
+# TODO(FAANG): Add rate limiting and quota management
+#   - Limit concurrent batches per user (e.g., max 5 active)
+#   - Limit total items per user per day (quota system)
+#   - Add authentication and user identification
+#   - Implement priority queue (premium vs free tier)
 async def submit_batch(
     request: BatchRequest,
     background_tasks: BackgroundTasks,
@@ -402,8 +435,14 @@ async def submit_batch(
         - Processing time varies: ~0.5-2s per item depending on operation
         - In-memory tracking lost on server restart (use Redis in production)
     """
+    # TODO(FAANG): Add input validation and security checks
+    #   - Validate total content size (prevent memory exhaustion)
+    #   - Check for duplicate items (deduplicate)
+    #   - Sanitize lyrics content (prevent injection attacks)
+    #   - Verify batch size limits based on user tier
     batch_id = str(uuid.uuid4())
 
+    # TODO(FAANG): Use atomic operation for job creation (Redis SETNX)
     # Initialize batch tracking
     batch_jobs[batch_id] = {
         "status": "queued",

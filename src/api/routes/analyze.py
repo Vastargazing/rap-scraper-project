@@ -66,6 +66,11 @@ if config is None:
 
     config = get_config()
 
+# TODO(FAANG-CRITICAL): Global mutable state is not thread-safe
+#   - Use dependency injection instead of global variable
+#   - Consider using FastAPI's Depends() for analyzer instance
+#   - Add thread-safe initialization (threading.Lock)
+#   - Support multiple analyzer instances for load balancing
 # Global QWEN analyzer instance (initialized in main.py startup)
 qwen_analyzer: "QwenAnalyzer | None" = None
 
@@ -256,6 +261,14 @@ async def initialize_analyzer() -> bool:
     Note:
         Initialization typically takes 3-5 seconds as the model loads into memory.
         Failure to initialize will result in 503 errors on /analyze endpoint.
+
+    # TODO(FAANG): Improve initialization robustness
+    #   - Add retry logic with exponential backoff (3 attempts)
+    #   - Add timeout for model loading (e.g., 60 seconds)
+    #   - Verify model health after initialization (test inference)
+    #   - Support lazy loading (initialize on first request)
+    #   - Add circuit breaker for repeated initialization failures
+    #   - Use proper logging instead of print()
     """
     global qwen_analyzer
     try:
@@ -263,11 +276,14 @@ async def initialize_analyzer() -> bool:
             from src.analyzers.qwen_analyzer import QwenAnalyzer
 
             qwen_analyzer = QwenAnalyzer()
+            # TODO(FAANG): Use logger instead of print()
             print("✅ QWEN analyzer initialized")
             return True
+        # TODO(FAANG): Use logger instead of print()
         print("❌ QWEN analyzer not available")
         return False
     except Exception as e:
+        # TODO(FAANG): Use logger with exc_info=True for full traceback
         print(f"❌ Failed to initialize QWEN: {e}")
         return False
 
@@ -305,6 +321,14 @@ async def analyze_lyrics(request: AnalyzeRequest) -> AnalysisResult:
     sentiment analysis, theme detection, complexity scoring, quality prediction,
     and emotional profiling. Supports Redis caching for performance optimization
     and configurable model temperature for analysis creativity control.
+
+    # TODO(FAANG): Add security and performance improvements
+    #   - Add input sanitization (prevent prompt injection)
+    #   - Implement rate limiting per user/IP
+    #   - Add request timeout (e.g., 30 seconds)
+    #   - Validate lyrics content (length, encoding, profanity)
+    #   - Add telemetry (latency histogram, cache hit rate)
+    #   - Implement circuit breaker for QWEN failures
 
     This endpoint powers the core analysis features of the Content Intelligence
     Platform, enabling deep understanding of lyrical content for research,
@@ -350,6 +374,10 @@ async def analyze_lyrics(request: AnalyzeRequest) -> AnalysisResult:
         - Redis caching significantly improves performance for repeated lyrics
         - First request after server restart may take longer (model loading)
     """
+    # TODO(FAANG): Add health check before processing
+    #   - Check if analyzer is healthy (not just initialized)
+    #   - Implement circuit breaker pattern
+    #   - Add fallback to simpler analysis if QWEN unavailable
     if not qwen_analyzer:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -357,8 +385,15 @@ async def analyze_lyrics(request: AnalyzeRequest) -> AnalysisResult:
         )
 
     try:
+        # TODO(FAANG): Add request timeout wrapper
+        #   - Use asyncio.wait_for() with timeout
+        #   - Cancel request if takes too long
         start_time = datetime.now(timezone.utc)
 
+        # TODO(FAANG): Add input validation before calling analyzer
+        #   - Check for malicious content
+        #   - Validate encoding (UTF-8)
+        #   - Remove or escape special characters
         # Call QWEN analyzer
         result = qwen_analyzer.analyze_lyrics(
             lyrics=request.lyrics,
