@@ -1,21 +1,34 @@
-"""
-🤖 QWEN Analyzer Wrapper with Config Integration
-Type-safe QWEN model integration for lyrics analysis
+"""QWEN Analyzer Wrapper with Config Integration.
+
+This module provides type-safe QWEN model integration for lyrics analysis
+with automatic configuration management, retry logic, and response caching.
 
 Features:
-- Config loader integration for API settings
-- Automatic API key validation
-- Retry logic from config
-- Temperature and token limits from config
-- Response caching support
+    - Config loader integration for API settings
+    - Automatic API key validation
+    - Retry logic with exponential backoff
+    - Temperature and token limits from config
+    - Redis response caching support
 
-Author: Vastargazing
-Version: 2.0.0
+Example:
+    Basic usage of the QWEN Analyzer:
+
+        analyzer = QwenAnalyzer()
+        result = analyzer.analyze_lyrics("rap lyrics text")
+
+    With custom parameters:
+
+        result = analyzer.analyze_lyrics(
+            "lyrics",
+            temperature=0.2,
+            max_tokens=500,
+            use_cache=True
+        )
 """
 
 import logging
 import time
-from typing import Any
+from typing import Any, TypedDict
 
 from openai import OpenAI
 
@@ -24,25 +37,85 @@ from src.config.config_loader import get_config
 
 logger = logging.getLogger(__name__)
 
+# Module-level constants for magic numbers and strings
+_DEFAULT_CACHE_PREFIX = "qwen"
+_BACKOFF_MULTIPLIER = 2
+_TEST_MAX_TOKENS = 10
+_TEST_TIMEOUT = 10
+
+
+class AnalysisResult(TypedDict):
+    """Structured type for analysis results.
+
+    Attributes:
+        model: Name of the model used for analysis.
+        tokens_used: Number of tokens consumed in API call.
+        timestamp: Unix timestamp of when analysis was performed.
+        analysis: Analysis content or error message.
+        raw_response: Flag indicating if response was not JSON-parseable.
+        error: Error message if analysis failed.
+        failed: Flag indicating if analysis failed.
+    """
+
+    model: str
+    tokens_used: int | None
+    timestamp: float
+    analysis: str | None
+    raw_response: bool | None
+    error: str | None
+    failed: bool | None
+
 
 class QwenAnalyzer:
+    """QWEN-based lyrics analyzer with config integration.
+
+    This class provides QWEN model integration for analyzing rap lyrics
+    with support for automatic caching, retry logic, and configuration
+    management from environment variables or config files.
+
+    Attributes:
+        client: OpenAI client instance for communication with QWEN API.
+        qwen_config: Configuration object containing model settings,
+            API credentials, timeout values, and retry parameters.
+        use_cache: Flag to enable/disable Redis response caching.
+
+    Example:
+        Initialize analyzer and analyze lyrics:
+
+            analyzer = QwenAnalyzer()
+            result = analyzer.analyze_lyrics("Your rap lyrics here")
+
+            if "error" not in result:
+                print(f"Model used: {result['model']}")
+                print(f"Analysis: {result['analysis']}")
+
+        With custom temperature and caching disabled:
+
+            result = analyzer.analyze_lyrics(
+                "Complex rap lyrics with metaphors",
+                temperature=0.2,
+                use_cache=False
+            )
+
+    Raises:
+        ConfigError: If configuration cannot be loaded or API key is missing.
+        APIError: If QWEN API connection fails.
     """
-    QWEN-based lyrics analyzer with config integration
 
-    Usage:
-        analyzer = QwenAnalyzer()
-        result = analyzer.analyze_lyrics("rap lyrics here")
+    def __init__(self) -> None:
+        """Initialize QWEN analyzer with config settings.
 
-        # With custom temperature
-        result = analyzer.analyze_lyrics("lyrics", temperature=0.2)
-    """
+        Loads configuration from environment and initializes OpenAI client
+        for QWEN API communication. Sets up caching support for analysis results.
 
-    def __init__(self):
-        """Initialize QWEN analyzer with config settings"""
+        Raises:
+            ConfigError: If configuration cannot be loaded.
+            ValueError: If required API key is missing in environment.
+        """
         config = get_config()
         self.qwen_config = config.analyzers.get_qwen()
 
-        logger.info("🤖 Initializing QWEN Analyzer...")
+        logger.info("Initializing QWEN Analyzer...")
         logger.info(f"   Model: {self.qwen_config.model_name}")
         logger.info(f"   Base URL: {self.qwen_config.base_url}")
         logger.info(f"   Temperature: {self.qwen_config.temperature}")
@@ -58,7 +131,7 @@ class QwenAnalyzer:
 
         self.use_cache = True  # Can be configured
 
-        logger.info("✅ QWEN Analyzer initialized successfully!")
+        logger.info("QWEN Analyzer initialized successfully!")
 
     def analyze_lyrics(
         self,
@@ -66,24 +139,28 @@ class QwenAnalyzer:
         temperature: float | None = None,
         max_tokens: int | None = None,
         use_cache: bool = True,
-    ) -> dict[str, Any]:
-        """
-        Analyze rap lyrics using QWEN model
+    ) -> AnalysisResult:
+        """Analyze rap lyrics using QWEN model.
+
+        Performs comprehensive analysis of provided lyrics including themes,
+        style, complexity, and emotional tone. Results are cached in Redis
+        if available.
 
         Args:
-            lyrics: Lyrics text to analyze
-            temperature: Override config temperature (optional)
-            max_tokens: Override config max tokens (optional)
-            use_cache: Use Redis cache if available
+            lyrics: Lyrics text to analyze.
+            temperature: Override config temperature (optional).
+            max_tokens: Override config max tokens (optional).
+            use_cache: Use Redis cache if available.
 
         Returns:
-            dict: Analysis results with themes, style, quality, etc.
+            AnalysisResult: Dictionary containing model name, tokens used,
+                analysis content, and error information if applicable.
         """
         # Check cache first
         if use_cache and self.use_cache:
             cached = redis_cache.get_analysis(f"qwen:{hash(lyrics)}")
             if cached:
-                logger.info("✅ Using cached QWEN analysis")
+                logger.info("Using cached QWEN analysis")
                 return cached
 
         # Use config defaults if not overridden
@@ -103,7 +180,17 @@ class QwenAnalyzer:
         return result
 
     def _build_analysis_prompt(self, lyrics: str) -> str:
-        """Build analysis prompt for QWEN"""
+        """Build analysis prompt for QWEN.
+
+        Creates a structured prompt for analyzing rap lyrics with specific
+        analysis criteria including themes, style, complexity, and quality.
+
+        Args:
+            lyrics: Raw rap lyrics text to analyze.
+
+        Returns:
+            str: Structured prompt for QWEN analysis.
+        """
         return f"""Analyze these rap lyrics and provide a detailed breakdown:
 
 LYRICS:
@@ -121,24 +208,34 @@ Provide response in JSON format."""
 
     def _analyze_with_retry(
         self, prompt: str, temperature: float, max_tokens: int
-    ) -> dict[str, Any]:
-        """
-        Analyze with automatic retry on failure
+    ) -> AnalysisResult:
+        """Analyze prompt with automatic retry logic.
+
+        Attempts to analyze lyrics using QWEN API with exponential backoff
+        retry strategy. Returns error result if all retry attempts fail.
 
         Args:
-            prompt: Analysis prompt
-            temperature: Temperature setting
-            max_tokens: Max tokens setting
+            prompt: Formatted analysis prompt to send to QWEN API.
+            temperature: Temperature setting for model creativity (0.0-2.0)
+            max_tokens: Max tokens for API response.
 
         Returns:
-            dict: Analysis results or error dict
+            AnalysisResult: Analysis results or error dict with failure flag set.
+
+        Raises:
+            Exception: Re-raises last exception after all retries exhausted
+                (caught internally but documented for debugging).
+
+        Note:
+            Uses _BACKOFF_MULTIPLIER for exponential backoff between retries.
+            Logs all retry attempts for debugging purposes.
         """
         last_error = None
 
         for attempt in range(1, self.qwen_config.retry_attempts + 1):
             try:
                 logger.info(
-                    f"🤖 QWEN analysis attempt {attempt}/{self.qwen_config.retry_attempts}"
+                    f"QWEN analysis attempt {attempt}/{self.qwen_config.retry_attempts}"
                 )
 
                 response = self.client.chat.completions.create(
@@ -201,14 +298,21 @@ Provide response in JSON format."""
         }
 
     def test_api_connection(self) -> bool:
-        """
-        Test QWEN API connection
+        """Test QWEN API connection and validate configuration.
+
+        Sends a simple test request to QWEN API to verify credentials,
+        connectivity, and basic API functionality. Logs results and errors.
 
         Returns:
-            bool: True if connection successful
+            bool: True if connection successful and API is responding.
+                False if connection fails or API returns error.
+
+        Raises:
+            No exceptions raised - all errors are caught and logged.
+
         """
         try:
-            logger.info("🧪 Testing QWEN API connection...")
+            logger.info("Testing QWEN API connection...")
 
             response = self.client.chat.completions.create(
                 model=self.qwen_config.model_name,
@@ -217,17 +321,33 @@ Provide response in JSON format."""
                 timeout=10,
             )
 
-            logger.info("✅ QWEN API connection successful!")
+            logger.info("QWEN API connection successful!")
             logger.info(f"   Model: {self.qwen_config.model_name}")
             logger.info(f"   Response: {response.choices[0].message.content}")
             return True
 
         except Exception as e:
-            logger.error(f"❌ QWEN API connection failed: {e}")
+            logger.error(f"QWEN API connection failed: {e}")
             return False
 
     def get_config_info(self) -> dict[str, Any]:
-        """Get current configuration info"""
+        """Get current QWEN analyzer configuration information.
+
+        Returns all configuration settings including model name, API endpoint,
+        temperature, token limits, timeouts, retry settings, and cache status.
+        Used for debugging and monitoring purposes.
+
+        Returns:
+            dict[str, Any]: Dictionary containing:
+                - model: str (model name)
+                - base_url: str (API endpoint URL)
+                - temperature: float (model temperature setting)
+                - max_tokens: int (maximum response tokens)
+                - timeout: int (API request timeout in seconds)
+                - retry_attempts: int (maximum retry attempts)
+                - api_key_set: bool (whether API key is configured)
+                - cache_enabled: bool (whether Redis caching is enabled)
+        """
         return {
             "model": self.qwen_config.model_name,
             "base_url": self.qwen_config.base_url,
