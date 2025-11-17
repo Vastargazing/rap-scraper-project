@@ -62,6 +62,11 @@ Version:
     2.0.0 - Multi-model with safety validation
 """
 
+# TODO(code_review): [HIGH] Move imports to follow Google Python Style Guide order:
+# 1. Standard library imports
+# 2. Third-party imports
+# 3. Local application imports
+# Currently mixing all import types without clear separation
 import asyncio
 import json
 import logging
@@ -76,9 +81,16 @@ from dotenv import load_dotenv
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel, Field
 
+# TODO(code_review): [CRITICAL] Avoid module-level side effects (load_dotenv())
+# Move to main() or create explicit initialization function
+# This breaks testability and causes issues with import order
 # Загрузка переменных окружения
 load_dotenv()
 
+# TODO(code_review): [HIGH] Avoid module-level logging configuration
+# This affects global logging state and breaks when imported as library
+# Move to main() or use __name__ == "__main__" guard
+# Consider using logging.getLogger(__name__).setLevel() instead
 # Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
@@ -92,6 +104,12 @@ logger = logging.getLogger(__name__)
 
 
 # ===== PostgreSQL Configuration =====
+# TODO(code_review): [HIGH] Convert to dataclass or use __init__ for proper instance attributes
+# Current implementation uses class attributes which are shared across all instances
+# This can lead to unexpected behavior and testing issues
+# TODO(code_review): [CRITICAL] NEVER hardcode credentials, even as defaults
+# Remove "securepassword123" default - fail fast if password not provided
+# Use required environment variables or raise ConfigurationError
 class DatabaseConfig:
     """PostgreSQL database connection configuration.
 
@@ -111,12 +129,16 @@ class DatabaseConfig:
         All attributes are loaded from environment variables with POSTGRES_ prefix.
         Connection pooling parameters should be tuned based on expected load.
     """
+    # TODO(code_review): [MEDIUM] Extract magic numbers to named constants at module level
+    # DEFAULT_POSTGRES_HOST = "localhost"
+    # DEFAULT_POSTGRES_PORT = 5432
+    # etc.
 
     host: str = os.getenv("POSTGRES_HOST", "localhost")
     port: int = int(os.getenv("POSTGRES_PORT", "5432"))
     database: str = os.getenv("POSTGRES_DATABASE", "rap_lyrics")
     username: str = os.getenv("POSTGRES_USERNAME", "rap_user")
-    password: str = os.getenv("POSTGRES_PASSWORD", "securepassword123")
+    password: str = os.getenv("POSTGRES_PASSWORD", "securepassword123")  # TODO(code_review): [CRITICAL] SECURITY: Remove hardcoded password!
     max_connections: int = int(os.getenv("POSTGRES_MAX_CONNECTIONS", "20"))
     min_connections: int = int(os.getenv("POSTGRES_MIN_CONNECTIONS", "5"))
 
@@ -321,6 +343,8 @@ class PostgreSQLManager:
         self.pool = None
         self.logger = logging.getLogger(f"{__name__}.PostgreSQLManager")
 
+    # TODO(code_review): [MEDIUM] Add type hints for async context manager protocol
+    # Consider implementing __aenter__ and __aexit__ for proper async context manager
     async def initialize(self) -> bool:
         """Initialize asyncpg connection pool and test connectivity.
 
@@ -340,14 +364,17 @@ class PostgreSQLManager:
         """
         try:
             self.logger.info("Initializing PostgreSQL connection pool")
-
+            # TODO(code_review): [HIGH] Avoid string interpolation for DSN with credentials
+            # Use asyncpg.create_pool() parameters directly for better security
+            # Current approach logs credentials if dsn variable is printed
             dsn = f"postgresql://{self.config.username}:{self.config.password}@{self.config.host}:{self.config.port}/{self.config.database}"
-
+            # TODO(code_review): [MEDIUM] Extract magic number 60 to named constant
+            # COMMAND_TIMEOUT_SECONDS = 60
             self.pool = await asyncpg.create_pool(
                 dsn,
                 min_size=self.config.min_connections,
                 max_size=self.config.max_connections,
-                command_timeout=60,
+                command_timeout=60,  # TODO(code_review): [MEDIUM] Magic number - extract to constant
                 server_settings={
                     "application_name": "multi_model_analyzer",
                     "timezone": "UTC",
@@ -357,11 +384,15 @@ class PostgreSQLManager:
             # Test connection
             async with self.pool.acquire() as conn:
                 await conn.execute("SELECT 1")
-
+            # TODO(code_review): [LOW] Avoid emoji in production logs - breaks parsing/monitoring tools
+            # Use structured logging with severity levels instead
             self.logger.info("✅ PostgreSQL connection pool initialized successfully")
             return True
 
         except Exception as e:
+            # TODO(code_review): [HIGH] Catch specific exceptions (asyncpg.PostgresError, etc.)
+            # Generic Exception catching hides bugs and makes debugging harder
+            # TODO(code_review): [MEDIUM] Add exception context: logger.error(..., exc_info=True)
             self.logger.error(f"❌ Failed to initialize PostgreSQL: {e}")
             return False
 
@@ -430,6 +461,9 @@ class PostgreSQLManager:
         )
 
 
+# TODO(code_review): [HIGH] Large class (>600 lines) - violates Single Responsibility Principle
+# Split into smaller focused classes:
+# - ThemeValidator, MoodValidator, ConsistencyChecker, HallucinationDetector
 class SafetyValidator:
     """Validator for AI analysis reliability and hallucination detection.
 
@@ -458,6 +492,9 @@ class SafetyValidator:
         ... else:
         ...     print(f"⚠️ Warnings: {result['warning_flags']}")
     """
+    # TODO(code_review): [MEDIUM] Extract keyword dictionaries to external config file (JSON/YAML)
+    # Hardcoded dictionaries make internationalization and updates difficult
+    # Consider using external keyword database or ML-based theme detection
 
     def __init__(self):
         """Initialize SafetyValidator with keyword dictionaries and thresholds.
@@ -470,7 +507,11 @@ class SafetyValidator:
             - consistency_threshold: Lower = more permissive (default 0.6)
             - hallucination_threshold: Higher = stricter (default 0.4)
         """
+        # TODO(code_review): [LOW] Mixed language comments (Russian) - use English for consistency
+        # Follow Google Style Guide: use English for all code/comments
         # Словари для проверки тематик (English-focused)
+        # TODO(code_review): [MEDIUM] Large hardcoded data structure - extract to constants or config
+        # This makes the __init__ method hard to read and test
         self.theme_keywords = {
             "money": [
                 "cash",
@@ -661,11 +702,18 @@ class SafetyValidator:
             ],
         }
 
+        # TODO(code_review): [HIGH] Extract magic numbers to module-level constants
+        # CONSISTENCY_THRESHOLD = 0.6
+        # HALLUCINATION_THRESHOLD = 0.4
+        # Consider making these configurable via constructor parameters
         # Пороги для различных проверок
-        self.consistency_threshold = 0.6  # Понижен для более гибкой оценки
-        self.hallucination_threshold = 0.4  # Повышен для строгого контроля галлюцинаций
+        self.consistency_threshold = 0.6  # Понижен для более гибкой оценки  # TODO(code_review): [MEDIUM] Magic number
+        self.hallucination_threshold = 0.4  # Повышен для строгого контроля галлюцинаций  # TODO(code_review): [MEDIUM] Magic number
 
-    def validate_analysis(self, lyrics: str, ai_analysis: dict) -> dict:
+    # TODO(code_review): [HIGH] Return TypedDict instead of plain dict for type safety
+    # Define ValidationResult(TypedDict) with all expected fields
+    # Current return type is untyped dict which breaks IDE autocomplete and type checking
+    def validate_analysis(self, lyrics: str, ai_analysis: dict) -> dict:  # TODO(code_review): [HIGH] Add proper return type hint
         """Perform comprehensive reliability validation of AI analysis results.
 
         Validates AI-generated analysis through multiple checks including internal
@@ -749,6 +797,8 @@ class SafetyValidator:
             ),
         }
 
+    # TODO(code_review): [MEDIUM] Method too long (70+ lines) - violates SRP
+    # Split into smaller focused methods: check_theme_hallucinations(), check_mood_hallucinations(), etc.
     def detect_hallucinations(self, lyrics: str, analysis: dict) -> float:
         """Detect potential hallucinations in AI analysis results.
 
@@ -774,6 +824,10 @@ class SafetyValidator:
             - Explicit content mismatch: +0.1
             - Unrealistic quality scores: +0.1
         """
+        # TODO(code_review): [MEDIUM] Extract penalty values to named constants
+        # THEME_PENALTY = 0.15
+        # MOOD_PENALTY = 0.2
+        # GENRE_PENALTY = 0.3, etc.
         hallucination_score = 0.0
         lyrics_lower = lyrics.lower()
 
@@ -783,7 +837,7 @@ class SafetyValidator:
             if isinstance(claimed_themes, list):
                 for theme in claimed_themes:
                     if not self.theme_present_in_lyrics(theme, lyrics_lower):
-                        hallucination_score += 0.15
+                        hallucination_score += 0.15  # TODO(code_review): [MEDIUM] Magic number - extract to constant
                         logger.warning(
                             f"🚨 Possible hallucination: theme '{theme}' not found in lyrics"
                         )
@@ -869,8 +923,17 @@ class SafetyValidator:
         # Для неизвестных настроений возвращаем True (не можем проверить)
         return True
 
+    # TODO(code_review): [HIGH] Hardcoded profanity list is incomplete and unmaintainable
+    # Use external profanity filter library (e.g., better-profanity, profanity-check)
+    # Current approach:
+    # 1. Misses common profanity variations (f**k, sh!t, etc.)
+    # 2. Doesn't support multiple languages properly
+    # 3. No context awareness (Scunthorpe problem)
+    # 4. Hardcoded list is difficult to update/customize
     def detect_explicit_content(self, lyrics_lower: str) -> bool:
         """Детектирует explicit контент в тексте (English-focused)"""
+        # TODO(code_review): [MEDIUM] Extract to module-level constant or config file
+        # TODO(code_review): [HIGH] Consider using set instead of list for O(1) lookup
         explicit_words = [
             "fuck",
             "shit",
@@ -890,6 +953,9 @@ class SafetyValidator:
             "bastard",
             "piss",
         ]
+        # TODO(code_review): [MEDIUM] Inefficient O(n*m) algorithm
+        # Convert explicit_words to set for O(n) performance
+        # Or use regex compilation for better performance
         return any(word in lyrics_lower for word in explicit_words)
 
     def check_internal_consistency(self, analysis: dict) -> float:
@@ -1121,6 +1187,10 @@ class SafetyValidator:
         return f"⚠️ Анализ ненадежен: {', '.join(issues)}"
 
 
+# TODO(code_review): [HIGH] Large class (375 lines) - violates SRP
+# Split into smaller classes: ExplanationGenerator, ConfidenceCalculator, FactorExtractor
+# TODO(code_review): [MEDIUM] Duplicate code with SafetyValidator keyword dictionaries
+# Extract shared keyword dictionaries to separate KeywordRegistry class
 class InterpretableAnalyzer:
     """Analyzer with AI decision explanations and interpretability features.
 
@@ -1713,8 +1783,15 @@ class OllamaProvider(ModelProvider):
             logger.error(f"⌛ Ошибка анализа Ollama: {e}")
             return None
 
+    # TODO(code_review): [HIGH] Method returns large multiline string - extract to template file
+    # Use jinja2 or similar template engine for better maintainability
+    # Current approach makes prompt versioning and A/B testing difficult
     def _create_analysis_prompt(self, artist: str, title: str, lyrics: str) -> str:
         """Создание промпта для анализа"""
+        # TODO(code_review): [MEDIUM] Magic number 2000 - extract to constant
+        # LYRICS_MAX_LENGTH = 2000
+        # TODO(code_review): [HIGH] Truncating lyrics at 2000 chars may cut mid-word/sentence
+        # Use proper text truncation that respects word boundaries
         return f"""
 Проанализируй рэп-песню и верни результат СТРОГО в JSON формате.
 
@@ -1758,11 +1835,17 @@ class OllamaProvider(ModelProvider):
 Верни ТОЛЬКО JSON без комментариев!
 """
 
+    # TODO(code_review): [CRITICAL] Code duplication - identical method in GemmaProvider
+    # Extract to shared utility function or base class method
+    # DRY principle violation - same logic duplicated 80+ lines
     def _parse_analysis(
         self, analysis_text: str, artist: str, title: str
     ) -> EnhancedSongData | None:
         """Парсинг результата анализа"""
         try:
+            # TODO(code_review): [MEDIUM] Naive JSON extraction - fragile parsing logic
+            # Use regex or proper parsing library to handle edge cases
+            # Current approach fails if JSON contains nested braces
             # Извлекаем JSON из ответа
             json_start = analysis_text.find("{")
             json_end = analysis_text.rfind("}") + 1
@@ -1772,7 +1855,7 @@ class OllamaProvider(ModelProvider):
                 return None
 
             json_str = analysis_text[json_start:json_end]
-            data = json.loads(json_str)
+            data = json.loads(json_str)  # TODO(code_review): [MEDIUM] Add JSONDecodeError handling separately
 
             # Проверяем и дополняем отсутствующие поля
             metadata_data = data.get("metadata", {})
@@ -1818,6 +1901,10 @@ class OllamaProvider(ModelProvider):
             return None
 
 
+# TODO(code_review): [HIGH] MockProvider.analyze_song() is 187 lines - violates SRP
+# Extract rule-based analysis logic to separate analyzers:
+# - GenreClassifier, MoodDetector, QualityEstimator
+# Use strategy pattern or composition instead of single monolithic method
 class MockProvider(ModelProvider):
     """Mock provider for testing and demonstration.
 
@@ -2070,6 +2157,11 @@ class MockProvider(ModelProvider):
             return None
 
 
+# TODO(code_review): [HIGH] GemmaProvider duplicates 100+ lines from OllamaProvider
+# Extract shared logic to base class or mixin:
+# - _create_analysis_prompt() is identical
+# - _parse_analysis() is identical
+# Use template method pattern or composition to eliminate duplication
 class GemmaProvider(ModelProvider):
     """Provider for Google Gemma API.
 
@@ -2279,6 +2371,16 @@ Return ONLY JSON, no additional text!
             return None
 
 
+# TODO(code_review): [HIGH] God class - 562 lines with too many responsibilities
+# Violates SRP - handles:
+# 1. Provider management
+# 2. Database operations
+# 3. Batch processing
+# 4. Statistics tracking
+# 5. Safety validation orchestration
+# Split into: ProviderManager, AnalysisOrchestrator, BatchProcessor, StatsCollector
+# TODO(code_review): [MEDIUM] No unit tests - only integration test in main()
+# Add proper unit tests with mocked dependencies
 class MultiModelAnalyzer:
     """Multi-provider AI analyzer with fallback, safety validation, and interpretability.
 
@@ -2599,7 +2701,11 @@ class MultiModelAnalyzer:
             else None,
         }
 
-    async def batch_analyze_from_db(self, limit: int = 100, offset: int = 0):
+    # TODO(code_review): [HIGH] Method too long (60+ lines) - extract helper methods
+    # Split into: fetch_unanalyzed_tracks(), analyze_single_track(), save_results()
+    # TODO(code_review): [MEDIUM] Hardcoded 2 second sleep - make configurable
+    # Add rate_limit_delay parameter with default value
+    async def batch_analyze_from_db(self, limit: int = 100, offset: int = 0):  # TODO(code_review): [MEDIUM] Add return type hint -> None
         """Batch analyze unanalyzed songs from database.
 
         Fetches songs without multi_model_ai analysis from database,
@@ -2674,7 +2780,7 @@ class MultiModelAnalyzer:
 
                         # Пауза между запросами
                         if i < len(rows):  # Не делаем паузу после последней песни
-                            await asyncio.sleep(2)  # 2 секунды между анализами
+                            await asyncio.sleep(2)  # 2 секунды между анализами  # TODO(code_review): [MEDIUM] Magic number - extract to constant or parameter
 
                     except Exception as e:
                         failed += 1
@@ -2691,9 +2797,10 @@ class MultiModelAnalyzer:
         except Exception as e:
             logger.error(f"⌛ Ошибка batch анализа: {e}")
 
+    # TODO(code_review): [MEDIUM] Add return type hint -> None
     async def _save_analysis_to_db(
         self, conn: asyncpg.Connection, track_id: int, analysis: EnhancedSongData
-    ):
+    ):  # TODO(code_review): [MEDIUM] Missing return type
         """Сохранение анализа в базу данных"""
         try:
             analysis_data = {
@@ -2701,12 +2808,13 @@ class MultiModelAnalyzer:
                 "lyrics_analysis": analysis.lyrics_analysis.model_dump(),
                 "quality_metrics": analysis.quality_metrics.model_dump(),
                 "analysis_info": {
-                    "analyzer_version": "multi_model_v2",
+                    "analyzer_version": "multi_model_v2",  # TODO(code_review): [MEDIUM] Hardcoded version - use __version__ from module
                     "analysis_timestamp": analysis.analysis_date,
                     "model_used": analysis.model_used,
                 },
             }
-
+            # TODO(code_review): [MEDIUM] SQL query embedded in code - extract to constants or SQL file
+            # Makes query optimization and testing difficult
             await conn.execute(
                 """
                 INSERT INTO analysis_results (
@@ -2716,13 +2824,13 @@ class MultiModelAnalyzer:
                 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             """,
                 track_id,
-                "multi_model_ai",
+                "multi_model_ai",  # TODO(code_review): [MEDIUM] Magic string - extract to constant
                 analysis.metadata.mood,
                 analysis.quality_metrics.authenticity_score,
                 analysis.quality_metrics.lyrical_creativity,
                 json.dumps(analysis.lyrics_analysis.main_themes),
                 json.dumps(analysis_data),
-                1000.0,  # placeholder processing time
+                1000.0,  # placeholder processing time  # TODO(code_review): [HIGH] Fake value 1000.0 - implement actual timing or remove
                 analysis.model_used,
                 datetime.now(),
             )
@@ -2843,6 +2951,16 @@ class MultiModelAnalyzer:
         }
 
 
+# TODO(code_review): [HIGH] main() is 171 lines - too long for a test function
+# Split into separate test functions: test_explainable_analysis(), test_safety_validation(), etc.
+# TODO(code_review): [CRITICAL] Integration tests in main() instead of proper test suite
+# Move to tests/ directory using pytest framework with fixtures and mocks
+# Current approach:
+# 1. Can't run individual tests
+# 2. No test isolation
+# 3. Requires live database
+# 4. No assertions - just prints
+# TODO(code_review): [HIGH] Test data hardcoded in main() - extract to fixtures
 async def main():
     """Test multi-model analyzer with interpretability and safety features.
 
@@ -2868,7 +2986,7 @@ async def main():
     """
 
     print("🤖 Многомодельный AI анализатор с объяснениями решений")
-    print("=" * 70)
+    print("=" * 70)  # TODO(code_review): [LOW] Magic number 70 - extract to constant
 
     try:
         analyzer = MultiModelAnalyzer()
