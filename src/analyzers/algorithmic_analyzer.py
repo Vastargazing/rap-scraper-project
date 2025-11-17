@@ -55,6 +55,8 @@
 ДАТА: Сентябрь 2025
 """
 
+# TODO(google-review): [STYLE] Organize imports: stdlib, third-party, local
+# TODO(google-review): [STYLE] Add module-level docstring after imports
 import asyncio
 import hashlib
 import logging
@@ -193,6 +195,8 @@ class PhoneticPattern:
 
 class AdvancedLexicon:
     """Расширенные словари для семантического анализа"""
+    # TODO(google-review): [DOCSTRING] Add Args, Returns sections to docstring
+    # TODO(google-review): [ARCHITECTURE] Consider loading from config file
 
     def __init__(self):
         # Эмоциональные категории с градацией интенсивности
@@ -456,6 +460,8 @@ class FlowAnalyzer:
 
     def analyze_flow_patterns(self, lines: list[str]) -> dict[str, Any]:
         """Анализ паттернов flow"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns, Raises sections
+        # TODO(google-review): [ARCHITECTURE] Function too long (40+ lines)
         if not lines:
             return self._empty_flow_result()
 
@@ -557,6 +563,7 @@ class FlowAnalyzer:
             prev_was_vowel = is_vowel
 
         # Исключения
+        # TODO(google-review): [STYLE] Line exceeds 80 chars, break into multiple
         if word.endswith("e") and syllable_count > 1 and not word.endswith(("le", "se", "me", "ne", "ve", "ze", "de", "ge")):
             syllable_count -= 1
 
@@ -568,6 +575,8 @@ class FlowAnalyzer:
 
     def _analyze_stress_pattern(self, line: str) -> str:
         """Анализ паттерна ударений (упрощенный)"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [ARCHITECTURE] Magic numbers: 3 should be constant
         words = line.split()
         if not words:
             return ""
@@ -575,6 +584,7 @@ class FlowAnalyzer:
         stress_pattern = []
         for word in words:
             # Простая эвристика для ударений
+            # TODO(google-review): [ARCHITECTURE] Magic number 3
             if len(word) <= 3:
                 stress_pattern.append("1")  # Ударный
             elif word.lower() in {"the", "and", "but", "for", "with", "from", "into"}:
@@ -667,6 +677,9 @@ class RhymeAnalyzer:
 
     def analyze_rhyme_structure(self, lines: list[str]) -> dict[str, Any]:
         """Комплексный анализ рифменной структуры"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [ARCHITECTURE] Function too long (40+ lines)
+        # TODO(google-review): [ARCHITECTURE] Magic number 2
         if len(lines) < 2:
             return self._empty_rhyme_result()
 
@@ -715,6 +728,8 @@ class RhymeAnalyzer:
 
     def _find_perfect_rhymes(self, endings: list[str]) -> list[tuple[int, int]]:
         """Поиск точных рифм"""
+        # TODO(google-review): [PERFORMANCE] O(n²) complexity, consider optimization
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         return [
             (i, j)
             for i in range(len(endings))
@@ -724,6 +739,8 @@ class RhymeAnalyzer:
 
     def _find_near_rhymes(self, endings: list[str]) -> list[tuple[int, int]]:
         """Поиск неточных рифм"""
+        # TODO(google-review): [PERFORMANCE] O(n²) complexity, consider optimization
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         return [
             (i, j)
             for i in range(len(endings))
@@ -734,6 +751,9 @@ class RhymeAnalyzer:
 
     def _find_internal_rhymes(self, lines: list[str]) -> list[tuple[int, str, str]]:
         """Поиск внутренних рифм"""
+        # TODO(google-review): [PERFORMANCE] Nested loops O(n*m²), optimize
+        # TODO(google-review): [ARCHITECTURE] Magic number 3
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         internal_rhymes = []
         for line_idx, line in enumerate(lines):
             words = re.findall(r"\b[a-zA-Z]{3,}\b", line.lower())
@@ -819,6 +839,8 @@ class RhymeAnalyzer:
 
     def _detect_complex_rhyme_scheme(self, endings: list[str]) -> str:
         """Определение сложной схемы рифмовки"""
+        # TODO(google-review): [ARCHITECTURE] Magic numbers: 4, 16 as constants
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         if len(endings) < 4:
             return "insufficient"
 
@@ -909,6 +931,8 @@ class RhymeAnalyzer:
         self, endings: list[str], perfect_rhymes: list, near_rhymes: list
     ) -> float:
         """Вычисление плотности рифм"""
+        # TODO(google-review): [ARCHITECTURE] Magic numbers: 2, 0.7 as constants
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         if len(endings) < 2:
             return 0.0
 
@@ -927,6 +951,8 @@ class RhymeAnalyzer:
 
     def _calculate_alliteration(self, lines: list[str]) -> float:
         """Вычисление коэффициента аллитерации"""
+        # TODO(google-review): [ARCHITECTURE] Magic numbers: 2, 0.5 as constants
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         if not lines:
             return 0.0
 
@@ -1031,6 +1057,8 @@ class ReadabilityAnalyzer:
 
     def analyze_readability(self, text: str) -> dict[str, Any]:
         """Комплексный анализ читабельности"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [ARCHITECTURE] Function too long (40+ lines)
         if not text.strip():
             return self._empty_readability_result()
 
@@ -1078,6 +1106,8 @@ class ReadabilityAnalyzer:
 
     def _count_total_syllables(self, text: str) -> int:
         """Подсчет общего количества слогов"""
+        # TODO(google-review): [PERFORMANCE] Creating FlowAnalyzer in loop expensive
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         words = re.findall(r"\b[a-zA-Z]+\b", text.lower())
         total_syllables = 0
 
@@ -1091,6 +1121,8 @@ class ReadabilityAnalyzer:
         self, sentences: int, words: int, syllables: int
     ) -> float:
         """Индекс читабельности Флеша"""
+        # TODO(google-review): [ARCHITECTURE] Magic numbers as constants
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         if sentences == 0 or words == 0:
             return 0.0
 
@@ -1115,6 +1147,9 @@ class ReadabilityAnalyzer:
 
     def _calculate_smog_index(self, text: str, sentences: int) -> float:
         """Индекс SMOG"""
+        # TODO(google-review): [PERFORMANCE] Creating FlowAnalyzer in method
+        # TODO(google-review): [ARCHITECTURE] Magic numbers: 3, 30
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         if sentences < 3:
             return 0.0
 
@@ -1161,6 +1196,8 @@ class ReadabilityAnalyzer:
 
     def _calculate_consensus(self, flesch: float, fk_grade: float, smog: float) -> str:
         """Консенсус по читабельности"""
+        # TODO(google-review): [ARCHITECTURE] Magic numbers, use dict/config
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         # Преобразуем Flesch в примерный уровень класса
         if flesch >= 90:
             flesch_grade = 5
@@ -1217,8 +1254,12 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
     - Анализ литературных приемов
     - Кэширование для производительности
     """
+    # TODO(google-review): [ARCHITECTURE] God class - too many responsibilities
+    # TODO(google-review): [DOCSTRING] Add Args, Returns to class docstring
 
     def __init__(self, config: dict[str, Any] | None = None):
+        # TODO(google-review): [PERFORMANCE] Cache has no max size limit
+        # TODO(google-review): [DOCSTRING] Add Args section to docstring
         super().__init__(config)
 
         # Инициализация компонентов
@@ -1239,6 +1280,9 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         """
         Комплексный анализ песни с продвинутыми алгоритмами
         """
+        # TODO(google-review): [DOCSTRING] Add Args, Returns, Raises sections
+        # TODO(google-review): [ARCHITECTURE] Function too long (90+ lines)
+        # TODO(google-review): [ERROR_HANDLING] Generic ValueError, be specific
         start_time = time.time()
 
         # Валидация
@@ -1330,6 +1374,9 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
 
     def _generate_cache_key(self, artist: str, title: str, lyrics: str) -> str:
         """Генерация ключа для кэша"""
+        # TODO(google-review): [SECURITY] MD5 deprecated, use SHA256
+        # TODO(google-review): [ARCHITECTURE] Magic number 500 as constant
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         content = (
             f"{artist}|{title}|{lyrics[:500]}"  # Первые 500 символов для уникальности
         )
@@ -1352,6 +1399,9 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
 
     def _extract_meaningful_words(self, lyrics: str) -> list[str]:
         """Извлечение значимых слов"""
+        # TODO(google-review): [PERFORMANCE] Stop words recreated each call
+        # TODO(google-review): [ARCHITECTURE] Move stop_words to class constant
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         words = re.findall(r"\b[a-zA-Z]{2,}\b", lyrics.lower())
 
         # Расширенный список стоп-слов
@@ -1472,12 +1522,15 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
             "think",
         }
 
+        # TODO(google-review): [ARCHITECTURE] Magic number 3 as constant
         return [word for word in words if word not in stop_words and len(word) >= 3]
 
     def _analyze_advanced_sentiment(
         self, words: list[str]
     ) -> dict[str, Any]:
         """Продвинутый анализ настроения с градацией"""
+        # TODO(google-review): [ARCHITECTURE] Function too long (60+ lines)
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         if not words:
             return self._empty_sentiment_result()
 
@@ -1493,6 +1546,7 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
                 matches = len(set(words) & word_set)
                 if matches > 0:
                     # Весовые коэффициенты для интенсивности
+                    # TODO(google-review): [ARCHITECTURE] Move weights to class const
                     intensity_weight = {"weak": 1.0, "medium": 2.0, "strong": 3.0}[
                         intensity
                     ]
@@ -1542,6 +1596,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
 
     def _analyze_themes_advanced(self, words: list[str]) -> dict[str, Any]:
         """Продвинутый тематический анализ"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [ARCHITECTURE] Function too long (50+ lines)
         if not words:
             return {"theme_scores": {}, "dominant_theme": "neutral"}
 
@@ -1594,6 +1650,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         self, lyrics: str, words: list[str]
     ) -> dict[str, Any]:
         """Анализ литературных приемов"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [ARCHITECTURE] Function too long (50+ lines)
         if not lyrics or not words:
             return self._empty_literary_result()
 
@@ -1652,6 +1710,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
 
     def _analyze_repetitions(self, lyrics: str) -> dict[str, Any]:
         """Анализ повторов в тексте"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [ARCHITECTURE] Magic numbers: 2, 5
         lines = [line.strip().lower() for line in lyrics.split("\n") if line.strip()]
 
         if not lines:
@@ -1690,6 +1750,9 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
 
     def _analyze_vocabulary_sophistication(self, words: list[str]) -> dict[str, Any]:
         """Анализ сложности словаря"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [ARCHITECTURE] Function too long (70+ lines)
+        # TODO(google-review): [PERFORMANCE] common_words recreated each call
         if not words:
             return self._empty_vocabulary_result()
 
@@ -1705,6 +1768,7 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
             total_complex_words += matches
 
         # Анализ длины слов
+        # TODO(google-review): [ARCHITECTURE] Magic number 7 as constant
         word_lengths = [len(word) for word in words]
         avg_word_length = sum(word_lengths) / len(word_lengths)
         long_words = len([w for w in words if len(w) >= 7])
@@ -1769,6 +1833,7 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         self, lines: list[str], full_text: str
     ) -> dict[str, Any]:
         """Продвинутый структурный анализ"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         if not lines:
             return self._empty_structure_result()
 
@@ -1874,6 +1939,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         self, lyrics: str, words: list[str], lines: list[str]
     ) -> dict[str, Any]:
         """Продвинутый анализ креативности"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [ARCHITECTURE] Function too long (40+ lines)
         if not words or not lines:
             return self._empty_creativity_result()
 
@@ -1910,6 +1977,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
 
     def _detect_neologisms(self, words: list[str]) -> list[str]:
         """Обнаружение неологизмов и необычных слов"""
+        # TODO(google-review): [ARCHITECTURE] Magic numbers: 6, 4, 10
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         # Простая эвристика для обнаружения возможных неологизмов
         potential_neologisms = []
 
@@ -1967,6 +2036,9 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         self, lyrics: str, words: list[str]
     ) -> dict[str, Any]:
         """Анализ продвинутых приемов игры слов"""
+        # TODO(google-review): [ARCHITECTURE] Magic numbers as constants
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [PERFORMANCE] Nested loops inefficient
         wordplay_score = 0
         techniques_found = []
 
@@ -2029,6 +2101,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
 
     def _analyze_rhyme_innovation(self, lines: list[str]) -> dict[str, Any]:
         """Анализ инновационности рифм"""
+        # TODO(google-review): [ARCHITECTURE] Magic numbers: 4, 12, 3, 6
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         if len(lines) < 4:
             return {"innovation_score": 0.0}
 
@@ -2095,6 +2169,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         self, analysis_results: dict[str, Any]
     ) -> dict[str, Any]:
         """Вычисление продвинутых композитных оценок"""
+        # TODO(google-review): [ARCHITECTURE] Magic weights should be constants
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
 
         # Извлекаем ключевые метрики
         rhyme_density = analysis_results.get("rhyme_analysis", {}).get(
@@ -2153,6 +2229,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         self, analysis_results: dict[str, Any], lines: list[str], words: list[str]
     ) -> float:
         """Расчет продвинутой оценки уверенности"""
+        # TODO(google-review): [ARCHITECTURE] Magic numbers: 100, 10, 8, 2
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         confidence_factors = []
 
         # Фактор объема текста
@@ -2209,7 +2287,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
         return min(consistency, 1.0)
 
     # Методы для пустых результатов
-    def _empty_sentiment_result(self):
+    def _empty_sentiment_result(self) -> dict[str, Any]:
+        # TODO(google-review): [TYPING] Add return type hint
         return {
             "emotion_scores": {},
             "dominant_emotion": "neutral",
@@ -2220,7 +2299,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
             "emotional_complexity": 0,
         }
 
-    def _empty_literary_result(self):
+    def _empty_literary_result(self) -> dict[str, Any]:
+        # TODO(google-review): [TYPING] Add return type hint
         return {
             "metaphor_count": 0,
             "simile_count": 0,
@@ -2231,7 +2311,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
             "total_literary_devices": 0,
         }
 
-    def _empty_vocabulary_result(self):
+    def _empty_vocabulary_result(self) -> dict[str, Any]:
+        # TODO(google-review): [TYPING] Add return type hint
         return {
             "complexity_scores": {},
             "total_complex_words": 0,
@@ -2243,7 +2324,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
             "sophisticated_vocabulary_score": 0.0,
         }
 
-    def _empty_structure_result(self):
+    def _empty_structure_result(self) -> dict[str, Any]:
+        # TODO(google-review): [TYPING] Add return type hint
         return {
             "total_lines": 0,
             "average_line_length": 0.0,
@@ -2254,7 +2336,8 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
             "structural_consistency": 0.0,
         }
 
-    def _empty_creativity_result(self):
+    def _empty_creativity_result(self) -> dict[str, Any]:
+        # TODO(google-review): [TYPING] Add return type hint
         return {
             "neologisms": [],
             "unique_phrases": [],
@@ -2323,8 +2406,9 @@ class AdvancedAlgorithmicAnalyzer(BaseAnalyzer):
 
 
 # Демонстрационная функция
-async def demo_advanced_analysis():
+async def demo_advanced_analysis() -> None:
     """Демонстрация возможностей продвинутого анализатора"""
+    # TODO(google-review): [DOCSTRING] Add Returns section to docstring
 
     sample_lyrics = """
     Metaphors cascade like waterfalls in my mind
@@ -2401,6 +2485,8 @@ async def demo_advanced_analysis():
         print("✅ Демонстрация завершена успешно!")
 
     except Exception as e:
+        # TODO(google-review): [ERROR_HANDLING] Use logger.exception instead
+        # TODO(google-review): [ERROR_HANDLING] Too broad exception clause
         print(f"❌ Ошибка демонстрации: {e}")
         import traceback
 
@@ -2410,6 +2496,8 @@ async def demo_advanced_analysis():
 # Класс для работы с PostgreSQL
 class PostgreSQLAnalyzer:
     """Анализатор для работы с PostgreSQL базой данных"""
+    # TODO(google-review): [ARCHITECTURE] Missing connection pooling
+    # TODO(google-review): [ARCHITECTURE] Tight coupling with database
 
     def __init__(self):
         """Инициализация PostgreSQL анализатора"""
@@ -2449,6 +2537,8 @@ class PostgreSQLAnalyzer:
                     print(
                         "⚠️ Файл config.yaml не найден, используются значения по умолчанию"
                     )
+                    # TODO(google-review): [SECURITY] Hardcoded credentials risk
+                    # TODO(google-review): [ARCHITECTURE] Use environment variables
                     return {
                         "host": "localhost",
                         "port": 5432,
@@ -2457,11 +2547,15 @@ class PostgreSQLAnalyzer:
                         "password": "password",
                     }
         except Exception as e:
+            # TODO(google-review): [ERROR_HANDLING] Too broad exception clause
+            # TODO(google-review): [ERROR_HANDLING] Use logger instead of print
             print(f"⚠️ Ошибка загрузки конфигурации: {e}")
             return {}
 
     async def get_database_stats(self) -> dict[str, Any]:
         """Получение статистики базы данных"""
+        # TODO(google-review): [DOCSTRING] Add Returns section to docstring
+        # TODO(google-review): [ARCHITECTURE] Function too long (100+ lines)
         try:
             import asyncpg
 
@@ -2556,6 +2650,8 @@ class PostgreSQLAnalyzer:
                 await conn.close()
 
         except Exception as e:
+            # TODO(google-review): [ERROR_HANDLING] Too broad exception clause
+            # TODO(google-review): [ERROR_HANDLING] Use logger.exception
             print(f"❌ Ошибка получения статистики БД: {e}")
             return {}
 
@@ -2563,6 +2659,9 @@ class PostgreSQLAnalyzer:
         self, limit: int | None = None, batch_size: int = 100
     ) -> dict[str, Any]:
         """Анализ всех песен в базе данных"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [ARCHITECTURE] Function too long (90+ lines)
+        # TODO(google-review): [ARCHITECTURE] Magic number 100
         try:
             import asyncpg
 
@@ -2576,6 +2675,8 @@ class PostgreSQLAnalyzer:
 
             try:
                 # Запрос песен для анализа
+                # TODO(google-review): [SECURITY] SQL injection risk with f-string
+                # TODO(google-review): [ARCHITECTURE] Use parameterized queries
                 limit_clause = f"LIMIT {limit}" if limit else ""
                 query = f"""
                 SELECT id, artist, title, lyrics 
@@ -2623,6 +2724,8 @@ class PostgreSQLAnalyzer:
                             processed += 1
 
                         except Exception as e:
+                            # TODO(google-review): [ERROR_HANDLING] Too broad exception
+                            # TODO(google-review): [ERROR_HANDLING] Use logger
                             print(f"⚠️ Ошибка анализа песни {song['id']}: {e}")
 
                     results.extend(batch_results)
@@ -2645,11 +2748,15 @@ class PostgreSQLAnalyzer:
                 await conn.close()
 
         except Exception as e:
+            # TODO(google-review): [ERROR_HANDLING] Too broad exception clause
+            # TODO(google-review): [ERROR_HANDLING] Use logger.exception
             print(f"❌ Ошибка анализа песен: {e}")
             return {}
 
     async def analyze_single_track(self, track_id: int) -> dict[str, Any]:
         """Анализ конкретной песни по ID"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
+        # TODO(google-review): [ARCHITECTURE] Function too long (50+ lines)
         try:
             import asyncpg
 
@@ -2697,11 +2804,14 @@ class PostgreSQLAnalyzer:
                 await conn.close()
 
         except Exception as e:
+            # TODO(google-review): [ERROR_HANDLING] Too broad exception clause
+            # TODO(google-review): [ERROR_HANDLING] Use logger.exception
             print(f"❌ Ошибка анализа трека {track_id}: {e}")
             return {}
 
     def _calculate_summary_stats(self, results: list[dict]) -> dict[str, Any]:
         """Вычисление сводной статистики"""
+        # TODO(google-review): [DOCSTRING] Add Args, Returns sections
         if not results:
             return {}
 
@@ -2731,8 +2841,11 @@ class PostgreSQLAnalyzer:
             "total_results": len(results),
         }
 
-    def _print_analysis_results(self, result: dict[str, Any]):
+    def _print_analysis_results(self, result: dict[str, Any]) -> None:
         """Красивый вывод результатов анализа"""
+        # TODO(google-review): [TYPING] Add return type hint
+        # TODO(google-review): [DOCSTRING] Add Args section to docstring
+        # TODO(google-review): [ARCHITECTURE] Function too long (40+ lines)
         print("\n📊 РЕЗУЛЬТАТЫ АНАЛИЗА:")
         print(f"🎯 Уверенность: {result['confidence']:.3f}")
         print(f"⚡ Время обработки: {result['processing_time']:.3f}s")
@@ -2774,8 +2887,10 @@ class PostgreSQLAnalyzer:
             print(f"  Инновационность: {composite.get('innovation_score', 0):.3f}")
 
 
-async def main():
+async def main() -> None:
     """Главная функция для работы с PostgreSQL"""
+    # TODO(google-review): [DOCSTRING] Add Returns section to docstring
+    # TODO(google-review): [ARCHITECTURE] Function too long (120+ lines)
     import argparse
 
     # Парсинг аргументов командной строки
@@ -2893,6 +3008,8 @@ async def main():
                     )
 
     except Exception as e:
+        # TODO(google-review): [ERROR_HANDLING] Too broad exception clause
+        # TODO(google-review): [ERROR_HANDLING] Use logger.exception instead
         print(f"❌ Ошибка выполнения: {e}")
         import traceback
 
