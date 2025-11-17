@@ -1,33 +1,38 @@
 #!/usr/bin/env python3
-"""
-🎯 Advanced Emotion Analyzer - Production Ready
-Анализ эмоций в рэп-лирике с использованием Hugging Face transformers
+# TODO(code-review): Remove emojis from docstrings - not Google style compliant
+# TODO(code-review): Translate all Russian text to English for international team
+# TODO(code-review): Convert to Google-style docstring format with Args/Returns/Raises
+"""Advanced Emotion Analyzer - Production Ready.
 
-УЛУЧШЕНИЯ V2.0:
-- Async-first архитектура с proper context management
-- PostgreSQL интеграция через database abstraction
-- Продвинутые эмоциональные паттерны для рэп-музыки
-- Caching и batch optimization
-- Comprehensive error handling и graceful degradation
-- Memory management и resource cleanup
-- Расширенная метрика качества анализа
+This module provides emotion analysis for rap lyrics using Hugging Face transformers.
 
-ИСПОЛЬЗОВАНИЕ:
-python src/analyzers/emotion_analyzer.py --test
-# Or via main.py interface with PostgreSQL backend
+IMPROVEMENTS V2.0:
+- Async-first architecture with proper context management
+- PostgreSQL integration through database abstraction
+- Advanced emotional patterns for rap music
+- Caching and batch optimization
+- Comprehensive error handling and graceful degradation
+- Memory management and resource cleanup
+- Extended quality metrics
 
-ТРЕБОВАНИЯ:
-- Python 3.8+
-- transformers >= 4.21.0
-- torch >= 1.12.0
-- PostgreSQL connection (через project config)
+Usage:
+    python src/analyzers/emotion_analyzer.py --test
+    # Or via main.py interface with PostgreSQL backend
 
-АВТОР: Enhanced by Claude | ДАТА: Сентябрь 2025
+Requirements:
+    - Python 3.8+
+    - transformers >= 4.21.0
+    - torch >= 1.12.0
+    - PostgreSQL connection (via project config)
+
+Author: Enhanced by Claude | Date: September 2025
 """
 
 import sys
 from pathlib import Path
 
+# TODO(code-review): Avoid modifying sys.path at module level - use proper package structure
+# TODO(code-review): This creates implicit dependencies and makes testing harder
 # Add project root to Python path for imports
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
@@ -40,7 +45,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-# Conditional imports для graceful degradation
+# TODO(code-review): Translate Russian comments to English
+# TODO(code-review): Avoid module-level mutable globals - use proper configuration class
+# TODO(code-review): Consider using TYPE_CHECKING for optional imports
+# Conditional imports for graceful degradation
 try:
     import torch
     from transformers import (
@@ -66,7 +74,9 @@ try:
 except ImportError:
     HAS_INTERFACE = False
 
-    # Fallback для независимого тестирования
+    # TODO(code-review): Add type hints to fallback classes
+    # TODO(code-review): Document why fallback is needed and when it's used
+    # Fallback for independent testing
     class BaseAnalyzer:
         def __init__(self, config=None):
             self.config = config or {}
@@ -101,10 +111,29 @@ except ImportError:
     DatabaseConfig = None
 
 
-# Enhanced результат с детальными метриками
+# TODO(code-review): Add comprehensive docstring with field descriptions
+# TODO(code-review): Consider using Pydantic for validation instead of dataclass
+# TODO(code-review): Document valid ranges for scores (e.g., 0.0-1.0)
+# Enhanced result with detailed metrics
 @dataclass
 class EmotionAnalysisResult:
-    """Расширенный результат анализа эмоций"""
+    """Extended emotion analysis result.
+
+    Attributes:
+        analyzer_name: Name of the analyzer that produced this result.
+        sentiment_score: Overall sentiment from 0.0 (negative) to 1.0 (positive).
+        confidence: Confidence level of the analysis (0.0-1.0).
+        dominant_emotion: The most prominent detected emotion.
+        emotion_scores: Dictionary mapping emotion names to scores.
+        genre_prediction: Predicted rap subgenre.
+        intensity: Overall emotional intensity (0.0-1.0).
+        analysis_time: Time taken for analysis in seconds.
+        metadata: Additional metadata about the analysis.
+        aggression_level: Rap-specific aggression metric (0.0-1.0).
+        energy_level: Rap-specific energy metric (0.0-1.0).
+        authenticity_score: Rap-specific authenticity metric (0.0-1.0).
+        complexity_score: Rap-specific complexity metric (0.0-1.0).
+    """
 
     analyzer_name: str
     sentiment_score: float  # 0.0-1.0 (negative to positive)
@@ -123,9 +152,17 @@ class EmotionAnalysisResult:
     complexity_score: float = 0.0
 
 
-# Model cache для предотвращения повторной загрузки
+# TODO(code-review): This singleton pattern is NOT thread-safe for synchronous code
+# TODO(code-review): _lock is created at module import, should be created in __init__
+# TODO(code-review): Use proper locking mechanism or dependency injection instead
+# TODO(code-review): Document memory implications of caching models
+# Model cache to prevent repeated model loading
 class ModelCache:
-    """Thread-safe model caching"""
+    """Thread-safe model caching singleton.
+
+    WARNING: This implementation has thread-safety issues.
+    The asyncio.Lock is created at class definition time.
+    """
 
     _instance = None
     _lock = asyncio.Lock()
@@ -138,7 +175,19 @@ class ModelCache:
         return cls._instance
 
     async def get_model(self, model_name: str, device: str = "auto"):
-        """Get cached model or create new one"""
+        # TODO(code-review): Add Google-style docstring with Args/Returns/Raises
+        # TODO(code-review): Don't catch bare Exception - specify expected exceptions
+        # TODO(code-review): Return None on error is error-prone - raise exception instead
+        # TODO(code-review): Add type hints for return value (Optional[Pipeline])
+        """Get cached model or create new one.
+
+        Args:
+            model_name: Name of the Hugging Face model to load.
+            device: Device to load model on ('auto', 'cpu', 'cuda').
+
+        Returns:
+            The loaded model pipeline or None on failure.
+        """
         cache_key = f"{model_name}_{device}"
 
         async with self._lock:
@@ -154,7 +203,19 @@ class ModelCache:
             return self._cache[cache_key]
 
     async def _create_model(self, model_name: str, device: str):
-        """Create new model instance"""
+        # TODO(code-review): Add proper docstring with Args/Returns/Raises
+        # TODO(code-review): Magic numbers: 0, -1 should be named constants
+        # TODO(code-review): Add input validation for device parameter
+        # TODO(code-review): This method is not actually async - remove async or make it truly async
+        """Create new model instance.
+
+        Args:
+            model_name: Name of the Hugging Face model to load.
+            device: Device to load model on ('auto', 'cpu', 'cuda').
+
+        Returns:
+            A text classification pipeline instance.
+        """
         # Determine optimal device
         if device == "auto" or device == "cuda":
             device_id = 0 if torch.cuda.is_available() else -1
@@ -183,18 +244,23 @@ logger = logging.getLogger(__name__)
 
 @register_analyzer("emotion_analyzer")
 class EmotionAnalyzer(BaseAnalyzer):
-    """
-    Production-ready анализатор эмоций для рэп-лирики
+    # TODO(code-review): Class is too large (1000+ lines) - violates Single Responsibility Principle
+    # TODO(code-review): Split into: EmotionAnalyzer, RapMetricsCalculator, DatabaseService
+    # TODO(code-review): Translate all Russian text to English in docstring
+    # TODO(code-review): Add Examples section to docstring showing usage
+    """Production-ready emotion analyzer for rap lyrics.
 
-    НОВЫЕ ВОЗМОЖНОСТИ V2.0:
-    - Async-first с proper resource management
-    - Rap-specific emotion patterns и метрики
-    - Advanced caching и batch processing
-    - PostgreSQL-ready с structured metadata
-    - Enhanced error handling и monitoring
+    NEW FEATURES V2.0:
+    - Async-first with proper resource management
+    - Rap-specific emotion patterns and metrics
+    - Advanced caching and batch processing
+    - PostgreSQL-ready with structured metadata
+    - Enhanced error handling and monitoring
     - Memory-efficient model loading
     """
 
+    # TODO(code-review): Class constants should be UPPER_CASE per PEP8
+    # TODO(code-review): Consider moving these to a separate config module
     # Rap-specific emotion mappings
     RAP_EMOTION_PATTERNS = {
         "aggression": ["anger", "dominance", "power"],
@@ -205,7 +271,10 @@ class EmotionAnalyzer(BaseAnalyzer):
         "energy": ["excitement", "hype", "motivation"],
     }
 
-    # Расширенные ключевые слова для рэп-анализа
+    # TODO(code-review): Class constants should use UPPER_CASE naming
+    # TODO(code-review): Consider loading keywords from external config file for easier updates
+    # TODO(code-review): Add content warning comment for explicit language in data
+    # Extended keywords for rap analysis
     RAP_KEYWORDS = {
         "aggression": {
             "high": ["fuck", "shit", "damn", "bitch", "kill", "murder", "war", "fight"],
@@ -233,7 +302,22 @@ class EmotionAnalyzer(BaseAnalyzer):
     }
 
     def __init__(self, config: dict[str, Any] | None = None):
-        """Initialize enhanced emotion analyzer"""
+        # TODO(code-review): Add comprehensive docstring with Args/Raises sections
+        # TODO(code-review): Validate config values (e.g., batch_size > 0, max_length > 0)
+        # TODO(code-review): Consider using Pydantic or dataclass for typed config
+        """Initialize enhanced emotion analyzer.
+
+        Args:
+            config: Optional configuration dictionary with keys:
+                - model_name: Hugging Face model name
+                - device: Device to use ('auto', 'cpu', 'cuda')
+                - max_length: Maximum text length for processing
+                - batch_size: Batch size for processing
+                - cache_enabled: Enable model caching
+                - fallback_enabled: Enable keyword-based fallback
+                - rap_analysis_enabled: Enable rap-specific analysis
+                - postgres_enabled: Enable PostgreSQL integration
+        """
         super().__init__(config)
 
         # Enhanced configuration
@@ -270,7 +354,18 @@ class EmotionAnalyzer(BaseAnalyzer):
         self._init_task = None
 
     async def initialize(self) -> bool:
-        """Async initialization of the analyzer"""
+        # TODO(code-review): Add proper docstring with Returns/Raises sections
+        # TODO(code-review): Don't catch bare Exception - specify expected exceptions
+        # TODO(code-review): Consider raising exception instead of returning False
+        # TODO(code-review): Add timeout to prevent infinite waiting
+        """Async initialization of the analyzer.
+
+        Returns:
+            True if initialization successful, False otherwise.
+
+        Raises:
+            Should raise specific exceptions instead of returning False.
+        """
         if self._init_task is None:
             self._init_task = asyncio.create_task(self._async_initialize())
 
@@ -283,10 +378,20 @@ class EmotionAnalyzer(BaseAnalyzer):
             return False
 
     async def _async_initialize(self):
-        """Async model initialization"""
+        # TODO(code-review): Add proper docstring
+        # TODO(code-review): Method is too long (60+ lines) - split into smaller methods
+        # TODO(code-review): Too many nested if statements - refactor for readability
+        # TODO(code-review): Line length exceeds 80 characters (Google style)
+        """Async model initialization.
+
+        Initializes PostgreSQL connection and transformer model.
+        """
         # Initialize PostgreSQL connection first (independent of model loading)
         logger.info(
-            f"PostgreSQL initialization check: enabled={self.postgres_enabled}, has_postgres={HAS_POSTGRES}, manager_class={PostgreSQLManager is not None}, config_class={DatabaseConfig is not None}"
+            f"PostgreSQL initialization check: enabled={self.postgres_enabled}, "
+            f"has_postgres={HAS_POSTGRES}, "
+            f"manager_class={PostgreSQLManager is not None}, "
+            f"config_class={DatabaseConfig is not None}"
         )
 
         if (
@@ -468,7 +573,20 @@ class EmotionAnalyzer(BaseAnalyzer):
             return self._create_error_emotion_result(text, start_time, str(e))
 
     def _preprocess_text(self, text: str) -> str:
-        """Enhanced text preprocessing for rap lyrics with proper tokenization"""
+        # TODO(code-review): Add comprehensive docstring with Args/Returns
+        # TODO(code-review): Magic number 2.5 should be a named constant
+        # TODO(code-review): Magic number 2 (target_length = max - 2) needs explanation
+        # TODO(code-review): Don't catch bare Exception - specify expected exceptions
+        # TODO(code-review): Duplicated truncation logic - extract to helper method
+        # TODO(code-review): Consider adding unit tests for edge cases
+        """Enhanced text preprocessing for rap lyrics with proper tokenization.
+
+        Args:
+            text: The input text to preprocess.
+
+        Returns:
+            The preprocessed and potentially truncated text.
+        """
         if not text:
             return ""
 
@@ -497,7 +615,8 @@ class EmotionAnalyzer(BaseAnalyzer):
                         truncated_tokens, skip_special_tokens=True
                     )
                     logger.debug(
-                        f"Text truncated from {len(tokens)} to {len(truncated_tokens)} tokens"
+                        f"Text truncated from {len(tokens)} to "
+                        f"{len(truncated_tokens)} tokens"
                     )
             except Exception as e:
                 logger.warning(f"Failed to use tokenizer for truncation: {e}")
@@ -529,7 +648,19 @@ class EmotionAnalyzer(BaseAnalyzer):
             raise
 
     def _fallback_emotion_analysis(self, text: str) -> dict[str, float]:
-        """Enhanced fallback analysis with rap-specific patterns"""
+        # TODO(code-review): Method is too long (100+ lines) - split into smaller methods
+        # TODO(code-review): Hardcoded keyword dictionaries should be class constants
+        # TODO(code-review): Add comprehensive docstring
+        # TODO(code-review): Magic numbers in normalization (10.0) should be constants
+        # TODO(code-review): Consider moving to separate FallbackAnalyzer class
+        """Enhanced fallback analysis with rap-specific patterns.
+
+        Args:
+            text: The input text to analyze.
+
+        Returns:
+            Dictionary mapping emotion names to normalized scores (0.0-1.0).
+        """
         text_lower = text.lower()
         emotion_scores = {}
 
@@ -648,7 +779,23 @@ class EmotionAnalyzer(BaseAnalyzer):
         return final_scores
 
     def _analyze_rap_patterns(self, text: str) -> dict[str, float]:
-        """Analyze rap-specific patterns and themes"""
+        # TODO(code-review): Add comprehensive docstring with Args/Returns
+        # TODO(code-review): Magic numbers everywhere (3, 2, 1, 20.0, 15.0, 10.0) - use constants
+        # TODO(code-review): Hardcoded weight dictionaries - extract to class constants
+        # TODO(code-review): Use word boundaries in count() to avoid partial matches
+        # TODO(code-review): Consider using Counter from collections for efficiency
+        """Analyze rap-specific patterns and themes.
+
+        Args:
+            text: The input text to analyze.
+
+        Returns:
+            Dictionary with rap-specific metrics (all values 0.0-1.0):
+                - aggression_level
+                - authenticity_score
+                - energy_level
+                - complexity_score
+        """
         text_lower = text.lower()
 
         metrics = {}
@@ -712,7 +859,21 @@ class EmotionAnalyzer(BaseAnalyzer):
     def _calculate_enhanced_sentiment(
         self, emotion_scores: dict[str, float], rap_metrics: dict[str, float]
     ) -> float:
-        """Enhanced sentiment calculation with rap context"""
+        # TODO(code-review): Add comprehensive docstring with Args/Returns
+        # TODO(code-review): Magic numbers (0.3, 0.7, 0.2, 0.1, 0.5) should be named constants
+        # TODO(code-review): Hardcoded emotion lists should be class constants
+        # TODO(code-review): Add unit tests for different scenarios
+        # TODO(code-review): Document the sentiment calculation algorithm
+        """Enhanced sentiment calculation with rap context.
+
+        Args:
+            emotion_scores: Dictionary of emotion names to scores.
+            rap_metrics: Dictionary of rap-specific metrics.
+
+        Returns:
+            Sentiment score from 0.0 (negative) to 1.0 (positive).
+            Returns 0.5 if no emotions detected.
+        """
         # Standard sentiment calculation
         positive_emotions = ["joy", "love", "surprise"]
         negative_emotions = ["anger", "fear", "sadness"]
@@ -753,7 +914,22 @@ class EmotionAnalyzer(BaseAnalyzer):
     def _predict_rap_subgenre(
         self, emotion_scores: dict[str, float], rap_metrics: dict[str, float]
     ) -> str:
-        """Predict rap subgenre based on emotional patterns"""
+        # TODO(code-review): Add comprehensive docstring with Args/Returns
+        # TODO(code-review): All thresholds (0.7, 0.6, 0.5, etc.) should be named constants
+        # TODO(code-review): Consider using a more maintainable approach (config-driven or ML)
+        # TODO(code-review): Add type hints for genre strings (use Literal or Enum)
+        # TODO(code-review): Document the classification logic and thresholds
+        """Predict rap subgenre based on emotional patterns.
+
+        Args:
+            emotion_scores: Dictionary of emotion names to scores.
+            rap_metrics: Dictionary of rap-specific metrics.
+
+        Returns:
+            Predicted rap subgenre name (one of: hardcore_rap, r&b_rap,
+            conscious_rap, party_rap, gangsta_rap, mainstream_hip_hop,
+            alternative_rap).
+        """
         anger = emotion_scores.get("anger", 0.0)
         joy = emotion_scores.get("joy", 0.0)
         love = emotion_scores.get("love", 0.0)
@@ -1027,15 +1203,27 @@ class EmotionAnalyzer(BaseAnalyzer):
     async def batch_analyze_from_database(
         self, batch_size: int = 50, max_batches: int = 10
     ) -> dict[str, Any]:
-        """
-        Perform batch analysis of songs from database
+        # TODO(code-review): Add input validation (batch_size > 0, max_batches > 0)
+        # TODO(code-review): Method is too long (90+ lines) - split into smaller methods
+        # TODO(code-review): Uses print() instead of logger - inconsistent with rest of code
+        # TODO(code-review): Magic strings in progress output - extract to constants
+        # TODO(code-review): Add proper error recovery for partial batch failures
+        """Perform batch analysis of songs from database.
 
         Args:
-            batch_size: Number of songs per batch
-            max_batches: Maximum number of batches to process
+            batch_size: Number of songs per batch (must be > 0).
+            max_batches: Maximum number of batches to process (must be > 0).
 
         Returns:
-            Statistics about the batch processing
+            Statistics dictionary with keys:
+                - total_processed: Total number of tracks processed
+                - total_analyzed: Successfully analyzed tracks
+                - total_saved: Successfully saved results
+                - batches_processed: Number of batches completed
+                - errors: Number of errors encountered
+                - start_time: Processing start time
+                - end_time: Processing end time
+                - duration: Total processing time in seconds
         """
         if not self.db_manager:
             logger.error("PostgreSQL manager not available")
@@ -1069,6 +1257,9 @@ class EmotionAnalyzer(BaseAnalyzer):
                 # Analyze batch with progress
                 for i, track in enumerate(tracks, 1):
                     try:
+                        # TODO(code-review): Remove emojis from production code
+                        # TODO(code-review): Use logger instead of print()
+                        # TODO(code-review): Extract progress formatting to separate method
                         # Progress indicator
                         progress = (
                             f"[Batch {batch_num + 1}/{max_batches}] {i}/{len(tracks)}"
@@ -1284,9 +1475,21 @@ class EmotionAnalyzer(BaseAnalyzer):
         ]
 
 
+# TODO(code-review): Decorator is defined but never used - remove or use it
+# TODO(code-review): Translate Russian to English
+# TODO(code-review): Add comprehensive docstring with Args/Returns/Examples
+# TODO(code-review): Don't catch bare Exception - be more specific
+# TODO(code-review): Consider using contextlib.contextmanager or existing profiling tools
 # Performance monitoring decorator
 def monitor_performance(func):
-    """Decorator для мониторинга производительности"""
+    """Decorator for performance monitoring.
+
+    Args:
+        func: The async function to monitor.
+
+    Returns:
+        Wrapped function that logs execution time and success status.
+    """
 
     @functools.wraps(func)
     async def wrapper(self, *args, **kwargs):
@@ -1301,7 +1504,8 @@ def monitor_performance(func):
         finally:
             execution_time = (datetime.now() - start_time).total_seconds()
             logger.debug(
-                f"{func.__name__} executed in {execution_time:.3f}s, success: {success}"
+                f"{func.__name__} executed in {execution_time:.3f}s, "
+                f"success: {success}"
             )
 
         return result
@@ -1309,9 +1513,21 @@ def monitor_performance(func):
     return wrapper
 
 
-# Utility functions для тестирования и интеграции
+# TODO(code-review): Test functions should be in separate test file, not in main module
+# TODO(code-review): Remove emojis from all print statements
+# TODO(code-review): Use proper testing framework (pytest) instead of manual tests
+# TODO(code-review): Translate all Russian text to English
+# Utility functions for testing and integration
 async def test_analyzer_comprehensive():
-    """Comprehensive analyzer testing"""
+    # TODO(code-review): Add comprehensive docstring
+    # TODO(code-review): Use logger instead of print()
+    # TODO(code-review): Add assertions to validate results
+    # TODO(code-review): Function is too long (100+ lines) - split into smaller tests
+    """Comprehensive analyzer testing.
+
+    Tests the EmotionAnalyzer with various rap lyrics samples representing
+    different genres and emotional patterns.
+    """
     print("🎯 Testing Enhanced Emotion Analyzer V2.0")
     print("=" * 60)
 
@@ -1505,9 +1721,21 @@ async def test_batch_processing():
     await analyzer.cleanup()
 
 
+# TODO(code-review): Interactive menu should be in separate CLI module
+# TODO(code-review): Remove all emojis from UI text
+# TODO(code-review): Translate all Russian text to English
+# TODO(code-review): Use proper CLI framework (click, argparse) instead of raw input()
+# TODO(code-review): Add input validation and error handling
 # Interactive menu functions
 async def create_interactive_menu():
-    """Создать интерактивное меню для выбора режима анализа"""
+    # TODO(code-review): Add comprehensive docstring
+    # TODO(code-review): Function is too long (100+ lines) - split into smaller functions
+    # TODO(code-review): Use enum for menu options instead of string comparison
+    """Create interactive menu for analysis mode selection.
+
+    Presents a menu-driven interface for different analyzer operations
+    including testing, database analysis, and custom text analysis.
+    """
     print("\n" + "=" * 70)
     print("🎯 ENHANCED EMOTION ANALYZER V2.0 - ИНТЕРАКТИВНОЕ МЕНЮ")
     print("=" * 70)
@@ -1884,7 +2112,22 @@ async def show_database_stats():
 
 # Utility functions для работы с базой данных
 async def get_track_by_id(db_manager, track_id: int):
-    """Получить трек по ID"""
+    # TODO(code-review): Add type hints for db_manager parameter
+    # TODO(code-review): Add type hint for return value (Optional[dict])
+    # TODO(code-review): Translate Russian to English
+    # TODO(code-review): Don't catch bare Exception - be specific
+    # TODO(code-review): Use logger instead of print()
+    # TODO(code-review): Consider raising exception instead of returning None
+    """Get track by ID from database.
+
+    Args:
+        db_manager: Database manager instance.
+        track_id: The track ID to retrieve.
+
+    Returns:
+        Track dictionary with keys: id, artist, title, lyrics.
+        Returns None if track not found or on error.
+    """
     try:
         query = "SELECT id, artist, title, lyrics FROM tracks WHERE id = %s"
         result = await db_manager.execute_query(query, (track_id,))
@@ -1892,7 +2135,7 @@ async def get_track_by_id(db_manager, track_id: int):
             return dict(result[0])
         return None
     except Exception as e:
-        print(f"Ошибка получения трека: {e}")
+        print(f"Error retrieving track: {e}")
         return None
 
 
@@ -1995,17 +2238,33 @@ async def display_analysis_result(result, track):
 
 
 async def get_unanalyzed_tracks_count(db_manager):
-    """Получить количество неанализированных треков"""
+    # TODO(code-review): Add type hints for all parameters and return value
+    # TODO(code-review): Add comprehensive docstring
+    # TODO(code-review): Translate Russian comments to English
+    # TODO(code-review): Don't catch bare Exception - be specific
+    # TODO(code-review): Use logger instead of print()
+    # TODO(code-review): Hardcoded 'emotion_analyzer_v2' should be a constant
+    """Get count of unanalyzed tracks from database.
+
+    Args:
+        db_manager: Database manager instance.
+
+    Returns:
+        Dictionary with keys:
+            - total_tracks: Total tracks with lyrics
+            - analyzed_tracks: Tracks already analyzed
+            - unanalyzed_tracks: Tracks needing analysis
+    """
     try:
-        # Всего треков с текстами
+        # Total tracks with lyrics
         total_query = "SELECT COUNT(*) as count FROM tracks WHERE lyrics IS NOT NULL"
         total_result = await db_manager.execute_query(total_query)
         total_tracks = total_result[0]["count"] if total_result else 0
 
-        # Проанализированные треков emotion_analyzer_v2
+        # Analyzed tracks with emotion_analyzer_v2
         analyzed_query = """
-        SELECT COUNT(DISTINCT track_id) as count 
-        FROM analysis_results 
+        SELECT COUNT(DISTINCT track_id) as count
+        FROM analysis_results
         WHERE analyzer_type = 'emotion_analyzer_v2'
         """
         analyzed_result = await db_manager.execute_query(analyzed_query)
@@ -2017,7 +2276,7 @@ async def get_unanalyzed_tracks_count(db_manager):
             "unanalyzed_tracks": total_tracks - analyzed_tracks,
         }
     except Exception as e:
-        print(f"Ошибка получения статистики: {e}")
+        print(f"Error retrieving statistics: {e}")
         return {"total_tracks": 0, "analyzed_tracks": 0, "unanalyzed_tracks": 0}
 
 
@@ -2037,18 +2296,22 @@ async def get_analyzer_stats(db_manager):
         return {}
 
 
+# TODO(code-review): Main execution block should be minimal - move logic to main() function
+# TODO(code-review): Translate all Russian comments to English
+# TODO(code-review): Add proper CLI framework instead of manual argument parsing
+# TODO(code-review): Add configuration file support instead of only env vars
 # Main execution
 if __name__ == "__main__":
     import argparse
     import sys
 
-    # Настройка логирования
+    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    # Аргументы командной строки
+    # Command line arguments
     parser = argparse.ArgumentParser(
         description="Enhanced Emotion Analyzer V2.0 with PostgreSQL support"
     )
@@ -2081,8 +2344,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     async def main():
-        """Main execution function"""
-        # Если нет аргументов или указан --menu, запускаем интерактивное меню
+        # TODO(code-review): Add comprehensive docstring
+        # TODO(code-review): Function is too long (70+ lines) - split into smaller functions
+        # TODO(code-review): Too many if statements - use command pattern or dispatch table
+        # TODO(code-review): Add proper error handling and exit codes
+        """Main execution function.
+
+        Processes command line arguments and executes the appropriate
+        analyzer operation (testing, database analysis, etc.).
+        """
+        # If no arguments or --menu specified, launch interactive menu
         if args.menu or (len(sys.argv) == 1):
             await create_interactive_menu()
             return
@@ -2148,7 +2419,10 @@ if __name__ == "__main__":
                 print(f"Result: {result.metadata}")
                 await analyzer.cleanup()
 
-    # Запуск главной функции
+    # TODO(code-review): Remove emoji from user-facing messages
+    # TODO(code-review): Use logger instead of print()
+    # TODO(code-review): Add proper cleanup on shutdown
+    # Run main function
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
