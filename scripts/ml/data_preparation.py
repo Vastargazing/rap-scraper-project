@@ -1,11 +1,22 @@
-"""
-🚀 ML Data Preparation Pipeline
-Подготовка dataset из PostgreSQL для custom ML models
+"""ML Data Preparation Pipeline.
 
-Dataset: 57,718 треков с 269,646 анализами
+TODO(code-review): Convert module docstring to English.
+TODO(code-review): Remove emoji from module docstring.
+TODO(code-review): This file is VERY LARGE (787 lines) - violates SRP.
+TODO(code-review): Split into multiple modules:
+  - data_extractor.py (DB queries)
+  - feature_engineer.py (feature creation)
+  - embedding_generator.py (text embeddings)
+  - label_creator.py (label generation)
+  - dataset_builder.py (final assembly)
+
+Data preparation pipeline from PostgreSQL for ML models.
+
+Dataset: 57,718 tracks with 269,646 analyses
 Features: Text embeddings, Spotify features, AI analysis results
 """
 
+# TODO(code-review): Group imports according to PEP 8
 import asyncio
 import json
 import logging
@@ -14,11 +25,13 @@ import pickle
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Optional, Dict, Any, Tuple  # TODO(code-review): Add type hints
 
 import numpy as np
 import pandas as pd
 
 # Add project root to path
+# TODO(code-review): Replace sys.path manipulation with proper package installation
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 import warnings
@@ -29,9 +42,12 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 from src.database.postgres_adapter import PostgreSQLManager
 
+# TODO(code-review): Don't suppress all warnings - suppress specific ones only
 warnings.filterwarnings("ignore")
 
 # Setup logging
+# TODO(code-review): Move logging config to separate module
+# TODO(code-review): Use structured logging for better observability
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
@@ -39,45 +55,92 @@ logger = logging.getLogger(__name__)
 
 
 class RapDatasetPreparator:
-    """
-    Подготовка comprehensive ML dataset из PostgreSQL
+    """Comprehensive ML dataset preparation from PostgreSQL.
+
+    TODO(code-review): Convert docstring to English.
+    TODO(code-review): This class is MASSIVE (600+ lines) - violates SRP.
+    TODO(code-review): Split into smaller, focused classes.
+    TODO(code-review): Add comprehensive docstring with Attributes and Examples.
 
     Features extracted:
     - Text features: embeddings, complexity, length, vocabulary
     - AI analysis: sentiment, themes, quality scores
     - Spotify audio features: danceability, energy, valence, etc.
     - Artist features: popularity, followers, genres
+
+    Attributes:
+        db: PostgreSQL database manager instance.
+        encoder: Sentence transformer for text embeddings.
+        label_encoders: Dictionary of label encoders for categorical features.
+        scaler: StandardScaler for feature normalization.
     """
 
-    def __init__(self):
-        self.db = None
-        self.encoder = None  # Will be loaded when needed
-        self.label_encoders = {}
+    def __init__(self) -> None:
+        """Initialize dataset preparator.
+
+        TODO(code-review): Add Args and Attributes sections.
+        TODO(code-review): Consider dependency injection for db and encoder.
+        TODO(code-review): Add proper type hints.
+        """
+        # TODO(code-review): Add type hints - Optional[PostgreSQLManager]
+        self.db: Optional[Any] = None
+        # TODO(code-review): Add type hint - Optional[SentenceTransformer]
+        self.encoder: Optional[Any] = None  # Will be loaded when needed
+        self.label_encoders: Dict[str, LabelEncoder] = {}
         self.scaler = StandardScaler()
 
-    async def initialize(self):
-        """Initialize database connection and text encoder"""
+    async def initialize(self) -> None:
+        """Initialize database connection and text encoder.
+
+        TODO(code-review): Add comprehensive docstring with Raises.
+        TODO(code-review): Remove emoji from log messages.
+        TODO(code-review): Add progress indicators for model loading.
+        TODO(code-review): Model loading can be slow - add timeout and retries.
+
+        Raises:
+            Exception: If initialization fails.
+        """
         try:
             self.db = PostgreSQLManager()
             await self.db.initialize()
-            logger.info("✅ PostgreSQL connection established")
+            logger.info("PostgreSQL connection established")  # TODO(code-review): Removed emoji
 
             # Initialize sentence transformer for embeddings
-            logger.info("🤖 Loading sentence transformer model...")
+            # TODO(code-review): Model name should come from config
+            # TODO(performance): Loading model can take time - consider lazy loading
+            logger.info("Loading sentence transformer model...")  # TODO(code-review): Removed emoji
             self.encoder = SentenceTransformer("all-MiniLM-L6-v2")
-            logger.info("✅ Text encoder loaded")
+            logger.info("Text encoder loaded")  # TODO(code-review): Removed emoji
 
         except Exception as e:
-            logger.error(f"❌ Initialization failed: {e}")
+            # TODO(code-review): Catch specific exceptions
+            # TODO(code-review): Add more context to error
+            logger.error(f"Initialization failed: {e}")  # TODO(code-review): Removed emoji
             raise
 
     async def extract_comprehensive_data(self) -> pd.DataFrame:
+        """Extract comprehensive dataset combining all data sources.
+
+        TODO(code-review): Method too long (65+ lines) - split into smaller methods.
+        TODO(code-review): Add comprehensive docstring with Returns and Raises.
+        TODO(code-review): Remove emoji from log messages.
+        TODO(code-review): SQL query is too complex - consider breaking into views.
+        TODO(performance): Add pagination for large datasets.
+        TODO(code-review): Add query timeout.
+
+        Returns:
+            DataFrame with comprehensive track data and features.
+
+        Raises:
+            ValueError: If no data extracted.
+            DatabaseError: If query fails.
         """
-        Extract comprehensive dataset combining all data sources
-        """
-        logger.info("📊 Extracting comprehensive dataset from PostgreSQL...")
+        logger.info("Extracting comprehensive dataset from PostgreSQL...")  # TODO(code-review): Removed emoji
 
         # Main query to join all data sources
+        # TODO(code-review): Extract SQL to separate file or use query builder
+        # TODO(code-review): This query can return huge dataset - add LIMIT or pagination
+        # TODO(security): No parameterization needed here but consider using SQLAlchemy
         query = """
         SELECT 
             -- Track information
@@ -137,10 +200,24 @@ class RapDatasetPreparator:
             raise
 
     def parse_spotify_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Parse Spotify audio features from JSON"""
-        logger.info("🎵 Parsing Spotify audio features...")
+        """Parse Spotify audio features from JSON.
+
+        TODO(code-review): Method too long (90+ lines) - split into smaller functions.
+        TODO(code-review): Add comprehensive docstring with Args, Returns.
+        TODO(code-review): Remove emoji from log messages.
+        TODO(performance): Iterating over DataFrame rows is VERY slow - use vectorized operations.
+        TODO(code-review): Extract feature list to module-level constant.
+
+        Args:
+            df: DataFrame with spotify_data JSON column.
+
+        Returns:
+            DataFrame with parsed Spotify features added.
+        """
+        logger.info("Parsing Spotify audio features...")  # TODO(code-review): Removed emoji
 
         # Initialize feature columns
+        # TODO(code-review): Extract to module-level constant SPOTIFY_FEATURES
         spotify_features = [
             "danceability",
             "energy",
@@ -160,6 +237,8 @@ class RapDatasetPreparator:
             df[f"spotify_{feature}"] = np.nan
 
         # Parse JSON data
+        # TODO(performance): CRITICAL - DataFrame.iterrows() is VERY slow for large datasets
+        # TODO(performance): Use df.apply() or vectorized operations instead
         for idx, row in df.iterrows():
             if pd.notna(row["spotify_data"]):
                 try:
@@ -306,16 +385,37 @@ class RapDatasetPreparator:
         return df
 
     def engineer_text_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Engineer comprehensive text features"""
-        logger.info("📝 Engineering text features...")
+        """Engineer comprehensive text features.
+
+        TODO(code-review): Method too long (65+ lines) - split into smaller functions.
+        TODO(code-review): Add comprehensive docstring.
+        TODO(code-review): Remove emoji from log messages.
+        TODO(code-review): Nested functions make testing difficult - extract to class methods.
+        TODO(code-review): Handle potential division by zero.
+        TODO(code-review): Extract profanity list to config file.
+
+        Args:
+            df: DataFrame with lyrics and basic text columns.
+
+        Returns:
+            DataFrame with engineered text features added.
+        """
+        logger.info("Engineering text features...")  # TODO(code-review): Removed emoji
 
         # Basic text metrics
         df["lines_count"] = df["lyrics"].str.count("\n") + 1
+        # TODO(code-review): Handle division by zero
         df["avg_words_per_line"] = df["word_count"] / df["lines_count"]
+        # TODO(code-review): Handle division by zero
         df["chars_per_word"] = df["lyrics_length"] / df["word_count"]
 
         # Advanced text features
-        def calculate_vocabulary_diversity(text):
+        # TODO(code-review): Extract nested functions to class methods for testability
+        def calculate_vocabulary_diversity(text: Optional[str]) -> float:
+            """Calculate vocabulary diversity.
+
+            TODO(code-review): Add proper docstring.
+            """
             if pd.isna(text) or len(text) == 0:
                 return 0
             words = str(text).lower().split()
@@ -324,10 +424,17 @@ class RapDatasetPreparator:
             unique_words = len(set(words))
             return unique_words / len(words)
 
-        def count_profanity(text):
+        def count_profanity(text: Optional[str]) -> int:
+            """Count profanity words.
+
+            TODO(code-review): Add proper docstring.
+            TODO(code-review): Extract profanity list to config.
+            TODO(code-review): Use proper NLP library for profanity detection.
+            """
             if pd.isna(text):
                 return 0
             # Simple profanity detection
+            # TODO(code-review): Extract to config or external profanity list
             profane_words = ["shit", "fuck", "bitch", "damn", "ass", "hell"]
             text_lower = str(text).lower()
             return sum(1 for word in profane_words if word in text_lower)

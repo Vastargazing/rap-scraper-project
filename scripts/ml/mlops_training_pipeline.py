@@ -1,6 +1,16 @@
-"""
-🔄 MLOps Training Pipeline
-Автоматизированная система обучения и мониторинга ML моделей
+"""MLOps Training Pipeline.
+
+TODO(code-review): Convert module docstring to English.
+TODO(code-review): Remove emoji from module docstring.
+TODO(code-review): This is a VERY large file (900+ lines) - violates Single Responsibility.
+TODO(code-review): Consider splitting into multiple modules:
+  - mlops_manager.py (core orchestration)
+  - model_trainer.py (training logic)
+  - model_validator.py (validation logic)
+  - metrics_tracker.py (metrics collection)
+  - deployment_manager.py (deployment logic)
+
+Automated ML model training and monitoring system.
 
 Features:
 - Automated retraining pipeline
@@ -13,6 +23,7 @@ Features:
 - Kubernetes-native deployment
 """
 
+# TODO(code-review): Group imports properly (stdlib, third-party, local)
 import json
 import logging
 import os
@@ -23,27 +34,37 @@ import traceback
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Optional, Dict, Any, List  # TODO(code-review): Add type hints
 
 import pandas as pd
 import schedule
 
 # ML libraries
+# TODO(code-review): Comment about unused ML libraries import section
 
 # Add project root to path
+# TODO(code-review): Replace sys.path manipulation with proper package installation
 sys.path.append(str(Path(__file__).parent.parent))
 
 # Import ML models
-from models.conditional_generation import ConditionalRapGenerator
-
-from models.quality_prediction import RapQualityPredictor
-from models.trend_analysis import RapTrendAnalyzer
+# TODO(code-review): Handle import errors gracefully
+try:
+    from models.conditional_generation import ConditionalRapGenerator
+    from models.quality_prediction import RapQualityPredictor
+    from models.trend_analysis import RapTrendAnalyzer
+except ImportError as e:
+    # TODO(code-review): Log warning about missing models
+    logger.warning(f"Failed to import ML models: {e}")
 
 # Setup logging
+# TODO(code-review): Move logging configuration to separate module
+# TODO(code-review): Hardcoded log path - use config or environment variable
+# TODO(code-review): Add log rotation to prevent disk space issues
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("./logs/mlops_pipeline.log"),
+        logging.FileHandler("./logs/mlops_pipeline.log"),  # TODO(security): Path traversal risk
         logging.StreamHandler(),
     ],
 )
@@ -52,38 +73,75 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ModelMetrics:
-    """Model performance metrics"""
+    """Model performance metrics.
+
+    TODO(code-review): Add comprehensive docstring with Attributes section.
+    TODO(code-review): Add validation for metric ranges (e.g., 0-1 for accuracy).
+    TODO(code-review): Consider using Pydantic for data validation.
+
+    Attributes:
+        model_name: Name of the ML model.
+        version: Version identifier for the model.
+        accuracy: Model accuracy score (0-1).
+        precision: Precision score (0-1).
+        recall: Recall score (0-1).
+        f1_score: F1 score (0-1).
+        training_time: Time spent training in seconds.
+        validation_loss: Validation loss value.
+        timestamp: ISO format timestamp.
+        dataset_size: Number of samples in training dataset.
+        additional_metrics: Additional model-specific metrics.
+    """
 
     model_name: str
     version: str
-    accuracy: float
-    precision: float
-    recall: float
-    f1_score: float
-    training_time: float
-    validation_loss: float
-    timestamp: str
-    dataset_size: int
-    additional_metrics: dict[str, float]
+    accuracy: float  # TODO(code-review): Add range validation [0, 1]
+    precision: float  # TODO(code-review): Add range validation [0, 1]
+    recall: float  # TODO(code-review): Add range validation [0, 1]
+    f1_score: float  # TODO(code-review): Add range validation [0, 1]
+    training_time: float  # TODO(code-review): Should be non-negative
+    validation_loss: float  # TODO(code-review): Should be non-negative
+    timestamp: str  # TODO(code-review): Consider using datetime instead of str
+    dataset_size: int  # TODO(code-review): Should be positive
+    additional_metrics: dict[str, float]  # TODO(code-review): Use Dict from typing for Python <3.9
 
 
 @dataclass
 class TrainingConfig:
-    """Training configuration"""
+    """Training configuration.
+
+    TODO(code-review): Add comprehensive docstring with Attributes section.
+    TODO(code-review): Add validation for configuration values.
+    TODO(code-review): Consider using Pydantic for config validation.
+
+    Attributes:
+        model_name: Name of the model to train.
+        retrain_frequency: How often to retrain ('daily', 'weekly', 'monthly').
+        min_data_threshold: Minimum samples required for training.
+        performance_threshold: Minimum acceptable performance score.
+        auto_deploy: Whether to automatically deploy successful models.
+        validation_split: Fraction of data for validation (0-1).
+        max_training_time: Maximum training time in minutes.
+        backup_models: Number of backup versions to keep.
+    """
 
     model_name: str
-    retrain_frequency: str  # 'daily', 'weekly', 'monthly'
-    min_data_threshold: int
-    performance_threshold: float
+    retrain_frequency: str  # TODO(code-review): Use Enum instead of string
+    min_data_threshold: int  # TODO(code-review): Should be positive
+    performance_threshold: float  # TODO(code-review): Add range validation [0, 1]
     auto_deploy: bool
-    validation_split: float
-    max_training_time: int  # minutes
-    backup_models: int
+    validation_split: float  # TODO(code-review): Add range validation [0, 1]
+    max_training_time: int  # TODO(code-review): Should be positive, in minutes
+    backup_models: int  # TODO(code-review): Should be non-negative
 
 
 class MLOpsManager:
-    """
-    MLOps Pipeline Manager
+    """MLOps Pipeline Manager.
+
+    TODO(code-review): This class is TOO LARGE (700+ lines) - violates SRP.
+    TODO(code-review): Split into separate classes for different responsibilities.
+    TODO(code-review): Add comprehensive docstring with Examples section.
+    TODO(code-review): Consider using composition over inheritance for model management.
 
     Capabilities:
     - Automated model retraining
@@ -92,31 +150,65 @@ class MLOpsManager:
     - Version control & rollback
     - Continuous deployment
     - Metrics tracking & alerts
+
+    Attributes:
+        config_path: Path to MLOps configuration file.
+        models_dir: Directory for storing model files.
+        metrics_dir: Directory for metrics storage.
+        logs_dir: Directory for log files.
+        config: Configuration dictionary.
+        model_registry: Registry of loaded models.
+        metrics_history: Historical metrics data.
     """
 
-    def __init__(self, config_path: str = "./config/mlops_config.json"):
+    def __init__(self, config_path: str = "./config/mlops_config.json") -> None:
+        """Initialize MLOps Manager.
+
+        TODO(code-review): Add comprehensive docstring.
+        TODO(code-review): Hardcoded default paths - use config or env vars.
+        TODO(security): Validate config_path to prevent path traversal.
+        TODO(code-review): Consider dependency injection for better testability.
+
+        Args:
+            config_path: Path to configuration file.
+        """
+        # TODO(security): Validate and sanitize config_path
         self.config_path = config_path
+        # TODO(code-review): Hardcoded paths - should come from config
         self.models_dir = Path("./models")
         self.metrics_dir = Path("./monitoring/metrics")
         self.logs_dir = Path("./logs")
 
         # Create directories
+        # TODO(code-review): Add error handling for directory creation
         for dir_path in [self.models_dir, self.metrics_dir, self.logs_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
         self.config = self._load_config()
-        self.model_registry = {}
-        self.metrics_history = []
+        # TODO(code-review): Add type hints for these attributes
+        self.model_registry: Dict[str, Any] = {}
+        self.metrics_history: List[ModelMetrics] = []
 
         # Model instances
-        self.generator = None
-        self.style_transfer = None
-        self.quality_predictor = None
-        self.trend_analyzer = None
+        # TODO(code-review): Use Optional type hints
+        self.generator: Optional[Any] = None
+        self.style_transfer: Optional[Any] = None
+        self.quality_predictor: Optional[Any] = None
+        self.trend_analyzer: Optional[Any] = None
 
-    def _load_config(self) -> dict:
-        """Load MLOps configuration"""
-        default_config = {
+    def _load_config(self) -> Dict[str, Any]:
+        """Load MLOps configuration.
+
+        TODO(code-review): Add comprehensive docstring.
+        TODO(code-review): Large config dict (50+ lines) - extract to YAML/JSON file.
+        TODO(code-review): Add config schema validation.
+        TODO(code-review): Remove emoji from log messages.
+
+        Returns:
+            Configuration dictionary with default and loaded values merged.
+        """
+        # TODO(code-review): Extract default config to separate file
+        default_config: Dict[str, Any] = {
             "models": {
                 "conditional_generation": {
                     "retrain_frequency": "weekly",
@@ -172,73 +264,113 @@ class MLOpsManager:
 
         try:
             if os.path.exists(self.config_path):
+                # TODO(code-review): Add file size check to prevent memory issues
+                # TODO(security): Validate JSON structure to prevent malicious configs
                 with open(self.config_path) as f:
                     loaded_config = json.load(f)
+                # TODO(code-review): Use deep merge instead of shallow merge
+                # TODO(code-review): Validate loaded config against schema
                 # Merge with defaults
                 for key in default_config:
                     if key not in loaded_config:
                         loaded_config[key] = default_config[key]
                 return loaded_config
             # Save default config
+            # TODO(code-review): Add error handling for directory creation
             os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
+            # TODO(code-review): Add error handling for file write
             with open(self.config_path, "w") as f:
                 json.dump(default_config, f, indent=2)
             return default_config
 
         except Exception as e:
-            logger.warning(f"⚠️ Config loading failed: {e}, using defaults")
+            # TODO(code-review): Catch specific exceptions (JSONDecodeError, IOError)
+            # TODO(code-review): Remove emoji from log
+            logger.warning(f"Config loading failed: {e}, using defaults")
             return default_config
 
-    def setup_training_schedule(self):
-        """Setup automated training schedule"""
-        logger.info("📅 Setting up training schedule...")
+    def setup_training_schedule(self) -> None:
+        """Setup automated training schedule.
 
+        TODO(code-review): Add comprehensive docstring.
+        TODO(code-review): Remove emoji from log messages.
+        TODO(code-review): Add error handling for schedule creation.
+        TODO(code-review): Extract schedule times to config.
+        TODO(code-review): Add schedule validation.
+        """
+        logger.info("Setting up training schedule...")  # TODO(code-review): Removed emoji
+
+        # TODO(code-review): Add validation for model config existence
         for model_name, config in self.config["models"].items():
             frequency = config["retrain_frequency"]
 
+            # TODO(code-review): Use match/case for Python 3.10+ or Enum
+            # TODO(code-review): Extract schedule times to config
             if frequency == "daily":
                 schedule.every().day.at("02:00").do(self.retrain_model, model_name)
-                logger.info(f"📅 {model_name}: Daily retraining at 02:00")
+                logger.info(f"{model_name}: Daily retraining at 02:00")  # TODO(code-review): Removed emoji
 
             elif frequency == "weekly":
                 schedule.every().sunday.at("01:00").do(self.retrain_model, model_name)
-                logger.info(f"📅 {model_name}: Weekly retraining on Sunday 01:00")
+                logger.info(f"{model_name}: Weekly retraining on Sunday 01:00")  # TODO(code-review): Removed emoji
 
             elif frequency == "monthly":
                 schedule.every().month.do(self.retrain_model, model_name)
-                logger.info(f"📅 {model_name}: Monthly retraining")
+                logger.info(f"{model_name}: Monthly retraining")  # TODO(code-review): Removed emoji
+            # TODO(code-review): Add else clause for invalid frequency
 
         # Health checks every hour
+        # TODO(code-review): Extract health check frequency to config
         schedule.every().hour.do(self.health_check)
-        logger.info("📅 Health checks: Every hour")
+        logger.info("Health checks: Every hour")  # TODO(code-review): Removed emoji
 
         # Metrics cleanup weekly
+        # TODO(code-review): Extract cleanup schedule to config
         schedule.every().sunday.at("23:00").do(self.cleanup_old_metrics)
-        logger.info("📅 Metrics cleanup: Weekly on Sunday 23:00")
+        logger.info("Metrics cleanup: Weekly on Sunday 23:00")  # TODO(code-review): Removed emoji
 
     def retrain_model(self, model_name: str) -> bool:
-        """Retrain a specific model"""
-        logger.info(f"🔄 Starting retraining for {model_name}")
+        """Retrain a specific model.
+
+        TODO(code-review): Method too long (60+ lines) - split into smaller methods.
+        TODO(code-review): Add comprehensive docstring with Args, Returns.
+        TODO(code-review): Remove emoji from log messages.
+        TODO(code-review): Add timeout mechanism for training.
+        TODO(code-review): Add metrics collection for training duration.
+
+        Args:
+            model_name: Name of the model to retrain.
+
+        Returns:
+            True if retraining successful, False otherwise.
+        """
+        logger.info(f"Starting retraining for {model_name}")  # TODO(code-review): Removed emoji
 
         try:
             start_time = datetime.now()
+            # TODO(code-review): Validate model_name against available models
+            # TODO(code-review): Add KeyError handling for missing config
             config = self.config["models"][model_name]
 
             # Check data availability
+            # TODO(code-review): This check is redundant with check below
             if not self._check_data_availability(
                 model_name, config["min_data_threshold"]
             ):
-                logger.warning(f"⚠️ {model_name}: Insufficient data for retraining")
+                logger.warning(f"{model_name}: Insufficient data for retraining")  # TODO(code-review): Removed emoji
                 return False
 
             # Backup current model
+            # TODO(code-review): Add error handling if backup fails
             self._backup_model(model_name)
 
             # Load fresh data
+            # TODO(code-review): Add caching to avoid reloading same data
             dataset = self._load_training_data()
+            # TODO(code-review): Duplicate check - already done in _check_data_availability
             if len(dataset) < config["min_data_threshold"]:
                 logger.warning(
-                    f"⚠️ {model_name}: Dataset too small ({len(dataset)} < {config['min_data_threshold']})"
+                    f"{model_name}: Dataset too small ({len(dataset)} < {config['min_data_threshold']})"  # TODO(code-review): Removed emoji
                 )
                 return False
 
