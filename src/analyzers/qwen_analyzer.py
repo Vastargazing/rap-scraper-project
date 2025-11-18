@@ -26,11 +26,19 @@ Example:
         )
 """
 
+import hashlib
+import json
 import logging
 import time
 from typing import Any, TypedDict
 
-from openai import OpenAI
+from openai import (
+    APIConnectionError,
+    APITimeoutError,
+    AuthenticationError,
+    OpenAI,
+    RateLimitError,
+)
 
 from src.cache.redis_client import redis_cache
 from src.config.config_loader import get_config
@@ -133,6 +141,17 @@ class QwenAnalyzer:
 
         logger.info("QWEN Analyzer initialized successfully!")
 
+    def _get_cache_key(self, text: str) -> str:
+        """Generate secure cache key from text using SHA256.
+
+        Args:
+            text: Text to hash.
+
+        Returns:
+            str: SHA256 hexdigest of text.
+        """
+        return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
     def analyze_lyrics(
         self,
         lyrics: str,
@@ -156,9 +175,23 @@ class QwenAnalyzer:
             AnalysisResult: Dictionary containing model name, tokens used,
                 analysis content, and error information if applicable.
         """
+
+        # Validate input parameters
+        if not lyrics or not lyrics.strip():
+            raise ValueError("Lyrics cannot be empty")
+
+        if temperature is not None and not (0.0 <= temperature <= 2.0):
+            raise ValueError(
+                f"Temperature must be between 0.0 and 2.0, got {temperature}"
+            )
+
+        if max_tokens is not None and max_tokens <= 0:
+            raise ValueError(f"Max tokens must be positive, got {max_tokens}")
+
         # Check cache first
         if use_cache and self.use_cache:
-            cached = redis_cache.get_analysis(f"qwen:{hash(lyrics)}")
+            cached = redis_cache.get_analysis(f"qwen:{self._get_cache_key(lyrics)}")
+
             if cached:
                 logger.info("Using cached QWEN analysis")
                 return cached
@@ -174,8 +207,8 @@ class QwenAnalyzer:
         result = self._analyze_with_retry(prompt, temp, tokens)
 
         # Cache result
-        if use_cache and self.use_cache and result:
-            redis_cache.cache_analysis(f"qwen:{hash(lyrics)}", result)
+        if use_cache and self.use_cache and result and not result.get("failed"):
+            redis_cache.cache_analysis(f"qwen:{self._get_cache_key(lyrics)}", result)
 
         return result
 
@@ -253,12 +286,15 @@ Provide response in JSON format."""
                 )
 
                 # Extract and parse response
+                if not response.choices or not response.choices[0].message.content:
+                    raise ValueError("Empty response from API")
+
                 content = response.choices[0].message.content
+                if not content:
+                    raise ValueError("Empty content in API response")
 
                 # Try to parse as JSON
                 try:
-                    import json
-
                     result = json.loads(content)
                 except json.JSONDecodeError:
                     # If not JSON, return as text analysis
@@ -274,22 +310,43 @@ Provide response in JSON format."""
                 result["timestamp"] = time.time()
 
                 logger.info(
-                    f"✅ QWEN analysis successful (tokens: {result.get('tokens_used', 'N/A')})"
+                    f"QWEN analysis successful (tokens: {result.get('tokens_used', 'N/A')})"
                 )
                 return result
 
-            except Exception as e:
+            except (APIConnectionError, APITimeoutError, RateLimitError) as e:
+                # Retry these errors
                 last_error = e
-                logger.warning(f"⚠️ QWEN attempt {attempt} failed: {e}")
+                logger.warning(f"QWEN attempt {attempt} failed (retryable): {e}")
 
                 if attempt < self.qwen_config.retry_attempts:
-                    wait_time = attempt * 2  # Exponential backoff
+                    wait_time = attempt * _BACKOFF_MULTIPLIER
+                    logger.info(f"   Retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+
+            except AuthenticationError as e:
+                # Fatal error - stop immediately
+                logger.error(f"QWEN authentication failed: {e}")
+                return {
+                    "error": "Authentication failed",
+                    "model": self.qwen_config.model_name,
+                    "failed": True,
+                    "timestamp": time.time(),
+                }
+
+            except Exception as e:
+                # Other unexpected errors
+                last_error = e
+                logger.warning(f"QWEN attempt {attempt} failed: {e}")
+
+                if attempt < self.qwen_config.retry_attempts:
+                    wait_time = attempt * _BACKOFF_MULTIPLIER
                     logger.info(f"   Retrying in {wait_time}s...")
                     time.sleep(wait_time)
 
         # All attempts failed
         logger.error(
-            f"❌ QWEN analysis failed after {self.qwen_config.retry_attempts} attempts: {last_error}"
+            f"QWEN analysis failed after {self.qwen_config.retry_attempts} attempts: {last_error}"
         )
         return {
             "error": str(last_error),
