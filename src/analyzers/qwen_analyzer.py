@@ -50,6 +50,9 @@ _DEFAULT_CACHE_PREFIX = "qwen"
 _BACKOFF_MULTIPLIER = 2
 _TEST_MAX_TOKENS = 10
 _TEST_TIMEOUT = 10
+_SYSTEM_PROMPT = (
+    "You are an expert rap lyrics analyst. Provide detailed, structured analysis."
+)
 
 
 class AnalysisResult(TypedDict):
@@ -276,7 +279,7 @@ Provide response in JSON format."""
                     messages=[
                         {
                             "role": "system",
-                            "content": "You are an expert rap lyrics analyst. Provide detailed, structured analysis.",
+                            "content": _SYSTEM_PROMPT,
                         },
                         {"role": "user", "content": prompt},
                     ],
@@ -320,7 +323,7 @@ Provide response in JSON format."""
                 logger.warning(f"QWEN attempt {attempt} failed (retryable): {e}")
 
                 if attempt < self.qwen_config.retry_attempts:
-                    wait_time = attempt * _BACKOFF_MULTIPLIER
+                    wait_time = min(_BACKOFF_MULTIPLIER**attempt, 32)
                     logger.info(f"   Retrying in {wait_time}s...")
                     time.sleep(wait_time)
 
@@ -340,7 +343,7 @@ Provide response in JSON format."""
                 logger.warning(f"QWEN attempt {attempt} failed: {e}")
 
                 if attempt < self.qwen_config.retry_attempts:
-                    wait_time = attempt * _BACKOFF_MULTIPLIER
+                    wait_time = min(_BACKOFF_MULTIPLIER**attempt, 32)
                     logger.info(f"   Retrying in {wait_time}s...")
                     time.sleep(wait_time)
 
@@ -402,9 +405,13 @@ Provide response in JSON format."""
                 - max_tokens: int (maximum response tokens)
                 - timeout: int (API request timeout in seconds)
                 - retry_attempts: int (maximum retry attempts)
-                - api_key_set: bool (whether API key is configured)
+                - api_key: str (first 8 chars + last 4 chars or masked)
                 - cache_enabled: bool (whether Redis caching is enabled)
         """
+        # Mask API key for security (show only first 8 and last 4 chars)
+        api_key = self.qwen_config.api_key or ""
+        masked_key = f"{api_key[:8]}...{api_key[-4:]}" if len(api_key) > 12 else "***"
+
         return {
             "model": self.qwen_config.model_name,
             "base_url": self.qwen_config.base_url,
@@ -412,7 +419,7 @@ Provide response in JSON format."""
             "max_tokens": self.qwen_config.max_tokens,
             "timeout": self.qwen_config.timeout,
             "retry_attempts": self.qwen_config.retry_attempts,
-            "api_key_set": bool(self.qwen_config.api_key),
+            "api_key": masked_key,
             "cache_enabled": self.use_cache,
         }
 
