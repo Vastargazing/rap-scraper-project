@@ -274,13 +274,13 @@ Provide response in JSON format."""
                 result["timestamp"] = time.time()
 
                 logger.info(
-                    f"✅ QWEN analysis successful (tokens: {result.get('tokens_used', 'N/A')})"
+                    f"QWEN analysis successful (tokens: {result.get('tokens_used', 'N/A')})"
                 )
                 return result
 
             except Exception as e:
                 last_error = e
-                logger.warning(f"⚠️ QWEN attempt {attempt} failed: {e}")
+                logger.warning(f"QWEN attempt {attempt} failed: {e}")
 
                 if attempt < self.qwen_config.retry_attempts:
                     wait_time = attempt * 2  # Exponential backoff
@@ -289,7 +289,7 @@ Provide response in JSON format."""
 
         # All attempts failed
         logger.error(
-            f"❌ QWEN analysis failed after {self.qwen_config.retry_attempts} attempts: {last_error}"
+            f"QWEN analysis failed after {self.qwen_config.retry_attempts} attempts: {last_error}"
         )
         return {
             "error": str(last_error),
