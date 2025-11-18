@@ -362,7 +362,7 @@ Provide response in JSON format."""
 
 if __name__ == "__main__":
     # Test QWEN analyzer
-    print("🧪 Testing QWEN Analyzer...")
+    print("Testing QWEN Analyzer...")
     print("=" * 60)
 
     try:
@@ -370,18 +370,18 @@ if __name__ == "__main__":
         analyzer = QwenAnalyzer()
 
         # Show config
-        print("\n📊 Configuration:")
+        print("\n Configuration:")
         config_info = analyzer.get_config_info()
         for key, value in config_info.items():
             print(f"   {key}: {value}")
 
         # Test connection
-        print("\n🔌 Testing API connection...")
+        print("\n Testing API connection...")
         if analyzer.test_api_connection():
-            print("✅ Connection test passed!")
+            print(" Connection test passed!")
 
             # Test lyrics analysis
-            print("\n🎤 Testing lyrics analysis...")
+            print("\n Testing lyrics analysis...")
             test_lyrics = """
             Started from the bottom now we're here
             Started from the bottom now my whole team here
@@ -390,21 +390,21 @@ if __name__ == "__main__":
             result = analyzer.analyze_lyrics(test_lyrics, use_cache=False)
 
             if "error" in result:
-                print(f"❌ Analysis failed: {result['error']}")
+                print(f"Analysis failed: {result['error']}")
             else:
-                print("✅ Analysis successful!")
+                print("Analysis successful!")
                 print(f"   Model: {result.get('model')}")
                 print(f"   Tokens: {result.get('tokens_used')}")
                 if "analysis" in result:
                     print(f"   Response: {result['analysis'][:100]}...")
 
-            print("\n✅ All tests passed!")
+            print("\n All tests passed!")
         else:
-            print("❌ Connection test failed!")
-            print("⚠️ Check your NOVITA_API_KEY in .env file")
+            print("Connection test failed!")
+            print("Check your NOVITA_API_KEY in .env file")
 
     except Exception as e:
-        print(f"❌ Test failed: {e}")
+        print(f"Test failed: {e}")
         import traceback
 
         traceback.print_exc()
