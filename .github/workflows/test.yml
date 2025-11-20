@@ -1,0 +1,56 @@
+name: 🧪 Tests & Coverage
+
+on: 
+  push:
+    branches: [ master, main, develop, feature/* ]
+  pull_request:
+    branches: [ master, main, develop ]
+  workflow_dispatch:  # Можно запускать вручную из GitHub UI
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+      fail-fast: false  # Не останавливаем если одна версия упала
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🐍 Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with: 
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: 📦 Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+    
+    - name: 🧪 Run tests with coverage
+      run: |
+        pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing --cov-report=html
+      env:
+        PYTHONPATH: ${{ github.workspace }}
+    
+    - name: 📊 Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-py${{ matrix.python-version }}
+        fail_ci_if_error: false
+    
+    - name: 💾 Upload coverage HTML report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-py${{ matrix.python-version }}
+        path: htmlcov/
+        retention-days: 7
