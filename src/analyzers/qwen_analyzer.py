@@ -144,6 +144,26 @@ class QwenAnalyzer:
 
         logger.info("QWEN Analyzer initialized successfully!")
 
+    def __enter__(self) -> "QwenAnalyzer":
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        """Context manager exit - cleanup resources.
+
+        Args:
+            exc_type: Exception type if raised, None otherwise.
+            exc_val: Exception value if raised, None otherwise.
+            exc_tb: Exception traceback if raised, None otherwise.
+
+        Returns:
+            bool: False to propagate exception, True to suppress.
+        """
+        logger.info("Cleaning up QWEN Analyzer resources")
+        if hasattr(self.client, "close"):
+            self.client.close()
+            logger.info("   QWEN client closed")
+        return False
+
     def _get_cache_key(self, text: str) -> str:
         """Generate secure cache key from text using SHA256.
 

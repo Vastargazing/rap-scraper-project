@@ -127,7 +127,13 @@ from .algorithmic_analyzer import AdvancedAlgorithmicAnalyzer
 
 # from .hybrid_analyzer import HybridAnalyzer  # Temporarily disabled
 from .emotion_analyzer import EmotionAnalyzer
-from .mass_qwen_analysis import UnifiedQwenMassAnalyzer
+
+try:
+    from .mass_qwen_analysis import UnifiedQwenMassAnalyzer
+except (ImportError, SystemExit):
+    # mass_qwen_analysis requires full app context, may fail during tests
+    UnifiedQwenMassAnalyzer = None
+
 from .ollama_analyzer import OllamaAnalyzer
 
 # New config-integrated analyzers (v2.0.0)
@@ -137,7 +143,7 @@ __all__ = [
     "AdvancedAlgorithmicAnalyzer",
     "EmotionAnalyzer",
     "OllamaAnalyzer",
-    "UnifiedQwenMassAnalyzer",
     "QwenAnalyzer",
+    "UnifiedQwenMassAnalyzer",
     # "HybridAnalyzer",  # Temporarily disabled pending refactoring
 ]

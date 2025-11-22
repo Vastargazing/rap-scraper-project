@@ -1039,7 +1039,7 @@ class PostgreSQLManager:
         """Get comprehensive database statistics"""
         try:
             stats_query = """
-                SELECT 
+                SELECT
                     (SELECT COUNT(*) FROM tracks WHERE lyrics IS NOT NULL AND LENGTH(TRIM(lyrics)) > 50) as total_tracks,
                     (SELECT COUNT(*) FROM analysis_results WHERE analyzer_type = 'simplified_features_v2') as analyzed_tracks,
                     (SELECT AVG(processing_time_ms) FROM analysis_results WHERE analyzer_type = 'simplified_features_v2') as avg_processing_time,
@@ -1337,7 +1337,7 @@ class AnalysisEngine:
         query = """
             SELECT t.id, t.title, t.artist, t.lyrics
             FROM tracks t
-            LEFT JOIN analysis_results ar ON t.id = ar.track_id 
+            LEFT JOIN analysis_results ar ON t.id = ar.track_id
                 AND ar.analyzer_type = 'simplified_features_v2'
             WHERE t.id > $1
                 AND t.lyrics IS NOT NULL
