@@ -51,6 +51,8 @@ AI_Engineer_Journal/
 *.temp
 temp/
 cache/
+# Exception: src/cache/ module is code, not cache data
+!src/cache/
 
 # Spotify cache files
 .cache
